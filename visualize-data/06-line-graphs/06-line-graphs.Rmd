@@ -1,0 +1,542 @@
+---
+title: "Line plots and maps"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+library(maps)
+library(mapproj)
+library(gapminder)
+library(forcats)
+
+asia <- 
+  gapminder %>% 
+  filter(country %in% c("China", "Korea, Dem. Rep.", "Korea, Rep.", "Japan")) %>% 
+  mutate(country = fct_recode(country, "North Korea" = "Korea, Dem. Rep.", "South Korea" = "Korea, Rep."))
+
+tx <- map_data("state", region = "texas")
+us <- map_data("state")
+
+USArrests2 <- USArrests %>% 
+  rownames_to_column("region") %>% 
+  mutate(region = tolower(region))
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## Welcome 
+
+A **line graph** displays a functional relationship between two continuous variables. A **map**  displays spatial data. The two may seem different, but they are made in similar ways. This tutorial will examine them both.
+
+In this tutorial, you'll learn how to:
+
+* Make new types of line plots with `geom_step()`, `geom_area()`, `geom_path()`, and `geom_polygon()`
+* Avoid "whipsawing" with the group aesthetic
+* Find and plot map data with `geom_map()`
+* Transform a coordinate system into a map projection with `coord_map()`
+
+The tutorial is adapted from _R for Data Science_ by Hadley Wickham and Garrett Grolemund, published by O’Reilly Media, Inc., 2016, ISBN: 9781491910399. You can purchase the book at [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
+
+The tutorial uses the ggplot2, maps, mapproj, and dplyr packages, which have been pre-loaded for your convenience.
+
+## Line graphs
+
+### Line Graph vs. Scatterplot
+
+Like scatterplots, line graphs display the relationship between two continuous variables. However, unlike scatterplots, line graphs expect the variables to have a _functional_ relationship, where each value of $x$ is associated with only one value of $y$.
+
+For example, in the plot below, there is only one value of unemploy for each value of date. 
+
+```{r echo = FALSE, out.width = "80%"}
+economics %>% 
+  ggplot() +
+    geom_line(mapping = aes(x = date, y = unemploy))
+```
+
+### geom_line()
+
+Use the `geom_line()` function to make line graphs. Like `geom_point()`, it requires x and y aesthetics. 
+
+Use `geom_line()` in the chunk below to recreate the graph above. The graph uses the `economics` dataset that comes with ggplot2 and maps the `date` and `unemploy` variables to the $x$ and $y$ axes. See [Visualization Basics]() if you are completely stuck.
+
+```{r r1, exercise = TRUE}
+
+```
+
+```{r r1-solution}
+ggplot(economics) +
+  geom_line(mapping = aes(x = date, y = unemploy))
+```
+
+```{r r1-check}
+"Good Job! The graph shows the number of unemployed people in the US (in thousands) from 1967 to 2015. Now let's look at a more rich dataset."
+```
+
+### asia
+
+I've used the **gapminder** package to assemble a new data set named `asia` to plot. Among other things, `asia` contains the per capita GDP of four countries from 1952 to 2007.
+
+```{r}
+asia
+```
+
+### whipsawing
+
+However, when we plot the asia data we get an odd looking graph. The line seems to "whipsaw" up and down. Whipsawing is one of the most encountered challenges with line graphs.
+
+```{r out.width = "80%"}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap))
+```
+
+### Review 1 - Whipsawing
+
+```{r r2, echo = FALSE}
+question("You've encountered whipsawing before in the [Data Basics tutorial](). What does whipsawing indicate?",
+         answer("There is a lot of volatility in the data.", message = "Highly volatile data could certainly seem to whip back and forth, but look closer: that's not what is going on here."),
+         answer("The graph should be plotted in polar coordinates."),
+         answer("The data contains rounding errors."),
+         answer("We are trying to plot more than one line with a single line.", correct = TRUE, message = "As a result, our single line needs to connect multiple points for each x value before moving to the next x value."),
+         allow_retry = TRUE)
+```
+
+### Multiple lines
+
+Redraw our graph as a scatterplot. Can you spot more than one "line" in the data?
+
+```{r r3, exercise = TRUE}
+
+```
+
+```{r r3-solution}
+ggplot(asia) +
+  geom_point(mapping = aes(x = year, y = gdpPercap))
+```
+
+```{r r3-check}
+"Good job! There are actually four lines in the plot. One for each country: China, Japan, North Korea, and South Korea."
+```
+
+### group
+
+Many geoms, like lines, boxplots, and smooth lines, use a single object to display the entire dataset. You can use the _group_ aesthetic to instruct these geoms to draw separate objects for different groups of observations.
+
+For example, in the code below, you can map `group` to the grouping variable `country` to create a separate line for each country. Try it. Be sure to place the group mapping inside of `aes()`.
+
+```{r r4, exercise = TRUE}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap))
+```
+
+```{r r4-solution}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap, group = country))
+```
+
+```{r r4-check}
+"Good job! We now have a separate line for each country. Unfortunately, we cannot tell what the countries are: the group aesthetic does not supply a legend. Let's look at how to fix that."
+```
+
+### aesthetics
+
+You do not have to rely on the group aesthetic to perform a grouping. ggplot2 will automatically group a monolithic geom whenever you map an aesthetic to a categorical variable. 
+
+So for example, the code below performs an implied grouping. And since we use the color aesthetic, the plot includes a legend, the color legend.
+
+```{r, out.width = "80%"}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap, color = country))
+```
+
+### linetype 
+
+Lines recognize a useful aesthetic that we haven't encountered before, _linetype_. Change color to linetype below and inspect the results. What happens if you map _both_ a color and a linetype to country?
+
+```{r r5, exercise = TRUE, exercise.eval = TRUE}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap, color = country))
+```
+
+```{r r5-solution}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap, linetype = country, color = country))
+```
+
+```{r r5-check}
+"Good job! If you map two aesthetics to the same variable, ggplot2 will combine their legends. Supplementing color with linetype is a good idea if you might print your line chart in black and white."
+```
+
+### Exercise 1 - Life Expectancy
+
+Use what you've learned to plot the life expectancy of each country over time. Life expectancy is saved in the `asia` data set as `lifeExp`. Which country has the highest life expectancy? The lowest?
+
+```{r r6, exercise = TRUE}
+
+```
+
+
+```{r r6-solution}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = lifeExp, color = country, linetype = country))
+```
+
+```{r r6-check}
+"Good job! Japan has the highest life expectancy and North Korea the worst, but we can see that things haven't always been this way. Now let's look at some other ways to display the same information."
+```
+
+## Similar geoms
+
+### geom_step()
+
+`geom_step()` draws a line chart in a stepwise fashion. To see what I mean, change the geom in the plot below and rerun the code.
+
+```{r r7, exercise = TRUE, exercise.eval = TRUE}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = lifeExp, color = country, linetype = country))
+```
+
+```{r r7-solution}
+ggplot(asia) +
+  geom_step(mapping = aes(x = year, y = lifeExp, color = country, linetype = country))
+```
+
+```{r r7-check}
+'Good job! You can control whether the steps move horizontally first and then vertically or vertically first and then horizontally with the parameters `direction = "hv"` (the default) or `direction = "vh"`.'
+```
+
+### geom_area()
+
+`geom_area()` is similar to a line graph, but it fills in the area under the line. To see `geom_area()` in action, change the geom in the plot below and rerun the code.
+
+```{r r0, exercise = TRUE, exercise.eval = TRUE}
+ggplot(economics) +
+  geom_line(mapping = aes(x = date, y = unemploy))
+```
+
+```{r r0-solution}
+ggplot(economics) +
+  geom_area(mapping = aes(x = date, y = unemploy))
+```
+
+```{r r0-check}
+"Good job! Filling the space under the line gives you a new way to customize your plot."
+```
+
+
+### Review 2 - Set vs. Map
+
+Do you recall from [Visualization Basics]() how you would set the fill of our plot to blue (instead of, say, map the fill to a variable)? Give it a try.
+
+```{r r8, exercise = TRUE, exercise.eval = TRUE}
+ggplot(economics) +
+  geom_area(mapping = aes(x = date, y = unemploy))
+```
+
+```{r r8-solution}
+ggplot(economics) +
+  geom_area(mapping = aes(x = date, y = unemploy), fill = "blue")
+```
+
+```{r r8-check}
+"Good job! Remember that you map aesthetics to variables inside of aes(). You set aesthetics to values outside of aes()."
+```
+
+### Accumulation
+
+`geom_area()` is a great choice if your measurements represent the accumulation of objects (like unemployed people). Notice that the $y$ axis `geom_area()` always begins or ends at zero.
+
+Perhaps because of this, `geom_area()` can be quirky when you have multiple groups. Run the code below. Can you tell what happens here?
+
+```{r r00, exercise = TRUE}
+ggplot(asia) +
+  geom_area(mapping = aes(x = year, y = lifeExp, fill = country))
+```
+
+### Review 3 - Position adjustments
+
+If you answered that people in China were living to be 300 years old, you guessed wrong. 
+
+`geom_area()` is stacking each group above the group below. As a result, the line that should display the life expectancy for China displays the combined life expectancy for all countries.
+
+You can fix this by changing the position adjustment for `geom_area()`. Give it a try below. Change the position parameter from "stack" (the implied default) to `"identity"`. See [Bar Charts]() if you'd like to learn more about position adjustments.
+
+```{r r9, exercise = TRUE}
+ggplot(asia) +
+  geom_area(mapping = aes(x = year, y = lifeExp, fill = country), alpha = 0.3)
+```
+
+```{r r9-solution}
+ggplot(asia) +
+  geom_area(mapping = aes(x = year, y = lifeExp, fill = country), position = "identity", alpha = 0.3)
+```
+
+```{r r9-check}
+"Good Job! You can further customize your graph by switching from `geom_area()` to `geom_ribbon()`. `geom_ribbon()` lets you map the bottom of the filled area to a variable, as well as the top. See `?geom_ribbon` if you'd like to learn more."
+```
+
+### geom_path()
+
+`geom_line()` comes with a strange bed-fellow, `geom_path()`. `geom_path()` draws a line between points like `geom_line()`, but instead of connecting points in the order that they appear along the $x$ axis, `geom_path()` connects the points in the order that they appear _in the data set_.
+
+It starts with the observation in row one of the data and connects it to the observation in row two, which it then connects to the observation in row three, and so on.
+
+### geom_path() example
+
+To see how `geom_path()` does this, let's rearrange the rows in the `economics` dataset. We can reorder them by `unemploy` value. Now the data set will begin with the observation that had the lowest value of `unemploy`.
+
+```{r}
+economics2 <- economics %>% 
+  arrange(unemploy)
+economics2
+```
+
+### geom_path() example continued
+
+If we plot the reordered data with both `geom_line()` and `geom_path()` we get two very different graphs. 
+
+```{r out.width = "50%", fig.show='hold'}
+ggplot(economics2) +
+  geom_line(mapping = aes(x = date, y = unemploy))
+
+ggplot(economics2) +
+  geom_path(mapping = aes(x = date, y = unemploy))
+```
+
+The plot on the left uses `geom_line()`, hence the points are connected in order along the $x$ axis. The plot on the right uses `geom_path()`. These points are connected in the order that they appear in the dataset, which happens to put them in order along the $y$ axis.
+
+### A use case
+
+Why would you want to use `geom_path()`? The code below illustrates one particularly useful case. The `tx` dataset contains latitude and longitude coordinates saved in a specific order.
+
+```{r}
+tx
+```
+
+### tx
+
+What do you think happens when you plot the data in `tx`? Run the code to find out.
+
+```{r r10, exercise = TRUE}
+ggplot(tx) +
+  geom_path(mapping = aes(x = long, y = lat))
+```
+
+```{r r10-solution}
+ggplot(tx) +
+  geom_path(mapping = aes(x = long, y = lat))
+```
+
+```{r r10-check}
+"Good job! `geom_path()` reveals how you can use what is essentially a line plot to make a map (this is a map of the state of Texas). There are other ways to make maps in R, but this low tech method is surprisingly versatile."
+```
+
+### geom_polygon()
+
+`geom_polygon()` extends `geom_path()` one step further: it connects the last point to the first and then colors the interior region with a fill. The result is a polygon.
+
+```{r out.width = "80%"}
+ggplot(tx) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+### Exercise 2 - Shattered Glass
+
+What do you think went wrong in the plot of Texas below?
+
+```{r out.width = "80%", echo = FALSE}
+set.seed(100)
+rows <- c(rep(c(1:10), 100) + rep(sample(0:99 * 10), each = 10), 1001:1088)
+
+tx[rows, ] %>% 
+  ggplot() +
+    geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+```{r r11, echo = FALSE}
+question("What went wrong?",
+         answer("The rows in the dataset became out of order.", correct = TRUE, message = "It looks like someone messed with tx. tx and datasets like it will have an order variable that you can use to ensure that the data is in the correct order before you plot it."),
+         answer("The programmer did not set a fill aesthetic.", message = "Its not necessary to set a fill aesthetic to make a correct polygon."),
+         answer("The programmer used a line plot instead of a polygon plot.", message = "If you look closely, you can see that this is a polygon plot."),
+         allow_retry = TRUE)
+```
+
+## Maps
+
+### maps
+
+The `tx` data set comes from the **maps** package, which is an R package that contains similarly formatted data sets for many regions of the globe. 
+
+A short list of the datasets saved in maps includes: `france`, `italy`, `nz`, `usa`, `world`, and `world2`, along with `county` and `state`. These last two map the US at the county and state levels. To learn more about maps, run `help(package = maps)`.
+
+### map_data
+
+You do not need to access the maps package to use its data. ggplot2 provides the function `map_data()` which fetches maps from the maps package and returns them in a format that ggplot2 can plot. 
+
+### map_data syntax
+
+To use `map_data()` give it the name of a dataset to retrieve. You can retrieve a subset of the data by providing an optional `region` argument. For example, I can use this code to retrieve a map of Florida from `state`, which is the dataset that contains all 50 US states.
+
+```{r eval = FALSE}
+fl <- map_data("state", region = "florida")
+ggplot(fl) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+Alter the code to retrieve and plot your home state (Try Idaho if you are outside of the US). Notice the capitalization.
+
+```{r r12, exercise = TRUE, exercise.eval = TRUE}
+
+```
+
+```{r r12-solution}
+id <- map_data("state", region = "idaho")
+ggplot(id) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+```{r r12-check}
+"Good job! This is how I collected the tx dataset. Let's look at what would happen if you do not specify a region in map_data()."
+```
+
+### state
+
+If you do not specify a region, `map_data()` will retrieve the entire data set, in this case `state`. 
+
+```{r eval = FALSE}
+us <- map_data("state")
+```
+
+In practice, you will often have to retrieve an entire dataset at least once to learn what region names to use with `map_data()`. The names will be stored in the `region` column of the dataset.
+
+### Hmmm
+
+The code below retrieves and plots the entire state data set, but something goes wrong. What?
+
+```{r}
+us <- map_data("state")
+ggplot(us) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+### Multiple polygons
+
+In this case, our data is not out of order, but it contains more than one polygon: it contains 50 polygons---one for each state. 
+
+By default, `geom_polygon()` tries to plot a single polygon, which causes it to connect multiple polygons in weird ways. 
+
+### groups
+
+Which aesthetic can you use to plot multiple polygons? In the code below, map the aesthetic to the `group` variable in the `state` dataset. This variable contains all of the grouping information needed to make a coherent map. Then rerun the code.
+
+```{r r13, exercise = TRUE, exercise.eval = TRUE}
+ggplot(us) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+```{r r13-solution}
+ggplot(us) +
+  geom_polygon(mapping = aes(x = long, y = lat, group = group))
+```
+
+```{r r13-check}
+"Good job! You've mastered a method for drawing maps. Let's take the final step and use the map to display information."
+```
+
+### USArrests
+
+R comes with a data set named `USArrests` that we can use in conjunction with our plot above to make a _choropleth map_. A choropleth map uses the color of each region in the plot to display some value associated with the region.
+
+In our case we will use the `UrbanPop` variable of `USAarrests` which records how urbanized each state was in 1973. `UrbanPop` is the percent of the population who lived within a city.
+
+```{r}
+USArrests
+```
+
+### geom_map()
+
+You can use `geom_map()` to create choropleth maps. `geom_map()` pairs a data frame like `USArrests` with a map dataset like `us` by matching region names. 
+
+### Data wrangling
+
+To use `geom_map()`, we first need to ensure that a common set of region names appears across both datasets. 
+
+At the moment, this isn't the case. `USArrests` uses capitalized state names and hides them outside of the dataset in the row names (instead of in a column). In contrast, `us` uses a column of lower case state names. The code below fixes this.
+
+```{r}
+USArrests2 <- USArrests %>% 
+  rownames_to_column("region") %>% 
+  mutate(region = tolower(region))
+
+USArrests2
+```
+
+### geom_map() syntax 
+
+To use `geom_map()`: 
+
+1. Initialize a plot with the data set that contains your data. Here that is `USArrests2`.
+
+1. Add `geom_map()`. Set the *map_id* aesthetic to the variable that contains the regions names. Then set the _fill_ aesthetic to the fill variable. You do not need to supply x and y aesthetics, `geom_map()` will derive these values from the map data set, which you must set with the _map_ parameter. Since map is a parameter, it should go outside the `aes()` function.
+
+1. Dfollow `geom_map()` with `expand_limits()`, and tell `expand_limits()` what the $x$ and $y$ variables in the map dataset are. This shouldn't be necessary in future iterations of `geom_map()`, but for now ggplot2 will use the x and y arguments of `expand_limits()` to build the bounding box for your plot.
+
+```{r r15, exercise = TRUE}
+ggplot(USArrests2) +
+  geom_map(aes(map_id = region, fill = UrbanPop), map = us) +
+  expand_limits(x = us$long, y = us$lat)
+```
+
+```{r r15-check}
+"Congratulations! You've used geom_map() to make your first choropleth plot! To test your understanding, alter the code to display the Murder, Assault, or Rape variables."
+```
+
+### coord_map()
+
+You may have noticed that our maps look a little off. So far, we've plotted them in cartesian coordinates, which distort the spherical surface described by latitude and longitude. Also, ggplot2 adjusts the aspect ratio of our plots to fit our graphing window, which can further distort our maps. 
+
+You can avoid both of these distortions by adding `coord_map()` to your plot. `coord_map()` displays the plot in a fixed cartographic projection. Note that  `coord_map()`, relies on the **mapproj** package, so you'll need to have mapproj installed before you use `coord_map()`.
+
+```{r out.width = "80%"}
+ggplot(USArrests2) +
+  geom_map(aes(map_id = region, fill = UrbanPop), map = us) +
+  expand_limits(x = us$long, y = us$lat) +
+  coord_map()
+```
+
+### projections
+
+By default, `coord_map()` replaces the coordinate system with a mercator projection. To use a different projection, set the `projection` argument of `coord_map()` to a projection name, surrounded by quotation marks. 
+
+To see this, extend the code below to view the map in a `"sinusoidal"` projection.
+
+```{r r16, exercise = TRUE, exercise.eval = TRUE, exercise.lines = 4}
+ggplot(USArrests2) +
+  geom_map(aes(map_id = region, fill = UrbanPop), map = us) +
+  expand_limits(x = us$long, y = us$lat)
+```
+
+```{r r16-solution}
+ggplot(USArrests2) +
+  geom_map(aes(map_id = region, fill = UrbanPop), map = us) +
+  expand_limits(x = us$long, y = us$lat) +
+  coord_map(projection = "sinusoidal")
+```
+
+```{r r16-check}
+"Good job! To see a list of available projections, visit the `?mapproj` help page, which is hyperlinked from the coord_map() help page."
+```
+
+
+### Recap
+
+You can now make all of the plots recommended in the [Exploratory Data Analysis tutorial](). The last tutorial in this primer will teach you several strategies for dealing with overplotting, a problem that can occur when you have large data or low resolution data.

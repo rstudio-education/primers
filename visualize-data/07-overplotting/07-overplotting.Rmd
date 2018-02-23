@@ -1,0 +1,268 @@
+---
+title: "Overplotting"
+tutorial:
+  id: "io.shinyapps.tutorials.07-overplotting"
+  version: 0.02
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    df_print: default
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Welcome
+
+Data Visualization is a useful tool because it makes data accessible to your visual system, which can process large amounts of information quickly. However, two characteristics of data can short circuit this system. Data can not be easily visualized if
+
+1. Data points are all rounded to the same values
+2. The data contains so many points that they occlude each other
+
+These features both create _overplotting_, the condition where multiple geoms in the plot are plotted on top of each other, hiding each other. This tutorial will show you several strategies for dealing with overplotting, introducing new geoms along the way.
+
+The tutorial is adapted from _R for Data Science_ by Hadley Wickham and Garrett Grolemund, published by O’Reilly Media, Inc., 2016, ISBN: 9781491910399. You can purchase the book at [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
+
+The tutorial uses the ggplot2 and hexbin packages, which have been pre-loaded for your convenience.
+
+## Overplotting
+
+### What is overplotting?
+
+You've seen this plot several times in previous tutorials, but have you noticed that it only displays 126 points? This is unusual because the plot visualizes a data set that contains 234 points.
+
+```{r echo = FALSE, out.width = "80%"}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+The missing points are hidden behind other points, a phenomenon known as _overplotting_. Overplotting is a problem because it provides an incomplete picture of the dataset. You cannot determine where the *mass* of the points fall, which makes it difficult to spot relationships in the data. 
+
+### Causes of overplotting
+
+Overplotting usually occurs for two different reasons:
+
+1. The data points have been rounded to a "grid" of common values, as in the plot above
+2. The dataset is so large that it cannot be plotted without points overlapping each other
+
+How you deal with overplotting will depend on the cause. 
+
+## Rounding
+
+### Overplotting due to rounding
+
+If your overplotting is due to rounding, you can obtain a better picture of the data by making each point semi-transparent. For example you could _set_ the alpha aesthetic of the plot below to a _value_ less than one, which will make the points transparent. 
+
+Try this now. Set the points to an alpha of 0.25, which will make each point 25% opague (i.e. four points staked on top of each other will create a solid black).
+
+```{r r1, exercise = TRUE}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+```{r r1-solution}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), alpha = 0.25)
+```
+
+```{r r1-check}
+"Good job! You can now identify which values contain more observations. The darker locations contain several points stacked on top of each other."
+```
+
+### Adjust the position
+
+A second strategy for dealing with rounding is to adjust the position of each point. `position = "jitter"` adds a small amount of random noise to the location of each point. Since the noise is random, it is unlikely that two points rounded to the same location will also be jittered to the same location.
+
+The result is a jittered plot that displays more of the data. Jittering comes with both limitations and benefits. You cannot use a jittered plot to see the _local_ values of the points, but you can use a jittered plot to perceive the _global_ relationship between the variables, something that is hard to do in the presence of overplotting.
+
+```{r out.width = "80%"}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), position = "jitter")
+```
+
+### Review - jitter
+
+In the [Scatterplots tutorial](), you learned of a geom that displays the equivalent of `geom_point()` with a `position = "jitter"` adjustment.
+
+Rewrite the code below to use that geom. Do you obtain similar results?
+
+```{r r2, exercise = TRUE}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), position = "jitter")
+```
+
+```{r r2-solution}
+ggplot(data = mpg) +
+  geom_jitter(mapping = aes(x = displ, y = hwy))
+```
+
+```{r r2-check}
+"Good job! Now let's look at ways to handle overplotting due to large datasets."
+```
+
+## Large data
+
+### Overplotting due to large data
+
+A dataset does not need to be truly "Big Data" to be hard to visualize. The diamonds data set contains less than 54,000 points, but it still suffers from overplotting when you try to plot carat vs. price. Here the bulk of the poitns fall on top of each other in an impenetrable cloud of blackness.
+
+```{r out.width = "80%"}
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = carat, y = price))
+```
+
+### Strategies for large data
+
+Alpha and jittering are less useful for large data. Jittering will not separate the points, and a mass of transparent points can still look black.
+
+A better way to deal with overplotting due to large data is to visualize a summary of the data. In fact, we've already worked with this dataset by using geoms that naturally summarise the data, like `geom_histogram()` and `geom_smooth()`.
+
+```{r echo = FALSE, out.width = "50%", warning = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = price))
+
+ggplot(data = diamonds) +
+  geom_smooth(mapping = aes(x = carat, y = price))
+```
+
+Let's look at several other geoms that you can use to summarise relationships in large data.
+
+### Review - Boxplots with continuous variables
+
+Boxplots efficiently summarise data, which make them a useful tool for large data sets. In the [boxplots tutorial](), you learned how to use `cut_width()` and the group aesthetic to plot multiple boxplots for a continuous variable.
+
+Modify the code below to cut the carat axis into intervals with width 0.2. Then set the group aesthetic of `geom_boxplot()` to the result.
+
+```{r r3, exercise = TRUE}
+ggplot(data = diamonds) +
+  geom_boxplot(mapping = aes(x = carat, y = price))
+```
+
+```{r r3-solution}
+ggplot(data = diamonds) +
+  geom_boxplot(mapping = aes(x = carat, y = price, group = cut_width(carat, width = 0.2)))
+```
+
+```{r r3-check}
+"Good job! The medians of the boxplots give a somewhat more precise description of the relationship between carat and price than does the fan of individual points."
+```
+
+### geom_bin2d()
+
+`geom_bin2d()` provides a new way to summarise two dimensional continuous relationships. You can think of bin2d as working like a three dimensional histogram. It divides the cartesian field into small retangular bins, like a checkerboard. It then counts how many points fall into each bin, and maps the count to color. Bins that contain no points are left blank.
+
+```{r out.width = "80%"}
+ggplot(data = diamonds) +
+  geom_bin2d(mapping = aes(x = carat, y = price))
+```
+
+By studying the results, we can see that the mass of points falls in the bottom left of the graph.
+
+### Exercise - binwidths
+
+Like histograms, bin2d use `bins` and `binwidth` arguments. Each should be set to a vector of two numbers: one for the number of bins (or binwidths) to use on the x axis, and one for the number of bins (or binwidths) to use on the y axis.
+
+Use one of these parameters to modify the graph below to use 40 bins on the x axis and 50 on the y axis.
+
+```{r r4, exercise = TRUE}
+ggplot(data = diamonds) +
+  geom_bin2d(mapping = aes(x = carat, y = price))
+```
+
+```{r r4-solution}
+ggplot(data = diamonds) +
+  geom_bin2d(mapping = aes(x = carat, y = price), bins = c(40, 50))
+```
+
+```{r r4-check}
+"Good job! As with histograms, bin2ds can reveal different information at different binwidths."
+```
+
+### Exercise - geom_hex()
+
+Our eyes are drawn to straight vertical and horizontal lines, which makes it easy to perceive "edges" in a bin2d that are not necessarily there (the rectangular bins naturally form edges that span the breadth of the graph).
+
+One way to avoid this, if you like, is to use `geom_hex()`. `geom_hex()` functions like `geom_bin2d()` but uses hexagonal bins. Adjust the graph below to use `geom_hex()`.
+
+```{r r5, exercise = TRUE}
+ggplot(data = diamonds) +
+  geom_bin2d(mapping = aes(x = carat, y = price))
+```
+
+```{r r5-solution}
+ggplot(data = diamonds) +
+  geom_hex(mapping = aes(x = carat, y = price))
+```
+
+```{r r5-check}
+"Good job! You need to have the hexbin package installed on your computer, but not necessarily loaded, to use geom_hex()."
+```
+
+### geom_density2d()
+
+`geom_density2d()` provides one last way to summarize a two dimensional continuous relationship. Think of density2d as the two dimensional analog of density. Instead of drawing a line that rises and falls on the y dimension, it draws a field over the coordinate axes that rises and falls on the z dimension, that's the dimension that points straight out of the graph towards you.
+
+The result is similar to a mountain that you are looking straight down upon. The high places on the mountain show where the most points fall and the low places show where the fewest points fall. To visualize this mountain, density2d draws contour lines that connect areas with the same "height." Just like a contour map draws elevation.
+
+Here we see the "ridge" of points that occur at low values of carat and price.
+
+```{r out.width = "80%"}
+ggplot(data = diamonds) +
+  geom_density2d(mapping = aes(x = carat, y = price))
+```
+
+### Expand limits
+
+By default, density2d zooms in on the region that contains density lines. This may not be the same region spanned by the data points. If you like, you can re-expand the graph to the region spanned by the price and carat variables with `expand_limits()`.
+
+`expand_limits()` zooms the x and y axes to the fit the range of any two variables (they need not be the original x and y variables).
+
+```{r out.width = "80%"}
+ggplot(data = diamonds) +
+  geom_density2d(mapping = aes(x = carat, y = price)) +
+  expand_limits(x = diamonds$carat, y = diamonds$price)
+```
+
+### Exercise - density2d
+
+Often density2d plots are easiest to read when you plot them on top of the original data. In the chunk below create a plot of daimond carat size vs. price. The plot should contain density2d lines superimposed _on top of_ the raw points. Make the raw points transparent with an alpha of 0.1.
+
+```{r r6, exercise = TRUE}
+
+```
+
+
+```{r r6-solution}
+ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
+  geom_point(alpha = 0.1) +
+  geom_density2d()
+```
+
+```{r r6-check}
+"Good job! Plotting a summay on top of raw values is a common pattern in data science."
+```
+
+### Recap
+
+Overplotting is a common phenomenon in plots because the causes of overplotting area common phenomenon in data sets. Data sets often
+
+* round values to a common set of values, or
+* are too big to visualize easily without overplotting
+
+When overplotting results from rounding errors, you can work around it by manipulating the transparency or location of the points.
+
+For larger datasets you can use geoms that summarise the data to display relationships without overplotting. This is an effective tactic for truly big data as well, and it also works for the first case of overplotting due to rounding.
+
+One final tactic is to sample your data to create a sample data set that is small enough to visualize without overplotting.
+
+You've now learned a complete toolkit for exploring data visually. The final tutorial in this primer will show you how to polish the plots you make for publication. Instead of learning how to visualize data, you will learn how to add titles and captions, customize color schemes and more.

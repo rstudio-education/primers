@@ -1,0 +1,566 @@
+---
+title: "Programming basics"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+```
+
+## Welcome 
+
+### Welcome to R
+
+R is easiest to use when you know how the R language works. This tutorial will teach you the implicit background knowledge that informs every piece of R code. You'll learn about:
+
+* **functions** and their **arguments**
+* **objects**
+* R's basic **data types** 
+* R's basic data structures including **vectors** and **lists**
+* R's **package system**
+
+## Functions 
+
+### Functions
+
+![](https://vimeo.com/220490105)
+
+### Run a function
+
+Can you use the `sqrt()` function in the chunk below to compute the square root of 962?
+
+```{r functions-1, exercise = TRUE}
+
+```
+
+```{r functions-1-solution}
+sqrt(961)
+```
+
+### Code
+
+Use the code chunk below to examine the code that `sqrt()` runs.
+
+```{r functions-2, exercise = TRUE}
+
+```
+
+```{r functions-2-solution}
+sqrt
+```
+
+```{r functions-2-check}
+"Good job! sqrt immediately triggers a low level algorithm optimized for performance, so there is not much code to see."
+```
+
+### lm
+
+Compare the code in `sqrt()` to the code in another R function, `lm()`. Examine `lm()`'s code body in the chunk below.
+
+```{r functions-3, exercise = TRUE}
+
+```
+
+```{r functions-3-solution}
+lm
+```
+
+### help pages
+
+Wow! `lm()` runs a lot of code. What does it do? Open the help page for `lm()` in the chunk below and find out.
+
+```{r functions-4, exercise = TRUE}
+
+```
+
+```{r functions-4-solution}
+?lm
+```
+
+```{r functions-4-check}
+"Good job! `lm()` is R's function for fitting basic linear models. No wonder it runs so much code."
+```
+
+### Code comments
+
+What do you think the chunk below will return? Run it and see. RThe result should be nothing. R will not run anything on a line after a `#` symbol. This is useful because it lets you write human readable comments in your code: just place the comments after a `#`. Now delete the `#` and re-run the chunk. You should see a result.
+
+```{r functions-5, exercise = TRUE}
+# sqrt(961)
+```
+
+```{r functions-5-solution}
+sqrt(961)
+```
+
+
+## Arguments
+
+### Arguments
+
+![](https://vimeo.com/220490157)
+
+### args()
+
+`rnorm()` is a function that generates random variables from a normal distribution. Fins the arguments of `rnorm()`.
+
+```{r arguments-1, exercise = TRUE}
+
+```
+
+```{r arguments-1-solution}
+args(rnorm)
+```
+
+```{r arguments-1-check}
+"Good job! `n` specifies the number of random normal variables to generate. `mean` and `sd` describe the distribution to generate the random values with." 
+```
+
+### optional arguments
+
+```{r arguments-2, echo = FALSE}
+question("Which arguments of R norm are optional?",
+         answer("n"),
+         answer("mean", correct = TRUE),
+         answer("sd", correct = TRUE),
+         allow_retry = TRUE,
+         correct = "`n` is not an optional argument because it does not have a default value.")
+```
+
+### rnorm() 1
+
+Use `rnrom()` to generate 100 random normal values with a mean of 100 and a standard deviation of 15.
+
+```{r arguments-3, exercise = TRUE}
+
+```
+
+```{r arguments-3-solution}
+rnorm(100, mean = 100, sd = 50)
+```
+
+### rnorm() 2
+
+Can you spot the error in the code below? Fix the code and then re-run it.
+
+```{r arguments-4, exercise = TRUE}
+rnorm(100, mu = 100, sd = 50)
+```
+
+```{r arguments-4-solution}
+rnorm(100, mean = 100, sd = 50)
+```
+
+## Objects
+
+### Objects
+
+![](https://vimeo.com/220493412)
+
+### Object names
+
+You can choose almost any name you like for an object, as long as the name does not begin with a number or a special character like `+`, `-`, `*`, `/`, `^`, `!`, `@`, or `&`. 
+
+```{r objects-1, echo = FALSE}
+question("Which of these would be valid object names?",
+  answer("today", correct = TRUE),
+  answer("1st"),
+  answer("+1"),
+  answer("vars", correct = TRUE),
+  answer("\\^_^"),
+  answer("foo", correct = TRUE),
+  allow_retry = TRUE,
+  correct = "Remember that the most helpful names will remind you what you put in your object."
+)
+```
+
+### Using objects
+
+In the code chunk below, save the results of `rnorm(100, mean = 100, sd = 15)` to an object named `data`. Then, on a new line, call the `hist()` function on `data` to plot a histogram of the random values.
+
+```{r objects-2, exercise = TRUE}
+
+```
+
+```{r objects-2-solution}
+data <- rnorm(100, mean = 100, sd = 15)
+hist(data)
+```
+
+### What if?
+
+What do you think would happen if you assigned `data` to a new object named `copy`, like this? Run the code and then inspect both `data` and `copy`.
+
+```{r objects-3, exercise = TRUE}
+data <- rnorm(100, mean = 100, sd = 15)
+copy <- data
+```
+
+```{r objects-3-solution}
+data <- rnorm(100, mean = 100, sd = 15)
+copy <- data
+data
+copy
+```
+
+```{r objects-3-check}
+"Good job! R saves a copy of the contents in data to copy."
+```
+
+### Data sets
+
+Objects provide an easy way to store data sets in R. In fact, R comes with many toy data sets pre-loaded. Examine the contents of `iris` to see a classic toy data set. Hint: how could you learn more about the `iris` object?
+
+```{r objects-4, exercise = TRUE}
+
+```
+
+```{r objects-4-solution}
+iris
+```
+
+```{r objects-4-check}
+"Good job! You can learn more about iris by examining its help page with `?iris`."
+```
+
+### rm()
+
+What if you accidentally overwrite an object? If that object came with R or one of its packages, you can restore the original version of the object by removing your version with `rm()`. Run `rm()` on `iris` below to restore the iris data set.
+
+```{r objects-5, exercise = TRUE}
+iris <- 1
+iris
+```
+
+```{r objects-5-solution}
+iris <- 1
+iris
+rm(iris)
+iris
+```
+
+```{r objects-5-check}
+"Good job! Unfortunately, `rm()` cannot help you if you overwrite one of your own objects."
+```
+
+## Vectors
+
+### Vectors
+
+![](https://vimeo.com/220490316)
+
+### Create a vector
+
+In the chunk below, create a vector that contains the integers from one to ten.
+
+```{r vectors-1, exercise = TRUE}
+
+```
+
+```{r vectors-1-solution}
+c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+### :
+
+If your vector contaisn a sequence of contiguous integers, you can create it with the `:` shortcut. Run `1:10` in the chunk below. What do you get? What do you suppose `1:20` would return?
+
+```{r vectors-2, exercise = TRUE}
+
+```
+
+```{r vectors-2-solution}
+1:10
+```
+
+### []
+
+You can extract any element of a vector by placinga pair of brackets behind the vector. Inside the brackets place the number of the element that you'd like to extract. For example, `vec[3]` would return the third element of the vector named `vec`.
+
+Use the chunk below to extract the fourth element of `vec`.
+
+```{r vectors-3, exercise = TRUE}
+vec <- c(1, 2, 4, 8, 16)
+```
+
+```{r vectors-3-solution}
+vec <- c(1, 2, 4, 8, 16)
+vec[4]
+```
+
+### More []
+
+You can also use `[]` to extract multiple elements of a vector. Place the vector `c(1,2,5)` between the brackets below. What does R return?
+
+```{r vectors-4, exercise = TRUE}
+vec <- c(1, 2, 4, 8, 16)
+vec[]
+```
+
+```{r vectors-4-solution}
+vec <- c(1, 2, 4, 8, 16)
+vec[c(1,2,5)]
+```
+
+### Names
+
+If the elements of your vector have names, you can extract them by name. To do so place a name or vector of names in the brackets behind a vector. Surround each name with quotation marks, e.g. `vec2[c("alpha", "beta")]`.
+
+Extract the element named gamma from the vector below.
+
+```{r vectors-5, exercise = TRUE}
+vec2 <- c(alpha = 1, beta = 2, gamma = 3)
+```
+
+```{r vectors-5-solution}
+vec2 <- c(alpha = 1, beta = 2, gamma = 3)
+vec2["gamma"]
+```
+
+### Vectorised operations
+
+Predict what the code below will return. Then look at the result.
+
+```{r vectors-6, exercise = TRUE}
+c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) + c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+```{r vectors-6-check}
+"Good job! Like many R functions, R's math operators are vectorised: they're designed to work with vectors by repeating the operation for each pair of elements."
+```
+
+### Vector recycling
+
+Predict what the code below will return. Then look at the result.
+
+```{r vectors-7, exercise = TRUE}
+1 + c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+```{r vectors-7-check}
+"Good job! Whenever you try to work with vectors of varying lengths (recall that `1` is a vector of length one), R will repeat the shorter vector as needed to compute the result."
+```
+
+## Types
+
+### Types
+
+![](https://vimeo.com/220490241)
+
+### Atomic types
+
+```{r types1, echo = FALSE}
+question("Which of these is not an atomic data type",
+         answer("numeric/double"),
+         answer("integer"),
+         answer("character"),
+         answer("logical"),
+         answer("complex"),
+         answer("raw"),
+         answer("simple", correct = TRUE),
+         allow_retry = TRUE,
+         random_answer_order = TRUE)
+```
+
+### What type?
+
+```{r types2, echo = FALSE}
+question('What type of data is `"1L"`',
+         answer("numeric/double"),
+         answer("integer", message = "Close. `1L` would be an integer, but look closer."),
+         answer("character", correct = TRUE),
+         answer("logical"),
+         allow_retry = TRUE)
+```
+
+### Integers
+
+Create a vector of integers from one to five. Can you imagine why you might want to use integers instead of numbers/doubles?
+
+```{r types3, exercise = TRUE}
+
+```
+
+```{r types3-solution}
+c(1L, 2L, 3L, 4L, 5L)
+```
+
+### Floating point arithmetic
+
+Computers must use a finite amount of memory to store decimal numbers (which can sometimes require infinite precision). As a result, some decimals can only be saved as very precise approximations. From time to time you'll notice side effects of this imprecision, like below.
+
+Compute the square root of two,square the answer (e.g. multiply the square root of two by the square root of two), and then subtract two from the result. What answer do you expect? What answer do you get?
+
+```{r types4, exercise = TRUE}
+
+```
+
+```{r types4-solution}
+sqrt(2) * sqrt(2) - 2
+sqrt(2)^2 - 2
+```
+
+### Vectors
+
+```{r types5, echo = FALSE}
+question('How many types of data can you put into a single vector?',
+         answer("1", correct = TRUE),
+         answer("6"),
+         answer("As many as you like"),
+         allow_retry = TRUE)
+```
+
+### Character or object?
+
+One of the most common mistakes in R is to call an object when you mean to call a character string and vice versa.
+
+```{r types6, echo = FALSE}
+question('One of the most common mistakes in R is to call an object when you mean to call a character string and vice versa. Which of these are object names? What is the difference between object names and character strings?',
+         answer("foo", correct = TRUE),
+         answer('"num"'),
+         answer("mu", correct = TRUE),
+         answer('"sigma"'),
+         answer('"data"'),
+         answer("a", correct = TRUE),
+         allow_retry = TRUE,
+         correct = "Character strings are surrounded by quotation marks, object names are not.")
+```
+
+## Lists 
+
+### Lists
+
+![](https://vimeo.com/220490360)
+
+### Lists vs. vectors
+
+```{r lists1, echo = FALSE}
+question('Which data structure(s) could you use to store these pieces of data in the same object? `1001`, `TRUE`, `"stories"`.',
+         answer("a vector"),
+         answer("a list", correct = TRUE),
+         answer("neither"),
+         allow_retry = TRUE)
+```
+
+### Make a list
+
+Make a list that contains the elements `1001`, `TRUE`, and `"stories"`. Give each element a name.
+
+```{r lists2, exercise = TRUE}
+
+```
+
+```{r lists2-solution}
+list(number = 1001, logical = TRUE, string = "stories")
+```
+
+### Extract an element
+
+Extract the number 1001 from the list below.
+
+```{r lists3, exercise = TRUE}
+things <- list(number = 1001, logical = TRUE, string = "stories")
+```
+
+```{r lists3-solution}
+things <- list(number = 1001, logical = TRUE, string = "stories")
+things$number
+```
+
+### Data Frames
+
+You can make a data frame with the `data.frame()` function, which works similar to `c()`, and `list()`. Assemble the vectors below into a data frame with the column names `numbers`, `logicals`, `strings`.
+
+```{r lists4, exercise = TRUE}
+nums <- c(1, 2, 3, 4)
+logs <- c(TRUE, TRUE, FALSE, TRUE)
+strs <- c("apple", "banana", "carrot", "duck")
+```
+
+```{r lists4-solution}
+nums <- c(1, 2, 3, 4)
+logs <- c(TRUE, TRUE, FALSE, TRUE)
+strs <- c("apple", "banana", "carrot", "duck")
+data.frame(numbers = nums, logicals = logs, strings = strs)
+```
+
+```{r lists4-check}
+"Good Job. When you make a data frame, you must follow one rule: each column vector should be the same length."
+```
+
+### Extract a column
+
+Given that a data frame is a type of list (with named elements), how could you extract the strings column of the `df` data frame below? Do it.
+
+```{r lists5, exercise = TRUE}
+nums <- c(1, 2, 3, 4)
+logs <- c(TRUE, TRUE, FALSE, TRUE)
+strs <- c("apple", "banana", "carrot", "duck")
+df <- data.frame(numbers = nums, logicals = logs, strings = strs)
+```
+
+```{r lists5-solution}
+df$strings
+```
+
+## Packages
+
+### Packages
+
+![](https://vimeo.com/220490447)
+
+### A common error
+
+
+```{r packages1, echo = FALSE}
+question('What does this common error message suggest? `object _____ does not exist.`',
+         answer("You misspelled your object name"),
+         answer("You've forgot to load the package that ____ comes in"),
+         answer("Either", correct = TRUE),
+         allow_retry = TRUE)
+```
+
+### Load a package
+
+In the code chunk below, load the `tidyverse` package. Whenever you load a package R will also load all of the packages that the first package depends on. `tidyverse` takes advantage of this to create a shortcut for laoding several common packages at once. Whenever you load `tidyverse`, `tidyverse` also loads `ggplot2`, `dplyr`, `tibble`, `tidyr`, `readr`, and `purrr`.
+
+```{r packages2, exercise = TRUE}
+
+```
+
+```{r packages2-solution}
+library(tidyverse)
+```
+
+```{r packages2-check}
+"Good job! R will keep the packages loaded until you close your R session. When you re-open R, you'll need to reload you packages."
+```
+
+### Install packages
+
+How would you install the dplyr package on your own computer?
+
+```{r packages3, exercise = TRUE}
+
+```
+
+```{r packages3-solution}
+install.packages("dplyr")
+```
+
+```{r packages3-check}
+"Good job! You only need to install a package once, unless you wish to update your local copying by reinstalling the package."
+```
+
+### Congratulations!
+
+Congratulations. You now have a formal sense for how the basics of R work. Although you may think of your self as a Data Scientist, this brief Computer Science background will help you as you analyze data. Whenever R does something unexpected, you can apply your knowledge of how R works to figure out what went wrong.
