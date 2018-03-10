@@ -1,0 +1,103 @@
+---
+title: "Tutorial"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Reduce
+
+### \t
+
+There's another way to iterate over vectors that we haven't looked at. Look at what `sum()` does. 
+
+```{r}
+vec <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+sum(vec)
+```
+
+`sum()` reduces the original vector to a single number computed from the original vector. Many functions in R do something similar: `prod()`, `max()`, `min()`, ...
+
+### Reducing lists
+
+Can we do this with a list? You bet! But not with `sum()` alone. Like almost all R functions, `sum()` is not written to work with lists.
+
+```{r sum2}
+list3 <- list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+sum(list3)
+```
+
+Re-enter the purrr package.
+
+### reduce()
+
+The `reduce()` function in purrr reduces the elements of a vector into a single result. Like `map()`, it works with both simple vectors and lists. Also like `map()`, it uses a function that you supply to do its job.
+
+* Click Submit Answer to see `reduce()` at work.
+
+```{r reduce1, exercise = TRUE}
+reduce(list3, sum)
+```
+
+```{r reduce1-setup}
+list3 <- list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+```{r reduce1-hint}
+"Click Submit Answer"
+```
+
+```{r reduce1-solution}
+reduce(list3, sum)
+```
+
+```{r reduce1-check}
+"reduce() performs its magic in a very particular way. Let's investigate."
+```
+
+### How it happens
+
+`reduce()` follows a specifc algorithm to return its result. `reduce()`:
+
+1. first applies your function to the first two elements of the vector
+1. then applies your function to the result of the previous step and the next element in the vector
+1. continues this process until no elements are left
+
+```{r echo=FALSE, out.width = "60%"}
+knitr::include_graphics("/images/reduce.png")
+```
+
+### \t
+
+You can use the `accumulate()` function to see this process in action. It works like `reduce()`, but returns a vector that contains the results from each step of the reduction.
+
+```{r echo=FALSE, out.width = "60%"}
+knitr::include_graphics("/images/accumulate.png")
+```
+
+* Predict what will happen if you change `reduce()` to `accumulate()` in the code below. Then make the change and click Submit Answer.
+
+```{r accumulate, exercise = TRUE}
+reduce(list3, sum)
+```
+
+```{r accumulate-setup}
+list3 <- list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+```{r accumulate-solution}
+accumulate(list3, sum)
+```
+
+```{r accumulate-check}
+"Now that you know how reduce() does its job, you might notice something important. What is it? Click Continue to find out."
+```
+
+### When to use reduce
+
+You shouldn't use `reduce()` with every function that takes a vector and returns a single number. `reduce()` returns the correct answer with `sum()`
