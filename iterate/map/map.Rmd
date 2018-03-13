@@ -465,8 +465,31 @@ map_chr(strings, str_sub, 1, 1)
 ```
 
 ```{r map_chr-check}
-"Great job. Now that you know how to use map(), let's practice using it."
+"Great job. Now that you know how to use map(), we will practice using it in the last section. But first, let's address something that might be on your mind."
 ```
+
+### What about for loops?
+
+If you've written a for loop before, you might be saying to yourself, "Isn't map() doing the same thing as a for loop?" (If you've never written for loops before, you can skip ahead).
+
+Yes the map functions _are_ doing the same thing as a for loop, and bravo for making that connection!
+
+So why use `map()` instead of `for()`?
+
+### \t
+
+You certainly can use `for()`, but the map functions provide some benefits:
+
+1. They implement the for loop for you, saving you time and brain power
+1. They work inside dplyr functions like `mutate()` and `summarise()` (Have you ever tried to implement a for loop inside of `mutate()`? It becomes important when you work with list columns.)
+
+### But wait...
+
+Okay, that sounds good. But if you've been using R for awhile you might have a follow up question: "What about `lapply()`, `sapply()` and `vapply()`? Don't they do the same thing as `map()`?" 
+
+Yes they do; and again, good job making the connection! Let's wait until the More Map tutorial to answer this question.
+
+In the mean time, let's cement our knowledge of `map()` by using it to solve a data wrangling challenge.
 
 ## Case Study
 
