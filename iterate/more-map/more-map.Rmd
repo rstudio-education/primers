@@ -49,15 +49,15 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 In the Map tutorial, you learned how to use purrr's map functions. In this tutorial, you will learn how to use them _well_.
 
-The map functions come with several incredibly useful shortcuts as well as new functions that let you map over two or more lists, or even a list of functions. 
+The map functions come with several very useful shortcuts as well as new functions that let you map over two or more lists, or even a list of functions. 
 
 ### Data 
 
-Let's start with some real data.
+Let's start with a real data set.
 
 `us` is a list of statistics about the US, measured every five years from 1952 to 2007. It is a reformatted portion of the `gapminder` data set, which comes in the gapminder package. 
 
-* Click Submit Answer to examine the contents of `us`. Can you find the life expectancy for a US citizen in 1952? How about in 2007?
+* Click Submit Answer to see the contents of `us`. Can you spot the life expectancy for a US citizen in 1952? How about in 2007?
 
 ```{r us-1, exercise = TRUE}
 us
@@ -68,22 +68,20 @@ us
 ```
 
 ```{r us-1-check}
-"Good job. Life expectancy statistics are saved in the second element of us: the element named lifeExp. The first number in lifeExp is the life expectancy in 1952, the last number is the life expectancy in 2007. Ideally, you'd encounter this type of data in a data frame, but it is not uncommon to receive messy data like this."
+"Good job. Life expectancy statistics are saved in the second element of us: the element named lifeExp. The first number in lifeExp is the life expectancy in 1952, the last number is the life expectancy in 2007. Ideally, you'd encounter this type of data in a data frame, but it is possible to receive messy data like this."
 ```
 
 ### \t
 
-Let's use the values of `us$lifeExp` to compute the change in life expectancy from 1952 to 2007. 
+Now, let's use the values of the `lifeExp` element in `us` to compute the rise in life expectancy from 1952 to 2007. 
 
 This is a simple task, but we can use it as the basis of an iteration project.
 
-### pluck()
+### Data Wrangling 
 
-At the moment, the values of `lifeExp` are hard to use because they are stored inside of a list. Purrr's `pluck()` function can help us extract the values so that we can manipulate them directly. 
+The values of `us$lifeExp` are difficult to work with because they are stored inside of a list (`us`). You can extract them with purrr's `pluck()` function. 
 
-### \t
-
-`pluck()` extracts an element from a list by name or by position, e.g. `pluck(list1, var = 1)`, `pluck(list1, var = "numbers")`.
+`pluck()` extracts an element from a list, by name or by position, e.g. `pluck(list1, var = 1)`, `pluck(list1, var = "numbers")`.
 
 * Use `pluck()` to extract the contents of `lifeExp` from `us`. Then click Submit Answer. I've pre-loaded the purrr package for you.
 
@@ -107,20 +105,14 @@ us %>% pluck(var = "lifeExp")
 'Nice. pluck() does the same thing as us$lifeExp and us[["lifeExp"]], but pluck() is easier to read (and easier to pass to map()).'
 ```
 
-### Change in lifeExp
+### Rise in lifeExp
 
-Now that you have the values of `us$lifeExp` we can do our calculation. Here are some functions that will help:
+* Use `last()` and `first()` to compute the rise in life expectancy in the US from 1952 to 2007. Both come in the dplyr package, which I've pre-loaded for you.
 
-1. `first()` extracts the first element of a vector. 
-2. `last()` extracts the last element. 
+    1. `last()` extracts the last element of a vector. 
+    1. `first()` extracts the first element of a vector. 
 
-Both come in the dplyr package, which I've pre-loaded for you.
-
-### \t
-
-$$\text{change in life expectancy} = \text{life expectancy in 2007} - \text{life expectancy in 1952}$$
-
-* Use `first()` and `last()` to compute the change in `lifeExp` from 1952 to 2007. Then click Submit Answer.
+* Then click Submit Answer.
 
 ```{r us-2, exercise = TRUE}
 lifeExp <- us %>% pluck(var = "lifeExp")
@@ -144,18 +136,23 @@ last(lifeExp) - first(lifeExp)
 
 Useful right? Let's recap what you did:
 
-1. You plucked the `lifeExp` values from US with `pluck()`
+1. You plucked the `lifeExp` values from `us` with `pluck()`
 2. You computed the change over time with `last(lifeExp) - first(lifeExp)`
 
 ### \t
 
 It'd be nice to do this for other countries as well.
 
-Guess what? You can. `gap_list` contains statistics for 142 countries, but to iterate through them, you will need to use map functions---and their shortcuts. Click Run Code to see.
+Guess what? You can. `gap_list` contains lists of statistics for 142 countries. Click Submit Answer to see. 
 
 ```{r gap_list, exercise = TRUE}
 gap_list
 ```
+
+```{r gap_list-check}
+"To iterate through these, you will need to use map functions---and their shortcuts."
+```
+
 
 ## Shortcuts
 
@@ -163,12 +160,10 @@ gap_list
 
 Let's map your work to `gap_list`. For each country in `gap_list`, you will need to
 
-1. Pluck the values of `lifeExp` from the sub-lists that contain them
+1. Pluck the values of `lifeExp` from the sub-list that contains them
 2. Compute the change over time with `last(lifeExp) - first(lifeExp)`
 
-### \t 
-
-Both of these steps will reveal new aspects of the map functions. 
+Each step will reveal new aspects of the map functions. 
 
 * Step 1 will demonstrate two useful shortcuts
 * Step 2 will demonstrate how to make and apply expressions with map functions
@@ -219,7 +214,11 @@ When `map()` receives a character string instead of a function, it will extract 
 gap_list %>% map(pluck, var = "lifeExp")
 ```
 
-```{r quotes-hint}
+```{r quotes-hint-1}
+"Did you remember to remove pluck from the map() call?"
+```
+
+```{r quotes-hint-2}
 "The element that you want to extract from each sub-list is named lifeExp."
 ```
 
@@ -269,9 +268,7 @@ gap_dfs
 
 ### \t
 
-Will our shortcuts work for `gap_dfs`?
-
-* Try it. Use `map()` and the "" shortcut to extract the `lifeExp` column of each sub-data frame. Then click Submit Answer. What happens?
+* Use the "" shortcut to extract the `lifeExp` column of each sub-data frame in `gap_dfs`. Then click Submit Answer. What happens?
 
 ```{r gap_dfs-1, exercise = TRUE}
 gap_dfs
@@ -282,28 +279,12 @@ gap_dfs %>% map("lifeExp")
 ```
 
 ```{r gap_dfs-1-check}
-'The "" shortcut works with data frames. Now lets try the integer shortcut.'
-```
-
-### \t
-
-* Rewrite your code to use the integer shortcut. Can you still extract the `lifeExp` columns?
-
-```{r gap_dfs-2, exercise = TRUE}
-gap_dfs %>% map("lifeExp")
-```
-
-```{r gap_dfs-2-solution}
-gap_dfs %>% map(2)
-```
-
-```{r gap_dfs-2-check}
-"Both shortcuts work with data frames. And the reason is simple: in R data frames are a type of list, just like tibbles are a type of data frame. As a result, things that work with lists will also work with data frames."
+'The "" shortcut works with data frames. So will the integer shortcut. And the reason is simple: in R data frames are a type of list, just like tibbles are a type of data frame. As a result, things that work with lists will also work with data frames.'
 ```
 
 ### One more thing
 
-There is one more thing that you should know about these shortcuts. In the Map tutorial, you learned that `map()` is just one part of a larger family of map functions:
+There is one more thing that you should know about these shortcuts. In the Map tutorial, you learned that `map()` is part of a larger family of map functions:
 
 Function     | Output
 ------------ | -------------
@@ -328,11 +309,9 @@ Recall your goals:
 1. Pluck the values of `lifeExp` from the sub-lists that contain them
 2. Compute the change over time with `last(lifeExp) - first(lifeExp)`
 
-Step 1 was easy and you learned two useful shortcuts along the way, but Step 2 will be harder.
+Step 1 was easy and you learned two shortcuts along the way, but Step 2 will be harder.
 
 ### Step 2
-
-Your current results are a list of lifeExp vectors.
 
 You know that you can use `map()` to apply a function to each element of a list, but `last(lifeExp) - first(lifeExp)` isn't a function. It is an expression that uses two functions. How can you pass it to `map()`?
 
@@ -342,7 +321,7 @@ Here is where expressions come in.
 
 At the heart of `map()` is the pattern:
 
-For each element do _____
+For each element, do _____
 
 ### \t
 
@@ -354,19 +333,19 @@ But you can also fill in the blank with an arbitrary R expression (like `last(li
 
 First, place a `~` at the start of the expression. This alerts `map()` that you are giving it an expression to run:
 
-For each element do `~last(lifeExp) - first(lifeExp)`
+For each element, do `~last(lifeExp) - first(lifeExp)`
 
 ### Rule 2 - .x
 
-Second, wherever the element to manipulate appears in the expression replace it with `.x`. This tells `map()` where to use the elements within your expression. If an expression uses each element multiple times, you will need to insert multiple `.x`s into your expression.
+Second, replace the _name of the thing to manipulate_ with `.x` wherever it appears in your expression.
 
-For each element do `~last(.x) - first(.x)`
-
-### \t 
+For each element, do `~last(.x) - first(.x)`
 
 Or more simply,
 
-For each `.x` do `~last(.x) - first(.x)`
+For each `.x`, do `~last(.x) - first(.x)`
+
+This tells `map()` where to use the element within your expression. If an expression uses each element multiple times, you will need to insert multiple `.x`s into your expression.
 
 ### \t
 
@@ -389,15 +368,15 @@ map(lists, ~rnorm(5, mean = pluck(.x, var = 1), sd = pluck(.x, var = 2)))
 ```
 
 ```{r rnorm-check}
-"Nice. Don't be confused by the element names, all of these numbers come from a normal distribution."
+"Nice. Don't be confused by the names, all of these numbers come from a normal distribution."
 ```
 
 ### Use it
 
-Now its your turn. To finish your code: 
+Now it is your turn. To finish your code: 
 
 1. Turn `last(lifeExp) - first(lifeExp)` into an expression.
-2. Use `map()` to apply the expression to each element of our current result. 
+2. Use `map()` to apply the expression to each element returned by the code below. 
 3. Then click Submit Answer.
 
 ```{r exp, exercise = TRUE}
@@ -420,7 +399,7 @@ gap_list %>%
 ```
 
 ```{r exp-check}
-"Great job. This expands you power to use map() greatly; you can do almost anything with the right expression."
+"Great job. You can do almost anything with map() if you use the right expression."
 ```
 
 ### Beyond map()
@@ -449,7 +428,7 @@ gap_list %>%
 
 You now have your results as a named numeric vector. Success!
 
-Even though it is not related to `map()`, it would be very rewarding to learn which ountries had the largest and smallest changes in life expectancy. Let's take a moment to find out.
+Even though it is not related to `map()`, it would be rewarding to learn which countries had the largest and smallest changes in life expectancy. Let's take a moment to find out.
 
 ### \t
 
@@ -467,13 +446,13 @@ Here are three functions that can help.
     
 ### \t
 
-2. `top_n()` arranges a data set by a column and then returns the top n rows. 
+2. `top_n()` returns the n rows that have the highest value of a weighting variable. 
 
     ```{r}
     top_n(mtcars, n = 5, wt = mpg)
     ```
     
-    Notice that `top_n()` returns the top n rows, but it displays them in the order that they appear in the data set (don't be fooled: these are the rows with the five wighest values of `mpg`. `top_n()` retrieves them but does not sort them by `mpg`).
+    (Don't be fooled: these are the rows with the five highest values of `mpg`. `top_n()` retrieves them but does not sort them by `mpg`).
 
 
 ### \t
@@ -484,7 +463,7 @@ Here are three functions that can help.
     top_n(mtcars, n = 5, wt = desc(mpg))
     ```
     
-    Both `top_n()` and `desc()` come in the dplyr package, which I've pre-loaded for you.
+    Both `top_n()` and `desc()` come in the dplyr package.
 
 ### The most extreme changes in life expectancy
 
@@ -505,7 +484,7 @@ gap_list %>%
 ```
 
 ```{r greatest-hint-3}
-"Then pipe that result to top_n(). You will need to set the n and wt arguments of top_n()" 
+"Then pipe that result to top_n(). You will need to set the n and wt arguments of top_n()." 
 ```
 
 ```{r greatest-hint-4}
@@ -560,15 +539,15 @@ The best way to write an expression is to:
 2. Write code that works correctly for that element
 3. Transform the code into an expression to use with `map()`
 
-The alternative is to write an expression in your head, and then see if it works. Too often it won't. 
+The alternative is to write an expression in your head, and to then see if it works. Too often it won't. 
 
 ### Models 
 
 Let's put this workflow into practice. 
 
-Another way to quantify the change in life expectancy over time is to fit a simple model to the data. Let's fit a very simple model to each data set: the linear regression of `lifeExp` on `year`. 
+Another way to quantify the change in life expectancy over time is to fit a simple linear model to the data. 
 
-The slope of this model will be how fast life expectancy increased per year, on average.
+The slope of the model will be how fast life expectancy increased per year, on average.
 
 ### Step 1
 
@@ -602,7 +581,7 @@ Next,
 
 2. Write code that works correctly for that element
 
-I'm not sure if you've ever fit a linear model with r before, so I'll just tell you: this is the code that we want. 
+I'm not sure if you've ever fit a linear model with R before, so I'll just tell you: this is the code that we want (below). 
 
 * Click Submit Answer to ensure that it works on your test case with no problems.
 
@@ -632,7 +611,7 @@ Finally,
 
 3. Transform the code into an expression to use with `map()`
 
-* Transform your code into an expression and then use `map()` to apply it to each element of `gap_dfs`. Then click Submit Answer.
+* Turn your code into an expression and `map()` it to each element of `gap_dfs`. Then click Submit Answer.
 
 ```{r lm-map-setup}
 usa <- gap_dfs %>% pluck("United States")
@@ -664,12 +643,10 @@ gap_dfs %>%
 ```
 
 ```{r lm-map-check}
-"Excellent! I've gone ahead and saved your results as a list named model1. Let's practice this workflow one last time, but this time with no guidance from me.
+"Excellent! I've gone ahead and saved your results as a list named model1. Let's practice this workflow one last time, but this time with no guidance from me."
 ```
 
-### A better model?
-
-Let's revist our models and account for the effect of economic growth on life expectancy.
+### A model that accounts for GDP
 
 * Repeat your previous work, but this time use `lifeExp ~ year + gdpPercap` as the formula inside of `lm`. Begin by testing out your code on your test case, which is `usa`. When you are finished fitting the models, click Submit Answer.
 
@@ -726,21 +703,19 @@ anova(usa_mod1, usa_mod2)
 
 So GDP per capita doesn't improve your predictions for the United States, but what about for the other countries? 
 
-To find out you can iterate through all of the countries, but this is a new sort of iteration problem. At each step, `anova()` will require one element from `model1` and one element from `model2`. You'll need to simultaneously iterate over _two_ lists.
+You can iterate through all of the countries to find out, but this is a new type of iteration problem. At each step, `anova()` will require one element from `model1` and one element from `model2`. You'll need to simultaneously iterate over _two_ lists.
 
 ### map2()
 
 Enter `map2()`.
 
-`map2()` takes _two_ lists and then a function. At each step of the iteration, `map2()` will pass an element from the first list to the first argument of the function. It will pass an element from the second list to the second argument of the function.
+Syntactically, `map2()` behaves like `map()`, but it takes _two_ lists as arguments before it takes a function. At each step of the iteration, `map2()` will pass an element from the first list to the first argument of the function. It will pass an element from the second list to the second argument of the function.
 
 ```{r echo=FALSE, out.width = "70%"}
 knitr::include_graphics("/images/map2.png")
 ```
 
 ### \t
-
-Syntactically, `map2()` behaves like `map()`, but it takes _two_ lists as arguments before it takes a function.
 
 * Use `map2()` to run an anova on each pair of models in `model1` and `model2`. Then click Submit Answer.
 
@@ -762,7 +737,7 @@ map2(list1, list2, anova)
 
 ### \t
 
-For another example, `map2()` returns its results as a list, but it comes with variants that will return the result in other formats. As with `map()`, you should use the variant of `map2()` that will return your results in the format you want:
+`map2()` returns its results as a list, but it comes with variants that will return the result in other formats. As with `map()`, you should use the variant of `map2()` that will return your results in the format you want:
 
 Map function | Map2 function | Output
 ------------ | ------------- | ----------------
@@ -778,8 +753,6 @@ Map function | Map2 function | Output
 ### Map2 expressions
 
 `map2()` also uses the same shortcuts as `map()`. While the "" and integer shortcuts do not make sense for `map2()`, the expressions shortcut does.
-
-### \t
 
 To make an expression for `map2()`:
 
@@ -877,23 +850,15 @@ knitr::include_graphics("/images/pmap.png")
 
 ### \t
 
-If you do not name the lists within your list of lists, `pmap()` will pass elements of the first list to the first argument of your function. It will pass elements from the second list to the second argument of the function. And so on, e.g.
-
-```{r}
-nums <- list(pi, exp(1), sqrt(2))
-digits <- list(2, 3, 4)
-pmap(list(nums, digits), round)
-```
-
-### \t
-
-However, if you have many lists to iterate over, it can be hard to keep track of argument positions. In this case, a better approach would be to name each list in your list of lists with the argument it should go to. `pmap()` will match names to arguments whenever you provide them, e.g.
+Name each list in your list of lists with the name of argument it should go to. `pmap()` will match names to arguments whenever you provide them, e.g.
 
 ```{r}
 nums <- list(pi, exp(1), sqrt(2))
 digits <- list(2, 3, 4)
 pmap(list(digits = digits, x = nums), round)
 ```
+
+(if you do not provide list names, `pmap()` will map lists to arguments by order).
 
 ### Use pmap()
 
@@ -940,9 +905,11 @@ Map function | Map2 function | pmap function | Output
 
 `pmap()` also uses expressions that start with a `~`. However, `pmap()` expects you to name the elements within an expression `..1`, `..2`, `..3` and so on instead of `.x` and `.y`. Notice the double dots.
 
-For example, you could return the year coefficients of each model with:
+For example, you could return the year coefficients of each model with the code below.
 
-```{r}
+* Click Run Code to see the results.
+
+```{r pmaps, exercise = TRUE}
 pmap(
   list(model1, model2, model3),
   ~c(pluck(coef(..1), "year"), 
@@ -960,10 +927,10 @@ To be a true purrr master, you should know that a couple more mapping functions 
 1. `imap()`, which applies a function to each element of a vector, and its index
 1. `invoke_map()`, which takes a list of functions and a list of arguments
 
-You can learn more about each at their help pages or <purrr.tidyverse.org>.
+You can learn more about each at their help pages or [purrr.tidyverse.org](purrr.tidyverse.org).
 
 ### Congratulations
 
 You've finished the More Map tutorial, and you now have a wealth of new information to think about. 
 
-When you are ready the List Column tutorial will show you how to integrate your purrr skills with your dplyr skills to create an unusually well organized data science workflow.
+When you are ready, the List Column tutorial will show you how to integrate your purrr skills with your dplyr skills to create an unusually well organized data science workflow.
