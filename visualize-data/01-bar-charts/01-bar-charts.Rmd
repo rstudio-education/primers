@@ -258,7 +258,7 @@ For example, in our plot, each value of `cut` is associated with eight rectangle
 Here's what that would look like if you could peek around the side of the graph.
 
 ```{r echo = FALSE, out.width = "80%"}
-knitr::include_graphics("images/positions.png")
+knitr::include_graphics("www/images/positions.png")
 ```
 
 ### Position = "identity"

@@ -388,5 +388,5 @@ Throughout the tutorial, you also encountered several recommendations for plots 
 The suggestions below can serve as starting point for visualizing data. In the tutorials that follow, you will learn how to make each type of plot, as well as how to use best practices and advanced skills when visualizing data.
 
 ```{r echo = FALSE, out.width = "100%"}
-knitr::include_graphics("images/plots-table.png")
+knitr::include_graphics("www/images/plots-table.png")
 ```

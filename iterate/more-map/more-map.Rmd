@@ -712,7 +712,7 @@ Enter `map2()`.
 Syntactically, `map2()` behaves like `map()`, but it takes _two_ lists as arguments before it takes a function. At each step of the iteration, `map2()` will pass an element from the first list to the first argument of the function. It will pass an element from the second list to the second argument of the function.
 
 ```{r echo=FALSE, out.width = "70%"}
-knitr::include_graphics("/images/map2.png")
+knitr::include_graphics("www/images/map2.png")
 ```
 
 ### \t
@@ -845,7 +845,7 @@ Yes, but not with `map3()` as you might think. `map3()` doesn't exist. Instead p
 The syntax of `pmap()` is a little different from the syntax of `map()` and `map2()`. Instead of accepting lists one at a time as arguments, `pmap()` expects a single argument that contains a _list of lists_ and then a function to apply to the lists within that list of lists.
 
 ```{r echo=FALSE, out.width = "70%"}
-knitr::include_graphics("/images/pmap.png")
+knitr::include_graphics("www/images/pmap.png")
 ```
 
 ### \t

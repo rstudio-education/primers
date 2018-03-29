@@ -326,7 +326,7 @@ The remaining columns are named after codes that contain multiple variables.
 Each column name after the fourth, contains a code comprised of three values from three variables: _type of TB_, _gender_, and _age_.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/codes.png")
+knitr::include_graphics("www/images/codes.png")
 ```
 
 ### A goal
@@ -369,7 +369,7 @@ Next, we need to move the type, sex, and age variables out of the column names a
 In short, we want to do something like this:
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/reshape.png")
+knitr::include_graphics("www/images/reshape.png")
 ```
 
 ### Exercise - Reshape

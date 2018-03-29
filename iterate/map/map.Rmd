@@ -217,7 +217,7 @@ library(tidyverse)
 The job of purrr's `map()` function is to take an R function and to apply it to each element of an R vector. `map()` works with simple vectors as well as lists. Think of `map()` like this:
 
 ```{r echo=FALSE, out.width = "70%"}
-knitr::include_graphics("/images/map.png")
+knitr::include_graphics("www/images/map.png")
 ```
 
 ### \t
