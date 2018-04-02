@@ -49,7 +49,7 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 In the Map tutorial, you learned how to use purrr's map functions. In this tutorial, you will learn how to use them _well_.
 
-The map functions come with several very useful shortcuts as well as new functions that let you map over two or more lists, or even a list of functions. 
+The map functions come with several very useful shortcuts as well as new functions that let you map over two or more vectors, or even a vector of functions. 
 
 ### Data 
 
@@ -81,7 +81,7 @@ This is a simple task, but we can use it as the basis of an iteration project.
 
 The values of `us$lifeExp` are difficult to work with because they are stored inside of a list (`us`). You can extract them with purrr's `pluck()` function. 
 
-`pluck()` extracts an element from a list, by name or by position, e.g. `pluck(list1, var = 1)`, `pluck(list1, var = "numbers")`.
+`pluck()` extracts an element from a list, by name or by position, e.g. `pluck(list1, 1)`, `pluck(list1, "numbers")`.
 
 * Use `pluck()` to extract the contents of `lifeExp` from `us`. Then click Submit Answer. I've pre-loaded the purrr package for you.
 
@@ -98,7 +98,7 @@ The values of `us$lifeExp` are difficult to work with because they are stored in
 ```
 
 ```{r pluck-solution}
-us %>% pluck(var = "lifeExp")
+us %>% pluck("lifeExp")
 ```
 
 ```{r pluck-check}
@@ -108,14 +108,13 @@ us %>% pluck(var = "lifeExp")
 ### Rise in lifeExp
 
 * Use `last()` and `first()` to compute the rise in life expectancy in the US from 1952 to 2007. Both come in the dplyr package, which I've pre-loaded for you.
-
     1. `last()` extracts the last element of a vector. 
     1. `first()` extracts the first element of a vector. 
 
 * Then click Submit Answer.
 
 ```{r us-2, exercise = TRUE}
-lifeExp <- us %>% pluck(var = "lifeExp")
+lifeExp <- us %>% pluck("lifeExp")
 
 ```
 
@@ -124,7 +123,7 @@ lifeExp <- us %>% pluck(var = "lifeExp")
 ```
 
 ```{r us-2-solution}
-lifeExp <- us %>% pluck(var = "lifeExp")
+lifeExp <- us %>% pluck("lifeExp")
 last(lifeExp) - first(lifeExp)
 ```
 
@@ -183,7 +182,7 @@ Recall that `gap_list` is a list whose elements are sub-lists. Each sub-list is 
 ```
 
 ```{r gap_pluck-solution}
-gap_list %>% map(pluck, var = "lifeExp")
+gap_list %>% map(pluck, "lifeExp")
 ```
 
 ```{r gap_pluck-check}
@@ -211,7 +210,7 @@ When `map()` receives a character string instead of a function, it will extract 
 * Try it with `gap_lists`. Change the code below to use the "" shortcut. Then click Submit Answer. Do you get the same result?
 
 ```{r quotes, exercise = TRUE}
-gap_list %>% map(pluck, var = "lifeExp")
+gap_list %>% map(pluck, "lifeExp")
 ```
 
 ```{r quotes-hint-1}
@@ -325,7 +324,7 @@ For each element, do _____
 
 ### \t
 
-When we fill in the blank with a function, or a character string, or an integer `map()` knows just what to do.
+When we fill in the blank with a function, or a character string, or an integer, `map()` knows just what to do.
 
 But you can also fill in the blank with an arbitrary R expression (like `last(lifeExp) - first(lifeExp)`) as long as you follow two rules.
 
@@ -349,14 +348,14 @@ This tells `map()` where to use the element within your expression. If an expres
 
 ### \t
 
-How does this look with the `map()` function? You pass the expression to map exactly as you would pass a function.
+How does this look with the `map()` function? You pass the expression to `map()` exactly as you would pass a function.
 
 Here is an example, the expression plucks the two values in each sub-list of `lists` and uses them to generate five random normal values.
 
 * Click Submit Answer to see the results.
 
 ```{r rnorm, exercise = TRUE}
-map(lists, ~rnorm(5, mean = pluck(.x, var = 1), sd = pluck(.x, var = 2)))
+map(lists, ~rnorm(5, mean = pluck(.x, 1), sd = pluck(.x, 2)))
 ```
 
 ```{r rnorm-hint}
@@ -364,7 +363,7 @@ map(lists, ~rnorm(5, mean = pluck(.x, var = 1), sd = pluck(.x, var = 2)))
 ```
 
 ```{r rnorm-solution}
-map(lists, ~rnorm(5, mean = pluck(.x, var = 1), sd = pluck(.x, var = 2)))
+map(lists, ~rnorm(5, mean = pluck(.x, 1), sd = pluck(.x, 2)))
 ```
 
 ```{r rnorm-check}
@@ -428,7 +427,7 @@ gap_list %>%
 
 You now have your results as a named numeric vector. Success!
 
-Even though it is not related to `map()`, it would be rewarding to learn which countries had the largest and smallest changes in life expectancy. Let's take a moment to find out.
+Even though it is not related to `map()`, it would be rewarding to learn which countries had the largest and smallest changes in life expectancy. Let's take a moment to find out. You'll learn three useful functions along the way.
 
 ### \t
 
@@ -539,7 +538,7 @@ The best way to write an expression is to:
 2. Write code that works correctly for that element
 3. Transform the code into an expression to use with `map()`
 
-The alternative is to write an expression in your head, and to then see if it works. Too often it won't. 
+The alternative is to write an expression in your head, and then see if it works. Too often it won't. 
 
 ### Models 
 
@@ -667,7 +666,7 @@ gap_dfs %>%
 "Great work. I've saved this result for you as model2. I recommend using this workflow every time you write a map expression. Now let's look at some new features of map."
 ```
 
-## Multiple Lists
+## Multiple Vectors
 
 ### \t
 
@@ -693,7 +692,7 @@ usa_mod2 <- model2 %>% pluck("United States")
 
 The anova results suggest that adding GDP per capita did _not_ improve your predictions for the US. 
 
-How can you tell? The very last number in the table is a p-value (here 0.1424). If the number is above 0.05, there's not enough evidence to suggest that the second model outperforms the first: you can ascribe any difference between the two to random chance.
+How can you tell? The very last number in the table is a p-value (here 0.1424). If the number is above 0.05, there's not enough evidence to suggest that the second model outperforms the first: you can ascribe the difference between the two to random chance.
 
 ```{r}
 anova(usa_mod1, usa_mod2)
@@ -709,7 +708,9 @@ You can iterate through all of the countries to find out, but this is a new type
 
 Enter `map2()`.
 
-Syntactically, `map2()` behaves like `map()`, but it takes _two_ lists as arguments before it takes a function. At each step of the iteration, `map2()` will pass an element from the first list to the first argument of the function. It will pass an element from the second list to the second argument of the function.
+Syntactically, `map2()` behaves like `map()`, but it takes _two_ vectors as arguments before it takes a function (remember that lists are a type of vector). 
+
+At each step of the iteration, `map2()` will pass an element from the first vector to the first argument of the function. It will pass an element from the second vector to the second argument of the function.
 
 ```{r echo=FALSE, out.width = "70%"}
 knitr::include_graphics("www/images/map2.png")
@@ -757,8 +758,8 @@ Map function | Map2 function | Output
 To make an expression for `map2()`:
 
 1. Begin the expression with `~`
-2. Refer to elements from the first list as `.x`
-3. Refer to elements from the second list as `.y`
+2. Refer to elements from the first vector as `.x`
+3. Refer to elements from the second vectore as `.y`
 
 Only the last step is different from `map()`.
 
@@ -834,15 +835,15 @@ Each value in the `Pr(>F)` column shows the p-value that results from comparing 
 
 Now can we do _this_ for every country?
 
-### Mapping over three lists
+### Mapping over three vectors
 
 Anova can handle three arguments. Can you?
 
-Yes, but not with `map3()` as you might think. `map3()` doesn't exist. Instead purrr offers the `pmap()` function for mapping over three _or more_ lists.
+Yes, but not with `map3()` as you might think. `map3()` doesn't exist. Instead purrr offers the `pmap()` function for mapping over three _or more_ vectors.
 
 ### pmap()
 
-The syntax of `pmap()` is a little different from the syntax of `map()` and `map2()`. Instead of accepting lists one at a time as arguments, `pmap()` expects a single argument that contains a _list of lists_ and then a function to apply to the lists within that list of lists.
+The syntax of `pmap()` is a little different from the syntax of `map()` and `map2()`. Instead of accepting vectors one at a time as arguments, `pmap()` expects a single argument that contains a _list of vectors_ and then a function to apply to the vectors within that list of vectors.
 
 ```{r echo=FALSE, out.width = "70%"}
 knitr::include_graphics("www/images/pmap.png")
@@ -850,7 +851,7 @@ knitr::include_graphics("www/images/pmap.png")
 
 ### \t
 
-Name each list in your list of lists with the name of argument it should go to. `pmap()` will match names to arguments whenever you provide them, e.g.
+Name each vector in your list of vectors with the name of the argument that it should map to. `pmap()` will match names to arguments whenever you provide them, e.g.
 
 ```{r}
 nums <- list(pi, exp(1), sqrt(2))
@@ -858,7 +859,7 @@ digits <- list(2, 3, 4)
 pmap(list(digits = digits, x = nums), round)
 ```
 
-(if you do not provide list names, `pmap()` will map lists to arguments by order).
+(if you do not provide names, `pmap()` will map vectors to arguments by order).
 
 ### Use pmap()
 
@@ -866,7 +867,7 @@ Got that? Let's give it a try.
 
 * Use `pmap()` to iterate over `model1`, `model2`, and `model3`, applying `anova()` as you go. Then click Submit Answer.
 
-_Note: `anova()` does not use argument names, so you will need to supply your lists in the correct order._
+_Note: `anova()` does not use argument names, so you will need to supply model1, model2, and model3 in the correct order._
 
 ```{r pmap, exercise = TRUE}
 
@@ -881,7 +882,7 @@ pmap(list(model1, model2, model3), anova)
 ```
 
 ```{r pmap-check}
-"Excellent. You can use pmap() to map over three, four, or any number of lists."
+"Excellent. You can use pmap() to map over three, four, or any number of vectors."
 ```
 
 ### similarities between pmap(), map2() and map()
@@ -912,9 +913,9 @@ For example, you could return the year coefficients of each model with the code 
 ```{r pmaps, exercise = TRUE}
 pmap(
   list(model1, model2, model3),
-  ~c(pluck(coef(..1), "year"), 
-     pluck(coef(..2), "year"), 
-     pluck(coef(..3), "year"))
+  ~c(mod1 = pluck(coef(..1), "year"), 
+     mod2 = pluck(coef(..2), "year"), 
+     mod3 = pluck(coef(..3), "year"))
 )
 ```
 
