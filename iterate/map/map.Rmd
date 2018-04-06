@@ -27,172 +27,11 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
-
-## Iteration
-
-### \t
-
-Here is a number. You can do great things with it, like this:  
-
-* Take the log of the number. Then click Submit Answer.
-
-```{r number, exercise = TRUE}
-1
-```
-
-```{r number-solution}
-log(1)
-```
-
-```{r number-hint}
-"You can take the log with `log()`"
-```
-
-```{r number-check}
-"Good job. Don't worry, things will soon get harder."
-```
-
-### \t
-
-Here are many numbers. What if you want to do great things with them? Go ahead: 
-
-* take the log of each. Don't get fancy.
-
-```{r numbers, exercise = TRUE}
-1
-2
-3
-4
-5
-```
-
-```{r numbers-solution}
-log(1)
-log(2)
-log(3)
-log(4)
-log(5)
-```
-
-```{r numbers-hint}
-"You can call `log()` on each."
-```
-
-```{r numbers-check}
-"Nice! You iterated through the numbers, calling log() on them one at a time.
-
-But shouldn't your computer do this repetition for us? Why are we using a computer anyways?"
-```
-
-### Vectorization
-
-You usually do not need to repeat yourself when you use R. Almost every function in R is _vectorized_. This means that if you put your values into a single vector, and then run a function on the vector, R will apply the function iteratively to each of the values.
-
-* Click Submit Answer to try it! It's worth seeing at least once.
-
-```{r vectors, exercise = TRUE}
-numbers <- c(1, 2, 3, 4, 5)
-log(numbers)
-```
-
-```{r vectors-hint}
-"Just click Submit Answer and see what happens."
-```
-
-```{r vectors-check}
-"Vectorization in R: it works. But there is something that you should know. Click Continue to find out what it is."
-```
-
-### Lists
-
-One type of vector in R breaks vectorization. That's the _recursive vector_, which is better known as the _list_.
-
-Lists are recursive because each of a list's elements can itself be a vector, maybe another list. Since almost everything in R is a vector, you will find lists everywhere. Lists are like the glue that holds R objects together.
-
-But are R functions vectorized to work with lists? 
-
-* Try running `log()` on the lists below, and find out. Click Run Code.
-
-```{r lists, exercise = TRUE}
-list1 <- list(1, 2, 3, 4, 5)
-
-log(list1)
-```
-
-```{r lists-hint}
-"Just click Submit Answer and see what happens."
-```
-
-### \t
-
-Almost no function in R is vectorized to work with lists. And you can see why: lists can contain different types of objects, as `list2` demonstrates. The second element of `list2` is a character vector. 
-
-```{r}
-list2 <- list(1, c("a", "b", "c"))
-list2
-```
-
-How likely is it that an R function will work with both `1` and the vector `c("a", "b", "c")`? 
-
-Simple vectors always contain a single type of data, but lists often contain many types of data. Most R functions only work with a single type of data, so their authors arrange for them to handle simple vectors, but not lists.
-
-### Important vocabulary
-
-Throughout this tutorial, I will use the word _list_ to mean recursive vectors and the word _simple vector_ to mean non-recursive vectors, i.e. vectors that are not lists.
-
-It's important to keep in mind that lists _are_ a type of vector. So if you see me say _vector_ instead of _simple vector_, I mean both lists and simple vectors.
-
-Now, how should we work with lists?
-
-### What should you do?
-
-Don't worry, there's no reason to go back to repeating things by hand for lists, although you could. Couldn't you? Let's see. 
-
-You can extract each element of a list with the `[[i]]` bracket syntax. For example, `list2[[2]]` extracts the second element of `list2`:
-
-```{r}
-list2[[2]]
-```
-
-* Finish the code below to take the log of each value in `list1`. Then click Submit Answer.
-
-```{r manual-setup}
-list1 <- list(1, 2, 3, 4, 5)
-```
-
-```{r manual, exercise = TRUE}
-list1[[1]]
-list1[[2]]
-list1[[3]]
-list1[[4]]
-list1[[5]]
-```
-
-```{r manual-hint-1}
-"Apply `log()` to each list component below."
-```
-
-```{r manual-hint-2}
-"You can pass each component straight into the `log()` function, e.g. `log(list1[[1]])`."
-```
-
-```{r manual-solution}
-log(list1[[1]])
-log(list1[[2]])
-log(list1[[3]])
-log(list1[[4]])
-log(list1[[5]])
-```
-
-```{r manual-check}
-"Nice! But not nice enough to use in daily practice. Let's learn how to tell your computer to iterate over lists for you."
-```
-
 ## Map
 
 ### \t
 
-The purrr package contains functions that help you iterate over lists (among other things). 
+The `map()` function comes in the purrr package. purrr is a package of tools that can help you apply functions in an iterative way.
 
 purrr is installed when you run `install.packages("tidyverse")`.  
 purrr is loaded when you run `library(tidyverse)`
@@ -204,7 +43,7 @@ purrr is loaded when you run `library(tidyverse)`
 ```
 
 ```{r purrr-check}
-'Purrr-fect. Now we can use purrr functions. You can also install and load purrr by itself, without the other tidyverse packages. To do so, use install.packages("purrr") and library(purrr).'
+'Purrr-fect. Now you can use purrr functions. You can also install and load the purrr package by itself, without the other tidyverse packages. To do so, use install.packages("purrr") and library(purrr).'
 ```
 
 ```{r purrr-solution}
@@ -214,7 +53,21 @@ library(tidyverse)
 
 ### map()
 
-The job of purrr's `map()` function is to take an R function and to apply it to each element of an R vector. `map()` works with simple vectors as well as lists. Think of `map()` like this:
+The job of purrr's `map()` function is to apply an R function to each element of an R vector. `map()` requires two arguments, in this order: 
+
+1. A vector to iterate over. `map()` works with simple vectors as well as lists.  
+2. A function to apply to each element in the vector. Give `map()` the name of the function without quotes around it and without parentheses behind it.
+
+Here, `map()` applies the absolute value function to each element of `negatives`.  
+
+```{r echo = TRUE}
+negatives <- list(-25, -31, -111)
+map(negatives, abs)
+```
+
+### \t
+
+Think of `map()` like this. Each circle of squares represents a vector, and each square represents an element of the vector:
 
 ```{r echo=FALSE, out.width = "70%"}
 knitr::include_graphics("www/images/map.png")
@@ -222,16 +75,14 @@ knitr::include_graphics("www/images/map.png")
 
 ### \t
 
-`map()` requires two arguments, in this order: 
+```{r echo = TRUE}
+list1 <- list(1, 2, 3, 4, 5)
+```
 
-1. A vector to iterate over.
-2. A function to apply to each element in the vector. Give `map()` the name of the function without parentheses behind it.
-
-* Change the code below to map `log()` over the elements of `list1`. Then click Submit Answer.
+* Use the code chunk below to map `log()` over the elements of `list1`. Then click Submit Answer.
 
 ```{r map1, exercise = TRUE, exercise.eval = TRUE}
-negatives <- list(-1, -2, -3)
-map(negatives, abs)
+
 ```
 
 ```{r map1-setup}
@@ -259,10 +110,10 @@ map(list1, log)
 ```
 
 ```{r map1-check}
-"Excellent. You can use map() with any function to iterate over the elements of a list. Your map() code returns the same results as the manual code you wrote earlier, except these results are returned in a list."
+"Excellent. You can use map() with any function to iterate over the elements of a vector. map() will return the results in a list, which means that map() can handle whatever output your function creates. Why? Because you can put anything in a list."
 ```
 
-### It's not weird
+### Functional programming
 
 It may seem weird to you that `map()` takes a function as an argument, but it is not weird at all. In R, functions are objects that can be passed around just like everything else.
 
@@ -301,12 +152,12 @@ By the way, you will need to click Run Code above at least once before you can c
 
 ### What about the output?
 
-You give `map()` a vector and a function. `map()` gives you a list. The _nth_ element of the list will be the result of applying your function to the contents of the _nth_ element of your vector. 
+You give `map()` a vector and a function. `map()` gives you a list. The _nth_ element of the list will be the result of applying your function to the _nth_ element of your vector. 
 
 This is convenient for two reasons:
 
 1. `map()` can handle anything that comes out of your function, even a data frame. Why? Because you can put anything into a list.
-2. `map()` is easy to use in pipes because it returns a list _and_ takes a list as its first argument. Here's an example.
+2. `map()` is easy to use in pipes because it takes a vector as its first argument and returns a vector (a list is a type of vector). Here's an example.
 
 * Predict what this code will return and then click Submit Answer.
 
@@ -334,7 +185,7 @@ list1 <- list(1, 2, 3, 4, 5)
 
 What if you want to pass `map()` a function that uses extra arguments? 
 
-For example, if you wanted to round to a certain number of digits past the decimal place, you would give `round()` an extra argument named `digits`, e.g. 
+For example, you would give `round()` an extra argument named `digits` if you wanted to round to a certain number of digits past the decimal place, e.g. 
 
 ```{r}
 round(3.141593, digits = 2)
@@ -342,7 +193,7 @@ round(3.141593, digits = 2)
 
 ### \t
 
-You can pass extra arguments for your function _to_ `map()` as if they were arguments _of_ `map()`. `map()` will forward the arguments to your function whenever it calls the function. You will almost always want to call these arguments by name, e.g.
+You can pass extra arguments for your function _to_ `map()` as if they were arguments _of_ `map()`. `map()` will forward the arguments to your function when it calls the function. You will almost always want to call these arguments by name, e.g.
 
 ```{r map-args}
 list1 %>% 
@@ -380,7 +231,7 @@ map(list1, log, base = 2)
 
 So far all of our functions have returned a list of numbers. This is a bit silly, because (as you've seen) it can be hard to work with lists.
 
-What if you wanted to return the results as a simple vector (i.e. a non-recursive vector, a vector that is not a list)?
+What if you want to return the results as a simple vector (i.e. not a list)?
 
 ### map_dbl()
 
@@ -403,7 +254,7 @@ map_dbl(list1, log)
 ```
 
 ```{r map_dbl-check}
-"Good job. Now our results come back as a numeric vector. This is useful. For example, we could pass the results directly to round() without using another call to map(): list1 %>% map(log) %>% round()."
+"Good job. Now your results come back as a numeric vector. This is useful. For example, you could pass the results directly to round() without using another call to map(): list1 %>% map(log) %>% round()."
 ```
 
 ### Other types of output
@@ -415,19 +266,19 @@ But suppose our function does not return doubles. For example, `str_sub()` from 
 ```{r map_dbl2, exercise = TRUE}
 library(stringr)
 strings <- list("Mary", "John", "Jill")
-map_dbl(strings, str_sub, 1, 1)
+map_dbl(strings, str_sub, start = 1, end = 1)
 ```
 
 ### \t
 
 The code didn't work because `str_sub()` returns a set of characters, but `map_dbl()` builds a double (numeric) vector. 
 
-In R, each non-list vector has a type. You can only save doubles in a double vector. You'd save characters in a _character vector_. Are we out of luck?"
+In R, each non-list vector has a type. You can only save doubles in a double vector. You'd save characters in a _character vector_. Are you out of luck?
 
 
 ### \t
 
-Of course not. purrr provides eight versions of `map()`. Each returns its results in a different format. 
+No. purrr provides eight versions of `map()`. Each returns its results in a different format. 
 
 Function     | Output
 ------------ | -------------
@@ -451,7 +302,7 @@ The idea behind purrr is that you can choose the map function that returns the t
 ```{r map_chr, exercise = TRUE}
 strings <- list("Mary", "John", "Jill")
 
-map_dbl(strings, str_sub, 1, 1)
+map_dbl(strings, str_sub, start = 1, end = 1)
 ```
 
 ```{r map_chr-hint}
@@ -461,39 +312,16 @@ map_dbl(strings, str_sub, 1, 1)
 ```{r map_chr-solution}
 strings <- list("Mary", "John", "Jill")
 
-map_chr(strings, str_sub, 1, 1)
+map_chr(strings, str_sub, start = 1, end = 1)
 ```
 
 ```{r map_chr-check}
-"Great job. Now that you know how to use map(), we will practice using it in the last section. But first, let's address something that might be on your mind."
+"Great job. Now let's cement our knowledge of `map()` by using it to solve a data wrangling challenge."
 ```
-
-### What about for loops?
-
-If you've written a for loop before, you might be saying to yourself, "Isn't map() doing the same thing as a for loop?" (If you've never written for loops before, you can skip ahead).
-
-Yes the map functions _are_ doing the same thing as a for loop, and bravo for making that connection!
-
-So why use `map()` instead of `for()`?
-
-### \t
-
-You certainly can use `for()`, but the map functions provide some benefits:
-
-1. They implement the for loop for you, saving you time and brain power
-1. They work inside dplyr functions like `mutate()` and `summarise()` (Have you ever tried to implement a for loop inside of `mutate()`? It becomes important when you work with list columns.)
-
-### But wait...
-
-Okay, that sounds good. But if you've been using R for awhile you might have a follow up question: "What about `lapply()`, `sapply()` and `vapply()`? Don't they do the same thing as `map()`?" 
-
-Yes they do; and again, good job making the connection! Let's wait until the More Map tutorial to answer this question.
-
-In the mean time, let's cement our knowledge of `map()` by using it to solve a data wrangling challenge.
 
 ## Case Study
 
-### The data
+### \t
 
 `ldeaths` is a list that records monthly deaths in the UK from lung disease. The data spans the years 1974 to 1979, and is divided year.
 
@@ -504,12 +332,12 @@ ldeaths
 ```
 
 ```{r ldeaths-1-check}
-"This is the data we will explore. ldeaths is a reformatted version of the ldeaths time series that comes in base R."
+"This is the data you will explore. ldeaths is a reformatted version of the ldeaths time series that comes in base R."
 ```
 
 ### Deaths by year
 
-It would be interesting to know how many people died each year from lung disease. Then we could see if deaths decreased over time. Can you find out?
+It would be helpful to know how many people died each year from lung disease. Then you could see if deaths decreased over time. Can you find out?
 
 * Use a map function to compute the sum of each vector in `ldeaths`. Then click Submit Answer.
 
@@ -531,7 +359,7 @@ map_dbl(ldeaths, sum)
 
 ### Total deaths
 
-Let's take it a step further.
+Take it a step further.
 
 * Compute the _total_ number of deaths in the data set. This will be the sum of your last result. Then click Submit Answer.
 
@@ -552,14 +380,16 @@ sum(map_dbl(ldeaths, sum))
 ```
 
 ```{r ldeaths-total-check}
-"Good work. First you summed each vector, then you summed the results. It is easiest to sum the results if you use map_dbl() to sum the vectors."
+"Good work. First, you summed each vector. Then, you summed the results. It is easiest to sum the results if you use map_dbl() to sum the vectors."
 ```
 
 ### Pipes
 
-Now that we are doing multi-step operations, you should begin using the pipe, `%>%`, if you aren't already. (The pipe is great for single step operations too.)
+Now that you are doing multi-step operations, you should begin using the pipe operator if you aren't already. The pipe operator (`%>%`) is great for single step operations too.
 
 * Take a moment to convert this code to use the pipe operator. Then click Submit Answer.
+
+    Note: Recall that the pipe operator takes the output of whatever is on its left hand side and passes it to the first argument of the function that is on its right hand side. So `x %>% f()` is the same as `f(x)` and `x %>% f() %>% g()` is the same as `g(f(x))`.
 
 ```{r ldeaths-pipe, exercise = TRUE}
 sum(map_dbl(ldeaths, sum))
@@ -576,22 +406,20 @@ ldeaths %>%
 ```
 
 ```{r ldeaths-pipe-check}
-"Let's use pipes for the rest of this case study. Pipes make it easy to build on previous work and to transform your data one step at a time. I can't recommend pipes enough."
+"Use pipes for the rest of this case study. Pipes make it easy to build on previous work and to transform your data one step at a time. I can't recommend pipes enough."
 ```
-
-Note: Recall that the pipe operator takes the output of whatever is on its left hand side and passes it to the first argument of the function that is on its right hand side. So `x %>% f()` is the same as `f(x)` and `x %>% f() %>% g()` is the same as `g(f(x))`.
 
 ### Sum by month
 
-Let's look at our data in one last way. Let's sum across months to see if there is a seasonal effect. 
+Let's sum across months to see if there is a seasonal effect. 
 
-Mathematically, this is as simple as our previous computations. Programatically, it is a challenge: our data is not set up in a way that makes it easy to sum across months. We'll need a strategy.
+Mathematically, this is as simple as your previous computations. Programatically, it is a challenge: your data is not set up in a way that makes it easy to sum across months. You'll need a strategy.
 
 ### \t
 
 If you've taken the Work with Data primer recently, you might have a strategy in mind:
 
-1. If we can get our data to look like this:
+1. If you can get your data to look like this:
 
 ```{r echo = FALSE}
 ldeaths %>% 
@@ -599,24 +427,24 @@ ldeaths %>%
   map_dfr(as_tibble)
 ```
 
-2. Then we can use dplyr's `summarise()` function to sum the columns.
+2. Then you can use dplyr's `summarise()` function to sum the columns.
 
-Let's do just that, but fair warning: we're going to bump into a couple of surprises---just like when you wrangle data in real life.
+Do just that, but fair warning: you're going to bump into a couple of surprises---just like when you wrangle data in real life.
 
 ### Step 1 - A data frame
 
-For Step 1, we can use a map function to combine our vectors into a data frame. Do you recall which map functions return a single data frame? There were two of them.
+For Step 1, you can use a map function to combine your vectors into a data frame. Do you recall which map functions return a single data frame? There were two of them.
 
 ### \t
 
-1. `map_dfr()` adds each element to the first as _rows_ (exactly what we want)
+1. `map_dfr()` adds each element to the first as _rows_ (exactly what you want)
 2. `map_dfc()` adds each element to the first as _columns_
 
-But each function expects to iterate over a set of _data frames_ and `ldeaths` contains a set of vectors. To make `map_dfr()` work, we will need to pass it a function that returns data frames for `map_dfr()` to combine.
+But each function expects to iterate over a set of _data frames_ and `ldeaths` contains a set of vectors. To make `map_dfr()` work, you will need to pass it a function that turns the vectors in `ldeaths` into data frames for `map_dfr()` to combine.
 
 ### as_tibble()
 
-R has many functions that can turn a vector into a data frame: `data.frame()`, `as.data.frame()`, `data_frame()`, `as_data_frame()`, etc. 
+R has many functions that can turn a vector into a data frame: `data.frame()`, `as.data.frame()`, `data_frame()`, `as_data_frame()`, are some of them. 
 
 I prefer to use `as_tibble()`. `as_tibble()` converts the vector to a data frame _and_ adds the helpful tibble class to the data frame. As a result, the data frame prints nicely at the command line. 
 
@@ -640,7 +468,7 @@ as_tibble(named_vec)
 
 Now that you know how `as_tibble()` works,
 
-* Use `map()` to map `as_tibble()` over the vectors in `ldeaths`. Then click Submit Answer. (For now, use `map()` instead of `map_dfr()`, this will help us see what happens step-by-step as we wrangle this data.)
+* Use `map()` to map `as_tibble()` over the vectors in `ldeaths`. Then click Submit Answer. (For now, use `map()` instead of `map_dfr()`, this will help you see what happens step-by-step as you wrangle the data.)
 * Inspect the results closely. What happens?
 
 ```{r as_tibble-2, exercise = TRUE}
@@ -658,7 +486,7 @@ ldeaths %>%
 
 ### Row or column?
 
-`as_tibble()` turned each vector into a data frame with one _column_. If we want the data frame below, we'll need to turn each vector into a data frame with one _row_ (that way `map_dfr()` can stack the rows on top of one another).
+`as_tibble()` turned each vector into a data frame with one _column_. If you want the data frame below, you'll need to turn each vector into a data frame with one _row_ (that way `map_dfr()` can stack the rows on top of one another).
 
 ```{r echo = FALSE}
 ldeaths %>% 
@@ -666,7 +494,7 @@ ldeaths %>%
   map_dfr(as_tibble)
 ```
 
-If we try running `map_dfr()` on our current output, it will stack our columns on top of one another to make a data frame with one long column. Go ahead, try it.
+If you try running `map_dfr()` on our current output, it will stack your columns on top of one another to make a data frame with one long column. Go ahead, try it.
 
 * Click Submit Answer. 
 
@@ -676,22 +504,22 @@ ldeaths %>%
 ```
 
 ```{r fail-check}
-"That's not what we want."
+"That's not what you want."
 ```
 
-### How can we fix this?
+### How can you fix this?
 
-Even though R displays vectors as if they were _row vectors_, R thinks of every vector as a _column vector_, even if that vector has names. So why display the vector as a row vector? To save screen space.
+Even though R displays simple vectors as if they were _row vectors_, R thinks of every vector as a _column vector_, even if that vector has names. So why display the vector as a row vector? To save screen space.
 
 ```{r}
 ldeaths[[1]]
 ```
 
-We can get the data frames we want if we first transpose the column vectors in `ldeaths` to row vectors. 
+You can get the data frames you want if you first transpose the column vectors in `ldeaths` to row vectors. 
 
 ### t()
 
-R's `t()` function does just that. It transposes vectors and data frames alike. 
+R's `t()` function does just that. 
 
 ```{r}
 ldeaths[[1]]
@@ -703,7 +531,7 @@ Don't be fooled by the way R displays the vectors. R only thinks of the second v
 
 ### A data set
 
-Now we can finish Step 1.
+Now you can finish Step 1.
 
 1. Use `map()` to apply `t()` to each vector in `ldeaths`.
 2. Use `map_dfr()` to map `as_tibble()` over the transposed results. `map_dfr()` will combine the output into a single data frame. 
@@ -720,7 +548,7 @@ ldeaths %>%
 ```
 
 ```{r t-check}
-"Excellent. Now we can finish."
+"Excellent. Now you can finish."
 ```
 
 ### Step 2 - summarise()
@@ -737,7 +565,7 @@ ldeaths %>%
 
 ### \t
 
-Here's a surefire way to do it, but it requires a lot of typing; we're summarising every column in the data frame. Let's use a shortcut instead.
+Here's a surefire way to do it, but it requires a lot of typing; I'm summarising every column in the data frame. Let's use a shortcut instead.
 
 ```{r eval = FALSE}
 ldeaths %>% 
@@ -788,4 +616,4 @@ ldeaths %>%
 
 Congratulations on making it to the end. You've learned the ins and outs of iterating with `map()`, but there is more to know.
 
-When you are ready, the next tutorial will show you how to save a lot of time with `map()`'s syntax shortcuts. It will also show you how to map over two or more lists at once.
+When you are ready, the next tutorial will show you how to save a lot of time with `map()`'s syntax shortcuts. It will also show you what to do when you cannot find a function to map that does what you want.
