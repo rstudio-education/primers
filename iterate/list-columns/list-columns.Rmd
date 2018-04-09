@@ -542,11 +542,11 @@ gap_models %>%
 ```
 
 ```{r dbl-hint-1}
-"You learned about map functions that return different types of output in the Introduction to Map tutorial."
+"You learned about map functions that return different types of output in the Map tutorial."
 ```
 
 ```{r dbl-hint-2}
-"You learned about map functions that return different types of output in the Introduction to Map tutorial."
+"You learned about map functions that return different types of output in the Map tutorial."
 ```
 
 ```{r dbl-check}
