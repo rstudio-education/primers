@@ -281,7 +281,7 @@ purrr functions also provide some advantages over R's lapply family.
 
 1. purrr functions share the same syntax across functions, which is not true for the lapply family. The first argument of `lapply()` is the data, but the first argument of `mapply()` is the function. `vapply()`, `sapply()`, and `mapply()` all recognize the `USE.NAMES` argument, but `lapply()` does not. And, whereas most lapply functions use `...` to pass arguments to functions, `mapply()` uses the `MoreArgs` argument.
 
-1. purrr functions also let you do things that you cannot do with the `lapply()` family. For example, you can map over two lists with `map2()`, or the rows of a data frame with `pmap()`. You can also arrange to return input invisibly as you trigger side effects with `walk()`.
+1. purrr functions also let you do things that you cannot do with the `lapply()` family. For example, you can map over two vectors with `map2()`, or the rows of a data frame with `pmap()`. You can also arrange to return input invisibly as you trigger side effects with `walk()`.
 
 Finally, purrr contains time saving short cuts for the most common iteration use cases.
 
