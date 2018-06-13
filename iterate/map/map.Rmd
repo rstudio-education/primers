@@ -11,6 +11,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(tidyverse)
 library(stringr)
+library(grader)
 
 ldeaths <- list(`1974` = c(Jan = 3035, Feb = 2552, Mar = 2704, Apr = 2554, May = 2014, Jun = 1655, Jul = 1721, Aug = 1524, Sep = 1596, Oct = 2074, Nov = 2199, Dec =  2512),
                 `1975` = c(Jan = 2933, Feb = 2889, Mar = 2938, Apr = 2497, May = 1870, Jun = 1726, Jul = 1607, Aug = 1545, Sep = 1396, Oct = 1787, Nov = 2076, Dec =  2837),
@@ -19,11 +20,7 @@ ldeaths <- list(`1974` = c(Jan = 3035, Feb = 2552, Mar = 2704, Apr = 2554, May =
                 `1978` = c(Jan = 2815, Feb = 3137, Mar = 2679, Apr = 1969, May = 1870, Jun = 1633, Jul = 1529, Aug = 1366, Sep = 1357, Oct = 1570, Nov = 1535, Dec =  2491),
                 `1979` = c(Jan = 3084, Feb = 2605, Mar = 2573, Apr = 2143, May = 1693, Jun = 1504, Jul = 1461, Aug = 1354, Sep = 1333, Oct = 1492, Nov = 1781, Dec =  1915))
                 
-
-checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
-  list(message = check_code, correct = TRUE, location = "append")
-}
-tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
@@ -43,7 +40,7 @@ purrr is loaded when you run `library(tidyverse)`
 ```
 
 ```{r purrr-check}
-'Purrr-fect. Now you can use purrr functions. You can also install and load the purrr package by itself, without the other tidyverse packages. To do so, use install.packages("purrr") and library(purrr).'
+strict_check('Purrr-fect. Now you can use purrr functions. You can also install and load the purrr package by itself, without the other tidyverse packages. To do so, use install.packages("purrr") and library(purrr).')
 ```
 
 ```{r purrr-solution}
@@ -110,7 +107,7 @@ map(list1, log)
 ```
 
 ```{r map1-check}
-"Excellent. You can use map() with any function to iterate over the elements of a vector. map() will return the results in a list, which means that map() can handle whatever output your function creates. Why? Because you can put anything in a list."
+strict_check("Excellent. You can use map() with any function to iterate over the elements of a vector. map() will return the results in a list, which means that map() can handle whatever output your function creates. Why? Because you can put anything in a list.")
 ```
 
 ### Functional programming
@@ -176,7 +173,7 @@ list1 <- list(1, 2, 3, 4, 5)
 ```
 
 ```{r map2-check}
-"The code first took the log of each element with log(). It then rounded each answer to the nearest integer with round()."
+strict_check("The code first took the log of each element with log(). It then rounded each answer to the nearest integer with round().")
 ```
 
 ## Inputs and Outputs
@@ -224,7 +221,7 @@ map(list1, log, base = 2)
 ```
 
 ```{r map4-check}
-"Good job. You can pass as many arguments as you like through map(), be sure to separate each with a comma, e.g. map(list1, rnorm, mean = 1, sd = 2)."
+strict_check("Good job. You can pass as many arguments as you like through map(), be sure to separate each with a comma, e.g. map(list1, rnorm, mean = 1, sd = 2).")
 ```
 
 ### Output formats
@@ -254,7 +251,7 @@ map_dbl(list1, log)
 ```
 
 ```{r map_dbl-check}
-"Good job. Now your results come back as a numeric vector. This is useful. For example, you could pass the results directly to round() without using another call to map(): list1 %>% map(log) %>% round()."
+strict_check("Good job. Now your results come back as a numeric vector. This is useful. For example, you could pass the results directly to round() without using another call to map(): list1 %>% map(log) %>% round().")
 ```
 
 ### Other types of output
@@ -315,8 +312,12 @@ strings <- list("Mary", "John", "Jill")
 map_chr(strings, str_sub, start = 1, end = 1)
 ```
 
+```{r map_chr-code-check}
+strict_check("Great job. Now let's cement our knowledge of `map()` by using it to solve a data wrangling challenge.")
+```
+
 ```{r map_chr-check}
-"Great job. Now let's cement our knowledge of `map()` by using it to solve a data wrangling challenge."
+strict_check("Great job. Now let's cement our knowledge of `map()` by using it to solve a data wrangling challenge.")
 ```
 
 ## Case Study
@@ -331,8 +332,12 @@ map_chr(strings, str_sub, start = 1, end = 1)
 ldeaths
 ```
 
+```{r ldeaths-1-solution}
+ldeaths
+```
+
 ```{r ldeaths-1-check}
-"This is the data you will explore. ldeaths is a reformatted version of the ldeaths time series that comes in base R."
+strict_check("This is the data you will explore. ldeaths is a reformatted version of the ldeaths time series that comes in base R.")
 ```
 
 ### Deaths by year
@@ -354,7 +359,7 @@ map_dbl(ldeaths, sum)
 ```
 
 ```{r ldeaths-sum-check}
-"Good job. It looks like deaths went down over time (slightly). Did you use map() or map_dbl()? Both will work, but map_dbl() will return your results in a format that is easier to inspect and use."
+strict_check("Good job. It looks like deaths went down over time (slightly). Did you use map() or map_dbl()? Both will work, but map_dbl() will return your results in a format that is easier to inspect and use.")
 ```
 
 ### Total deaths
@@ -380,7 +385,7 @@ sum(map_dbl(ldeaths, sum))
 ```
 
 ```{r ldeaths-total-check}
-"Good work. First, you summed each vector. Then, you summed the results. It is easiest to sum the results if you use map_dbl() to sum the vectors."
+strict_check("Good work. First, you summed each vector. Then, you summed the results. It is easiest to sum the results if you use map_dbl() to sum the vectors.")
 ```
 
 ### Pipes
@@ -406,7 +411,7 @@ ldeaths %>%
 ```
 
 ```{r ldeaths-pipe-check}
-"Use pipes for the rest of this case study. Pipes make it easy to build on previous work and to transform your data one step at a time. I can't recommend pipes enough."
+strict_check("Use pipes for the rest of this case study. Pipes make it easy to build on previous work and to transform your data one step at a time. I can't recommend pipes enough.")
 ```
 
 ### Sum by month
@@ -461,7 +466,7 @@ as_tibble(named_vec)
 ```
 
 ```{r as_tibble-check}
-"Good job. as_tibble() comes in the tibble package, as do as_data_frame() and data_frame(). Like purrr, the tibble package is a member of the tidyverse."
+strict_check("Good job. as_tibble() comes in the tibble package, as do as_data_frame() and data_frame(). Like purrr, the tibble package is a member of the tidyverse.")
 ```
 
 ### \t
@@ -481,7 +486,7 @@ ldeaths %>%
 ```
 
 ```{r as_tibble-2-check}
-"Good job, you made each vector a tibble (i.e. a data frame)! But there is something funny happening here. Let's investigate."
+strict_check("Good job, you made each vector a tibble (i.e. a data frame)! But there is something funny happening here. Let's investigate.")
 ```
 
 ### Row or column?
@@ -503,8 +508,13 @@ ldeaths %>%
   map_dfr(as_tibble)
 ```
 
+```{r fail-solution}
+ldeaths %>% 
+  map_dfr(as_tibble)
+```
+
 ```{r fail-check}
-"That's not what you want."
+strict_check("That's not what you want.")
 ```
 
 ### How can you fix this?
@@ -548,7 +558,7 @@ ldeaths %>%
 ```
 
 ```{r t-check}
-"Excellent. Now you can finish."
+strict_check("Excellent. Now you can finish.")
 ```
 
 ### Step 2 - summarise()
@@ -609,7 +619,7 @@ ldeaths %>%
 ```
 
 ```{r all-check}
-"Great Job! You can see a strong seasonal effect in the data: more lung related deaths happen in winter. You were able to do this because of the work you put into wrangling the data with purrr. Give yourself a pat on the back!"
+strict_check("Great Job! You can see a strong seasonal effect in the data: more lung related deaths happen in winter. You were able to do this because of the work you put into wrangling the data with purrr. Give yourself a pat on the back!")
 ```
 
 ### The End
