@@ -13,6 +13,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(tidyverse)
 library(repurrrsive)
+library(grader)
 
 
 gap_dfs <- gap_split %>% map(select, -1, -2)
@@ -24,26 +25,8 @@ list1 <- list(
   letters = c("a", "b", "c"),
   logicals = c(TRUE, FALSE)
 )
-params <- list(
-  "norm1" = list("mu" = 0, "sd" = 1),
-  "norm2" = list("mu" = 1, "sd" = 1),
-  "norm3" = list("mu" = 2, "scale" = 1)
-)
 
-model1 <- gap_dfs %>%
-  map(~ lm(lifeExp ~ year, data = .x))
-
-model2 <- gap_dfs %>%
-  map(~ lm(lifeExp ~ year + gdpPercap, data = .x))
-
-model3 <- gap_dfs %>%
-  map(~ lm(lifeExp ~ year + gdpPercap + pop, data = .x))
-
-
-checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
-  list(message = check_code, correct = TRUE, location = "append")
-}
-tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
