@@ -215,7 +215,7 @@ The tidy data format works so well for R because it aligns the structure of your
 * R computes many functions and operations in a vectorized fashion, matching the first values of each vector of input to compute the first result, matching the second values of each input to compute the second result, and so on. Tidy data ensures that R will always match values with other values from the same operation whenever vector inputs are drawn from the same table. 
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/vectorized.png")
+knitr::include_graphics("www/images/vectorized.png")
 ```
 
 

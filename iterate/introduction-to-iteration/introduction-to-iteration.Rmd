@@ -1,0 +1,292 @@
+---
+title: "Introduction to Iteration"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: false
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(tidyverse)
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+
+## Iteration
+
+### \t
+
+Here is a number. You can do many things with it, like this:  
+
+* Take the log of the number. Then click Submit Answer.
+
+```{r number, exercise = TRUE}
+1
+```
+
+```{r number-solution}
+log(1)
+```
+
+```{r number-hint}
+"You can take the log with `log()`"
+```
+
+```{r number-check}
+"Good job. Don't worry, things will soon get harder."
+```
+
+### \t
+
+Here are many numbers. What if you want to do things with them? Go ahead: 
+
+* Take the log of each. Don't get fancy.
+
+```{r numbers, exercise = TRUE}
+1
+2
+3
+4
+5
+```
+
+```{r numbers-solution}
+log(1)
+log(2)
+log(3)
+log(4)
+log(5)
+```
+
+```{r numbers-hint}
+"You can call `log()` on each."
+```
+
+```{r numbers-check}
+"Nice! You iterated through the numbers, calling log() on them one at a time.
+
+But shouldn't your computer do this repetition for you? Why are you using a computer anyways?"
+```
+
+### Vectorization
+
+You usually do not need to repeat yourself when you use R. Almost every function in R is _vectorized_. This means that if you put your values into a vector, and then run a function on the vector, R will apply the function iteratively to each of the values.
+
+* Click Submit Answer to try it. It's worth seeing at least once!
+
+```{r vectors, exercise = TRUE}
+numbers <- c(1, 2, 3, 4, 5)
+log(numbers)
+```
+
+```{r vectors-hint}
+"Just click Submit Answer and see what happens."
+```
+
+```{r vectors-check}
+"Vectorization in R works, but there is something that you should know. Click Continue to find out what it is."
+```
+
+### \t
+
+Not every function in R is vectorized, and those that are vectorized often only work with _non-recursive vectors_.
+
+What does that mean? Well, there are two types of vectors in R:
+
+1. non-recursive vectors
+1. recursive vectors
+
+Let's look at each.
+
+### Non-recursive vectors
+
+Non-recursive vectors are usually what you think of when you think of a vector. Each element of a non-recursive vector is a single value, and all of the values in a non-recursive vector are the same type. 
+
+Examples of non-recursive vectors in R include:
+
+* double vectors (i.e. numeric vectors)
+* integer vectors
+* character vectors
+* logical vectors
+* factors
+* and so on
+
+### \t
+
+As you saw with `log()`, almost every function in R is vectorized to work with non-recursive vectors. Here, `numbers` is a non-recursive vector.
+
+```{r echo = TRUE}
+numbers <- c(1, 2, 3, 4, 5)
+log(numbers)
+```
+
+What about recursive vectors?
+
+### Recursive vectors
+
+A _recursive vector_ is a vector whose individual elements can be anything, even other vectors, even other recursive vectors. Hence, the name.
+
+Recursive vectors are so special that R gives them a special name, _lists_. You can think of lists as the glue that holds R together. R uses lists to build data frames, environments, model objects and more.
+
+### \t
+
+But are R functions vectorized to work with lists? 
+
+* Try running `log()` on the list below to find out. Click Run Code.
+
+```{r lists, exercise = TRUE}
+list1 <- list(1, 2, 3, 4, 5)
+
+log(list1)
+```
+
+```{r lists-hint}
+"Just click Submit Answer and see what happens."
+```
+
+### \t
+
+Almost no function in R is vectorized to work with lists. And you can see why: lists can contain different types of objects. For example, the list below contains both a number and a character vector.
+
+```{r}
+chars <- c("a", "b", "c")
+list2 <- list(1, chars)
+list2
+```
+
+How likely is it that an R function will work with both `1` and the vector `c("a", "b", "c")`? 
+
+Most R functions only work with a single type of data, so their authors arrange for them to handle non-recursive vectors, but not lists.
+
+### Important vocabulary
+
+Recursive vectors have an everyday name, lists, but non-recursive vectors do not. People tend to call non-recursive vectors _vectors_, but that is not very accurate since recursive vectors are vectors too.
+
+To distinguish non-recursive vectors from recursive vectors, I will refer to recursive vectors as _lists_ and non-recursive vectors as _simple vectors_.
+
+It's important to keep in mind that lists _are_ a type of vector. So if you see me say _vector_ instead of _simple vector_, I mean both lists and simple vectors.
+
+Now, how should you work with lists?
+
+### What should you do?
+
+Don't worry, there's no reason to go back to repeating things by hand for lists, although you could. Couldn't you? Let's see. 
+
+You can extract each element of a list with the `[[i]]` bracket syntax. For example, `list2[[2]]` extracts the second element of `list2`:
+
+```{r}
+list2[[2]]
+```
+
+* Finish the code below to take the log of each value in `list1`. Then click Submit Answer.
+
+```{r manual-setup}
+list1 <- list(1, 2, 3, 4, 5)
+```
+
+```{r manual, exercise = TRUE}
+list1[[1]]
+list1[[2]]
+list1[[3]]
+list1[[4]]
+list1[[5]]
+```
+
+```{r manual-hint-1}
+"Apply `log()` to each list component below."
+```
+
+```{r manual-hint-2}
+"You can pass each component straight into the `log()` function, e.g. `log(list1[[1]])`."
+```
+
+```{r manual-solution}
+log(list1[[1]])
+log(list1[[2]])
+log(list1[[3]])
+log(list1[[4]])
+log(list1[[5]])
+```
+
+```{r manual-check}
+"Nice! But not nice enough to use in daily practice. Let's learn how to tell your computer to iterate over lists for you."
+```
+
+## purrr
+
+### \t 
+
+This primer will teach you how to solve iteration problems with the purrr package. In particular, you will learn how to use the map family of functions and their derivatives, like
+
+* `map()`
+* `map_dbl()`
+* `map2()`
+* `pmap()` 
+* `invoke_map()` and more
+
+### Other approaches
+
+But there are other ways to solve iteration problems in R. You could use:
+
+* for loops
+* the lapply family of functions
+* situation specific functions like `rowwise()` and `transpose()`
+
+So why learn to use the purrr package?
+
+### Why purrr?
+
+To make the discussion concrete, let's start with an example. Here's how you would use purrr to take the mean of each element of a list named `x`:
+
+```{r echo = TRUE, eval = FALSE}
+map(x, mean)
+```
+
+And here is how you would do it with a for loop:
+
+```{r echo = TRUE, eval = FALSE}
+y <- list()
+for (i in seq_along(x)) {
+  y[[i]] <- mean(x[[i]])
+}
+y
+```
+
+### \t
+
+You don't need to know what the code above does to see some obvious benefits:
+
+1. purrr code is easy to write. It is much more succinct than for loops.
+
+1. purrr code is easy to _read_. Once you know the vocabulary, you can understand immediately what `map(x, mean)` does.
+
+    This isn't true with loops. Even if you know what `for` does, you still need to study the set up and internals of the loop to determine what the loop will return. 
+
+1. purrr code is easy to pass to other functions, e.g. `x %>% map(mean)` or `mutate(df, avg_x = map(x, mean))`.
+
+1. purrr code is easy to use well. Since purrr implements the for loop for you, you do not need to worry that your loop will have unintended side effects, run slower than it should, or consume unnecessary amounts of memory.
+
+### purrr and lapply
+
+purrr functions also provide some advantages over R's lapply family. 
+
+1. purrr functions always return the same type of data structure. In contrast, `sapply()` or `mapply()` will return diffferent types of data structures in different situations.
+
+1. purrr functions share the same syntax across functions, which is not true for the lapply family. The first argument of `lapply()` is the data, but the first argument of `mapply()` is the function. `vapply()`, `sapply()`, and `mapply()` all recognize the `USE.NAMES` argument, but `lapply()` does not. And, whereas most lapply functions use `...` to pass arguments to functions, `mapply()` uses the `MoreArgs` argument.
+
+1. purrr functions also let you do things that you cannot do with the `lapply()` family. For example, you can map over two vectors with `map2()`, or the rows of a data frame with `pmap()`. You can also arrange to return input invisibly as you trigger side effects with `walk()`.
+
+Finally, purrr contains time saving short cuts for the most common iteration use cases.
+
+### Why not purrr?
+
+If you are already a whiz with iteration in R, there is no reason to relearn what you are good at. You might want to spend your time learning something more novel.
+
+However, if you are curious, or if you are new to iteration in R, this primer will teach you everything you need to know to get started. To begin, visit the next tutorial, where you will learn about purrr's map family of functions.

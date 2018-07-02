@@ -1,0 +1,706 @@
+---
+title: "Map Shortcuts"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: false
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(tidyverse)
+library(repurrrsive)
+
+
+gap_dfs <- gap_split %>% map(select, -1, -2)
+gap_list <- gap_dfs %>% map(as.list)
+
+us <- gap_list %>% pluck("United States")
+list1 <- list(
+  numbers = 1:3,
+  letters = c("a", "b", "c"),
+  logicals = c(TRUE, FALSE)
+)
+params <- list(
+  "norm1" = list("mu" = 0, "sd" = 1),
+  "norm2" = list("mu" = 1, "sd" = 1),
+  "norm3" = list("mu" = 2, "scale" = 1)
+)
+
+model1 <- gap_dfs %>%
+  map(~ lm(lifeExp ~ year, data = .x))
+
+model2 <- gap_dfs %>%
+  map(~ lm(lifeExp ~ year + gdpPercap, data = .x))
+
+model3 <- gap_dfs %>%
+  map(~ lm(lifeExp ~ year + gdpPercap + pop, data = .x))
+
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+
+## Why More?
+
+### \t
+
+The map functions come with two useful shortcuts:
+
+1. an easy way to extract elements from nested lists
+1. an easy way to apply non-function expressions, like `x + 1`, to the elements of a vector
+
+This tutorial will teach you how to use the shortcuts as you work through a data analysis case study. This first section will introduce the case study.
+
+### Data 
+
+`us` is a list of statistics about the US, measured every five years from 1952 to 2007. The data is a reformatted portion of the `gapminder` data set, which comes in the gapminder package. 
+
+* Click Submit Answer to see the contents of `us`. Can you spot the life expectancy for a US citizen in 1952? How about in 2007?
+
+```{r us-1, exercise = TRUE}
+us
+```
+
+```{r us-1-solution}
+us
+```
+
+```{r us-1-check}
+"Life expectancy statistics are saved in the second element of us, which is named lifeExp. The first number in lifeExp is the life expectancy in 1952, the last number is the life expectancy in 2007. Ideally, you'd encounter this type of data in a data frame, but it is possible to receive messy data like this."
+```
+
+### \t
+
+Can you use the values of `lifeExp` to compute the rise in life expectancy in the US from 1952 to 2007?
+
+This is a simple task, but we will use it as the basis of an iteration project.
+
+### Data Wrangling
+
+First, you need to access the values of `lifeExp`. The values are difficult to work with because they are stored inside of a list (`us`). 
+
+You can extract the values with purrr's `pluck()` function. 
+
+### pluck() 
+
+`pluck()` extracts an element from a list, by name or by position. It returns the contents of the element as they are, without surrounding them in a new list. 
+
+For example, the two `pluck()` calls below both extract the first element of `list1`.
+
+```{r eval = FALSE, echo = TRUE}
+list1 <- list(
+  numbers = 1:3,
+  letters = c("a", "b", "c"),
+  logicals = c(TRUE, FALSE)
+)
+
+pluck(list1, 1) # list1 %>% pluck(1)
+pluck(list1, "numbers") # list1 %>% pluck("numbers")
+```
+
+```{r echo = FALSE}
+list1 <- list(
+  numbers = 1:3,
+  letters = c("a", "b", "c"),
+  logicals = c(TRUE, FALSE)
+)
+
+pluck(list1, "numbers") # list1 %>% pluck("numbers")
+```
+
+### \t
+
+* Use `pluck()` to extract `lifeExp` from `us`. Then click Submit Answer. I've pre-loaded the purrr package for you.
+
+```{r pluck, exercise = TRUE}
+
+```
+
+```{r pluck-hint-1}
+"The name of the element that you want to pluck is lifeExp."
+```
+
+```{r pluck-hint-2}
+"Don't forget to put quotes around lifeExp when you pass it to pluck()."
+```
+
+```{r pluck-solution}
+us %>% pluck("lifeExp")
+```
+
+```{r pluck-check}
+'Nice. pluck() does the same thing as us$lifeExp and us[["lifeExp"]], but pluck() is easier to read (and easier to pass to map()).'
+```
+
+### Rise in lifeExp
+
+`pluck()` returns the values of `lifeExp` as a vector, which makes it easy to manipulate the values with two new functions:
+
+1. `last()` returns the last element of a vector. 
+1. `first()` returns the first element of a vector. 
+
+Both come in the dplyr package, which I have pre-loaded for you.
+
+* Use `last()` and `first()` to compute the rise in life expectancy in the US from 1952 to 2007. Then click Submit Answer.
+
+```{r us-2, exercise = TRUE}
+lifeExp <- us %>% pluck("lifeExp")
+```
+
+```{r us-2-hint}
+"The change in life expectancy will be the last value of lifeExp minus the first value of lifeExp."
+```
+
+```{r us-2-solution}
+lifeExp <- us %>% pluck("lifeExp")
+last(lifeExp) - first(lifeExp)
+```
+
+```{r us-2-check}
+"Excellent. The life expectancy of US citizens increased by 9.8 years between 1952 and 2007."
+```
+
+### Recap
+
+You computed that the life expectancy of US citizens increased by 9.8 years between 1952 and 2007. To do this, you:
+
+1. Plucked the `lifeExp` values from `us` with `pluck()`
+2. Calculated the change in life expectancy with `last(lifeExp) - first(lifeExp)`
+
+It'd be nice to do this for other countries as well. And you can. `gap_list` contains lists of statistics for 142 countries. Click Submit Answer to see. 
+
+```{r gap_list, exercise = TRUE}
+gap_list
+```
+
+```{r gap_list-check}
+"Each element of gap_list is a new list that is identical in structure to us."
+```
+
+### \t
+
+To apply your two step process to each country, you will need to use `map()` and each of its shortcuts.
+
+Click Continue when you are ready to begin.
+
+## Shortcuts
+
+### \t
+
+To map your work to every country, you will need to do two things for each value of `gap_list`:
+
+1. Pluck the values of `lifeExp` from the sub-list that contains them
+2. Compute the change in life expectancy with `last(lifeExp) - first(lifeExp)`
+
+Each step will reveal new aspects of the map functions. 
+
+* Step 1 will demonstrate two useful shortcuts for extracting sub-elements
+* Step 2 will demonstrate how to make and apply expressions with map functions
+
+### Step 1
+
+* Map `pluck()` over `gap_list` to return the `lifeExp` vectors of each country in `gap_list`.
+
+```{r gap_pluck, exercise = TRUE}
+
+```
+
+```{r gap_pluck-hint}
+"Recall that map() takes a vector to iterate over, a function to apply to each element of the vector, and then any arguments that that function needs."
+```
+
+```{r gap_pluck-solution}
+gap_list %>% map(pluck, "lifeExp")
+```
+
+```{r gap_pluck-check}
+"Nice! As always, I recommend that you use R's pipe syntax whenever possible (%>%). Pipes make it easy to build upon your work, concentrating on one step at a time."
+```
+
+### shortcuts
+
+Before you go on, consider what you did.
+
+`gap_list` contained 142 sub-lists, and each sub-list contained the same set of elements. This set up is more common than you may think. 
+
+You pulled out the same element from each of those sub-lists. This operation is more common than you might think.
+
+In fact, this operation is so common that `map()` provides two shortcuts to help you do it.
+
+### "name" shortcut
+
+First, you can pass `map()` the name of an element to extract as a character string. When `map()` receives a character string instead of a function, `map()` will return the element of each sub-list whose name matches the character string.
+
+```{r echo = TRUE}
+params <- list(
+  "norm1" = list("mu" = 0, "sd" = 1),
+  "norm2" = list("mu" = 1, "sd" = 1),
+  "norm3" = list("mu" = 2, "scale" = 1)
+)
+map(params, "mu") # params %>% map("mu")
+```
+
+### \t
+
+* Change the code below to use the "name" shortcut. Then click Submit Answer. Do you get the same result?
+
+```{r quotes, exercise = TRUE}
+gap_list %>% map(pluck, "lifeExp")
+```
+
+```{r quotes-hint-1}
+"Did you remember to remove pluck from the map() call?"
+```
+
+```{r quotes-hint-2}
+"The element that you want to extract from each sub-list is named lifeExp."
+```
+
+```{r quotes-solution}
+gap_list %>% map("lifeExp")
+```
+
+```{r quotes-check}
+"Excellent. I recommend this shortcut, but there is also a second, even shorter shortcut that extracts elements from sub-lists. Click Continue to find out what it is."
+```
+
+### Integers shortcut
+
+Instead of passing `map()` a character string that identifies the element to extract by name, you can pass `map()` an integer that identifies the element to extract by position, e.g. 
+
+```{r echo = TRUE}
+params <- list(
+  "norm1" = list("mu" = 0, "sd" = 1),
+  "norm2" = list("mu" = 1, "sd" = 1),
+  "norm3" = list("mu" = 2, "scale" = 1)
+)
+map(params, 1) # params %>% map(1)
+```
+
+### \t
+
+* Extract `lifeExp` with the integer shortcut. Then click Submit Answer.
+
+```{r integer, exercise =TRUE}
+gap_list
+```
+
+```{r integer-hint-1}
+"Use map() and pass it a number."
+```
+
+```{r integer-hint-2}
+"Do you remember the position of lifeExp within each sub-list of gap_list? It is the second element."
+```
+
+```{r integer-solution}
+gap_list %>% map(2)
+```
+
+```{r integer-check}
+"Great job. In general, I suggest that you use the name shortcut. Then you won't need to remember the position of each element, nor will you need to worry that the elements may be out of order in one of the sub-lists."
+```
+
+### Data frames
+
+The best thing about these shortcuts is that they also work when your vector contains data frames. You can use the shortcuts to pull out the same column of each data frame.
+
+For example, `gap_dfs` contains the same information as `gap_lists`, but it organizes each sub-list into data frame, which is more user-friendly.
+
+```{r echo = TRUE}
+gap_dfs %>% pluck(1)
+```
+
+### \t
+
+* Use the "name" shortcut to extract the `lifeExp` column of each data frame in `gap_dfs`. Then click Submit Answer. What happens?
+
+```{r gap_dfs-1, exercise = TRUE}
+gap_dfs
+```
+
+```{r gap_dfs-1-solution}
+gap_dfs %>% map("lifeExp")
+```
+
+```{r gap_dfs-1-check}
+'The "name" shortcut works with data frames and tibbles. So will the integer shortcut. The reason for this is simple: in R, data frames are a type of list, just like tibbles are a type of data frame. As a result, things that work with lists will also work with data frames and tibbles.'
+```
+
+### One more thing
+
+There is one more thing that you should know about these shortcuts. In the Map tutorial, you learned that `map()` is part of a larger family of map functions:
+
+Function     | Output
+------------ | -------------
+`map()`      |  list
+`map_chr()`  |  character vector
+`map_dbl()`  |  double (numeric) vector
+`map_dfc()`  |  data frame (output column binded)
+`map_dfr()`  |  data frame (output row binded)
+`map_int()`  |  integer vector
+`map_lgl()`  |  logical vector
+`walk()`     |  returns the input invisibly (used to trigger side effects)
+
+The "name" and integer shortcuts will work with all of these functions. So will the expressions that you are about to learn. Speaking of that, let's get back to your case study.
+
+## Expressions
+
+### \t
+
+Recall your goals. For each value of `gap_list`, you want to:
+
+1. Pluck the values of `lifeExp` from the sub-list that contains them
+2. Compute the change in life expectancy with `last(lifeExp) - first(lifeExp)`
+
+Step 1 was easy and you learned two shortcuts along the way. Step 2 will be harder.
+
+### Step 2
+
+You know that you can use `map()` to apply a function to each element of a list, but `last(lifeExp) - first(lifeExp)` isn't a function. It is an expression that uses two functions. How can you pass it to `map()`?
+
+With a _map expression_.
+
+### A pattern
+
+At the heart of `map()` is the pattern:
+
+For each element, do _____
+
+### \t
+
+When you fill in the blank with a function, or a character string, or an integer, `map()` knows just what to do.
+
+But you can also fill in the blank with an arbitrary R expression (like `last(lifeExp) - first(lifeExp)`) if you follow two rules.
+
+### Rule 1 - ~
+
+First, place a `~` at the start of the expression. This alerts `map()` that you are giving it an expression to run:
+
+For each element, do `~last(lifeExp) - first(lifeExp)`
+
+### Rule 2 - .x
+
+Second, replace the _name of the thing to manipulate_ with `.x` wherever it appears in your expression.
+
+For each element, do `~last(.x) - first(.x)`
+
+Or more simply,
+
+For each `.x`, do `~last(.x) - first(.x)`
+
+This tells `map()` where to use the element within your expression. If an expression uses each element multiple times, you will need to insert multiple `.x`s into your expression.
+
+### \t
+
+How does this look with the `map()` function? You pass the expression to `map()` exactly as you would pass a function.
+
+In this example, the expression plucks the two values in each sub-list of `params` and uses them to generate five random normal values.
+
+```{r echo = TRUE}
+params <- list(
+  "norm1" = list("mu" = 0, "sd" = 1),
+  "norm2" = list("mu" = 1, "sd" = 1),
+  "norm3" = list("mu" = 2, "scale" = 1)
+)
+
+map(params, ~ rnorm(5, mean = pluck(.x, 1), sd = pluck(.x, 2)))
+# params %>% map(~rnorm(5, mean = pluck(.x, 1), sd = pluck(.x, 2)))
+```
+
+### \t
+
+Now it is your turn. To finish your code: 
+
+1. Turn `last(lifeExp) - first(lifeExp)` into an expression.
+2. Use `map()` to apply the expression to each element returned by the code below. 
+3. Click Submit Answer.
+
+```{r exp, exercise = TRUE}
+gap_list %>%
+  map("lifeExp")
+```
+
+```{r exp-hint-1}
+"Use %>% to add a second map() call to your code."
+```
+
+```{r exp-hint-2}
+"Remember the two rules for map expressions: 1) begin with a ~, 2) refer to the elements with .x. Do not surround the expression with quotes."
+```
+
+```{r exp-solution}
+gap_list %>%
+  map("lifeExp") %>%
+  map(~ last(.x) - first(.x))
+```
+
+```{r exp-check}
+"Great job. You are on a roll! What if you'd like the result to come back as a double (numeric) vector?"
+```
+
+### Beyond map()
+
+* Change the code below to return a double vector in the last step. Will the expression still work? Click Submit Answer to find out.
+
+```{r dbl-exp, exercise = TRUE}
+gap_list %>%
+  map("lifeExp") %>%
+  map(~ last(.x) - first(.x))
+```
+
+```{r dbl-exp-solution}
+gap_list %>%
+  map("lifeExp") %>%
+  map_dbl(~ last(.x) - first(.x))
+```
+
+```{r dbl-exp-check}
+"Excellent. Just like the shortcuts you learned earlier, expressions work with all of the map functions."
+```
+
+### A small payoff
+
+It would be rewarding to learn which countries had the largest and smallest changes in life expectancy. You can find out with three new functions:
+
+### \t
+
+1. `enframe()` turns a named vector into a data frame with two columns: `name` and `value`. 
+
+    ```{r}
+named_vec <- c(uno = 1, dos = 2, tres = 3)
+enframe(named_vec)
+    ```
+    
+    `enframe()` comes in the tidyr package, which I've pre-loaded for you.
+    
+### \t
+
+2. `top_n()` returns the n rows that have the highest value of a weighting variable. 
+
+    ```{r}
+top_n(mtcars, n = 5, wt = mpg)
+    ```
+    
+    (Don't be fooled: these are the rows with the five highest values of `mpg`. `top_n()` retrieves them but does not sort them by `mpg`).
+
+
+### \t
+
+3. You can combine `top_n()` with `desc()` to retrieve the lowest n values.
+
+    ```{r}
+top_n(mtcars, n = 5, wt = desc(mpg))
+    ```
+    
+    Both `top_n()` and `desc()` come in the dplyr package, which I have pre-loaded for you.
+
+### The most extreme changes in life expectancy
+
+* Extend your code with `enframe()` and `top_n()` to retrieve the five countries with the _most positve_ change in life expectancy. Then click Submit Answer.
+
+```{r greatest, exercise = TRUE}
+gap_list %>%
+  map("lifeExp") %>%
+  map_dbl(~ last(.x) - first(.x))
+```
+
+```{r greatest-hint-1}
+"To begin pipe your results into enframe()."
+```
+
+```{r greatest-hint-2}
+"...i.e. add %>% enframe() to the end of your code."
+```
+
+```{r greatest-hint-3}
+"Then pipe that result to top_n(). You will need to set the n and wt arguments of top_n()."
+```
+
+```{r greatest-hint-4}
+'enframe() named the column that you want to wt by "value".'
+```
+
+```{r greatest-solution}
+gap_list %>%
+  map("lifeExp") %>%
+  map_dbl(~ last(.x) - first(.x)) %>%
+  enframe() %>%
+  top_n(5, wt = value)
+```
+
+```{r greatest-check}
+"Excellent. Oman, Vietnam, Indonesia, Saudi Arabia, and Libya had the highest increases. Now which countries had the lowest increases?"
+```
+
+### \t
+
+* Add `desc()` to your code to retrieve the five countries with the least positive increase in life expectancy. Then click Submit Answer.
+
+```{r least, exercise = TRUE}
+gap_list %>%
+  map("lifeExp") %>%
+  map_dbl(~ last(.x) - first(.x)) %>%
+  enframe() %>%
+  top_n(5, wt = value)
+```
+
+```{r least-hint}
+"This time, you want to order by descending values of value."
+```
+
+```{r least-solution}
+gap_list %>%
+  map("lifeExp") %>%
+  map_dbl(~ last(.x) - first(.x)) %>%
+  enframe() %>%
+  top_n(5, wt = desc(value))
+```
+
+```{r least-check}
+"Two countries actually decreased their life expectancy: Zimbabwe and Swaziland. Now let's get back to map expressions."
+```
+
+## Best practices
+
+### \t
+
+You can do almost anything with `map()` if you use the right expression. The best way to write an expression is to:
+
+1. Pluck a single element from your vector
+2. Write code that works correctly for that element
+3. Transform the code into an expression to use with `map()`
+
+The alternative is to write an expression in your head, and then see if it works. Too often it won't. 
+
+### Models 
+
+Let's put this workflow into practice. 
+
+Another way to quantify the change in life expectancy over time is to fit a simple linear model to the data. The slope of the model will be how fast life expectancy increased per year, on average.
+
+### Step 1 - Pluck a single element from your vector
+
+* Pluck the "United States" element from `gap_dfs`. Save it as `usa`, so you don't overwrite `us`. Then click Submit Answer.
+
+```{r usa, exercise = TRUE}
+
+```
+
+```{r usa-hint}
+"You do not need to use map() here, just pluck()."
+```
+
+```{r usa-solution}
+usa <- gap_dfs %>% pluck("United States")
+```
+
+```{r usa-check}
+"This single case will be your test case. You can run your code on it to spot any bugs as soon as they arise."
+```
+
+### Step 2 - Write code that works correctly for that element
+
+You may not know how to fit a linear model with R, so I assure you that the code below will work. 
+
+* Click Submit Answer to double check the code runs with your test case.
+
+```{r lm-setup}
+usa <- gap_dfs %>% pluck("United States")
+```
+
+```{r lm, exercise = TRUE}
+lm(lifeExp ~ year, data = usa)
+```
+
+```{r lm-hint}
+"Leave the code as is and click Submit Answer."
+```
+
+```{r lm-solution}
+lm(lifeExp ~ year, data = usa)
+```
+
+```{r lm-check}
+"Life expectancy increased on average by 0.18 years per year for the US. Great. This is the code to map over gap_dfs, but to use it, you will need to transform it into an expression."
+```
+
+### Step 3 - Transform the code into an expression to use with map()
+
+* Turn your code into an expression and `map()` it to each element of `gap_dfs`. Then click Submit Answer.
+
+```{r lm-map-setup}
+usa <- gap_dfs %>% pluck("United States")
+```
+
+```{r lm-map, exercise = TRUE}
+lm(lifeExp ~ year, data = usa)
+```
+
+```{r lm-map-hint-1}
+"Begin with gap_dfs and pass it to map()."
+```
+
+```{r lm-map-hint-2}
+"The next argument of map() should be your function, rewritten as an expression. Do you remember the two rules for writing map expressions?"
+```
+
+```{r lm-map-hint-3}
+"Rule 1: begin the expression with a ~."
+```
+
+```{r lm-map-hint-4}
+"Rule 2: replace every appearance of the element to use with .x. In our code, each element would iteratively take the place of usa."
+```
+
+```{r lm-map-solution}
+gap_dfs %>%
+  map(~ lm(lifeExp ~ year, data = .x))
+```
+
+```{r lm-map-check}
+"Excellent! Let's practice this workflow one last time, but this time with no guidance from me."
+```
+
+### A model that accounts for GDP
+
+* Use the best practices to fit a model that accounts for GDP to each country. Your model should use the formula `lifeExp ~ year + gdpPercap` inside of `lm()`. The best practices are:
+
+    1. Pluck a single element from your vector (in this case `usa`)
+    2. Write code that works correctly for that element
+    3. Transform the code into an expression to use with `map()`
+
+* When you are finished fitting the models, click Submit Answer.
+
+```{r lm-map2-setup}
+usa <- gap_dfs %>% pluck("United States")
+```
+
+```{r lm-map2, exercise = TRUE}
+
+```
+
+```{r lm-map2-solution}
+gap_dfs %>%
+  map(~ lm(lifeExp ~ year + gdpPercap, data = .x))
+```
+
+```{r lm-map2-check}
+"Great work. I recommend using this workflow every time you write a map expression."
+```
+
+### The End
+
+
+Congratulations on making it to the end. We will use the two lists of models that you created in the next tutorial, which teaches a new dimension of map.
+
+In that tutorial, you will learn how to iterate over two or more vectors at the same time.
+

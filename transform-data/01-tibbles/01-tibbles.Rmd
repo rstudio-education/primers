@@ -116,7 +116,7 @@ Whenever you do not have the tibble packages loaded, R will display the tibble a
 You can think of the difference between the data frame display and the tibble display like this:
 
 ```{r out.width = "75%"}
-knitr::include_graphics("images/tibble_display.png")
+knitr::include_graphics("www/images/tibble_display.png")
 ```
 
 ### as_tibble()

@@ -150,7 +150,7 @@ This is easy to do with one of dplyr's four join functions: `left_join()`, `righ
 The easiest way to learn how join functions work is visually. To this end, I've created some small toy data sets that we can visualize in their entirety: `band` and `instrument`, which look like this:
 
 ```{r out.width = "60%"}
-knitr::include_graphics("images/instrument.png")
+knitr::include_graphics("www/images/instrument.png")
 ```
 
 Notice that each data set has a column named `name`. Also, notice that each data set contains a row about John and a row about Paul. If you know a little about The Beatles, you'll recognize that these rows match: they describe the same people. On ther other hand, the rows named Mick and Keith do not match any rows in the other data set. Finally, notice that the matching rows do not appear in the same place in each data set. For example, John is in the second row of `band`, but the first row of `instrument`.
@@ -173,7 +173,7 @@ The `left_join()` function returns a copy of a data set that is augmented with i
 So here, Mick is retained in the result (with an `NA` in the appropriate spot) because Mick appears in the first data set. On the other hand, Kieth does not appear in the result because Keith does not appear in the first data set.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/left-join.png")
+knitr::include_graphics("www/images/left-join.png")
 ```
 
 To see what this result looks like in R, run the code below.
@@ -187,7 +187,7 @@ band %>% left_join(instrument, by = "name")
 `right_join()` does the opposite of `left_join()`; it retains every row from the second data set and only adds rows from the first data set that have a match in the second data set. Now Keith appears in the result because Keith appears in the second data set. On the other hand, Mick does not appear in the result because he does not appear in the second data set.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/right-join.png")
+knitr::include_graphics("www/images/right-join.png")
 ```
 
 You can think of `left_join()` as prioritizing the first data set, and `right_join()` as prioritizing the second. To see the results in R, run the code below.
@@ -201,7 +201,7 @@ band %>% right_join(instrument, by = "name")
 How can you swap the names in the code below to attain the results pictured in the right join diagram (don't worry about the order of the columns the result).
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/right-join.png")
+knitr::include_graphics("www/images/right-join.png")
 ```
 
 ```{r ex4, exercise = TRUE}
@@ -223,7 +223,7 @@ A `full_join()` is more inclusive than either a `right_join()` or a `left_join()
 This is the only join that does not lose _any_ information from the original data sets. Both Mick and Kieth appear in the results.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/full-join.png")
+knitr::include_graphics("www/images/full-join.png")
 ```
 
 To see what this result looks like in R, run the code below.
@@ -237,7 +237,7 @@ band %>% full_join(instrument, by = "name")
 In contrast, an `inner_join()` is the most exclusive join. It only retains rows that appear in _both_ data sets. As a result, only John and Paul appear in the result. Mick and Keith are left behind.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/inner-join.png")
+knitr::include_graphics("www/images/inner-join.png")
 ```
 
 To see what this result looks like in R, run the code below.
@@ -307,7 +307,7 @@ flights %>%
 The diagram below lists the column names for each data set. You can see that each data set shares one or more common columns with `flights`. Let's use one to answer a new query.
 
 ```{r out.width = "80%"}
-knitr::include_graphics("images/nycflights13.png")
+knitr::include_graphics("www/images/nycflights13.png")
 ```
 
 ### Which airports have the largest arrival delays?
@@ -353,7 +353,7 @@ instrument2
 We can still join `band` to `insturment2`, but we will need to tell R to match the `name` column to the `artist` column. To do this, you will need to know a little about how to name the elements of a vector.
 
 ```{r out.width = "52%"}
-knitr::include_graphics("images/names.png")
+knitr::include_graphics("www/images/names.png")
 ```
 
 ### Named vectors
@@ -385,7 +385,7 @@ band %>% left_join(instrument2, by = c("name" = "artist"))
 R will match the column in the first data set that has the name (here `"name"`) with the column in the second data set that has the element (here `"artist"`).
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/match-names.png")
+knitr::include_graphics("www/images/match-names.png")
 ```
 
 To see what the result looks like in R, run the code below.
@@ -469,7 +469,7 @@ Both follow the same syntax as the mutating joins.
 `semi_join()` returns every row in the first data set that has a match in the second data set. So, for example, here `semi_join()` returns the John and Paul rows of `band`. Notice that `semi_join()` has not added anything to those rows.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/semi-join.png")
+knitr::include_graphics("www/images/semi-join.png")
 ```
 
 To see what the results look like in R, run the code below.
@@ -483,7 +483,7 @@ band %>% semi_join(instrument, by = "name")
 `anti_join()` does just the opposite of `semi_join()`; it returns all of the rows in the first data set that _do not_ have a match in the second data set.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/anti-join.png")
+knitr::include_graphics("www/images/anti-join.png")
 ```
 
 To see what the results look like in R, run the code below.
@@ -502,7 +502,7 @@ instrument %>% distinct(plays)
 ```
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/distinct.png")
+knitr::include_graphics("www/images/distinct.png")
 ```
 
 If you do not supply a column, `distinct()` returns the _distinct_ rows of the data frame, removing duplicates.
@@ -659,7 +659,7 @@ Sometimes, however, you may wish to paste together data sets that already "fit t
 Consider the two data sets below. Notice that they contain different variables, but identical observations. For example, the first row in `beatles1` aligns with the first row of `beatles2`, the second row aligns with the second row, and so on. 
 
 ```{r out.width = "50%"}
-knitr::include_graphics("images/beatles.png")
+knitr::include_graphics("www/images/beatles.png")
 ```
 
 You wouldn't need to do a join to combine these data sets, you'd just need to paste them together. How could you do it?
@@ -669,7 +669,7 @@ You wouldn't need to do a join to combine these data sets, you'd just need to pa
 If your data sets contain the same observations, in the same order, you can combine them together with `bind_cols()`
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/bind-cols.png")
+knitr::include_graphics("www/images/bind-cols.png")
 ```
 
 Run the code below to see what the results look like in R.
@@ -685,7 +685,7 @@ Note that this is a dangerous way to store your data, because it is hard to ensu
 These data sets provide the opposite case, which is more common. Here each data set contains the same variables, but different observations. You could think of `band2` as a continuation of `band`.
 
 ```{r out.width = "50%"}
-knitr::include_graphics("images/band2.png")
+knitr::include_graphics("www/images/band2.png")
 ```
 
 ### bind_rows()
@@ -693,7 +693,7 @@ knitr::include_graphics("images/band2.png")
 Use `bind_rows()` to combine data sets that contain the same variables, but different observations.
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/bind-rows.png")
+knitr::include_graphics("www/images/bind-rows.png")
 ```
 
 Run the code below to see what the results look like in R.
@@ -707,7 +707,7 @@ band %>% bind_rows(band2)
 When conbining data with `bind_rows()`, it can be useful to add a new column that shows where each row came from. 
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/bind-rows-id.png")
+knitr::include_graphics("www/images/bind-rows-id.png")
 ```
 
 The easiest way to do this is to save the input data sets as a named list. Then add the argument `.id` to your `bind_rows()` call and set `.id` to a character string. `bind_rows()` will use the character string as the name of a new column that displays the name of the data set that each row comes from (as determined by the names in the list). 
@@ -740,7 +740,7 @@ Did you notice that `bands` and `bands2` contain a duplicate row? Each contains 
 When your data sets contain the same variables and overlapping sets of observations, you can use traditional set operations to return a reduced set of rows drawn from the data sets.
 
 ```{r out.width = "50%"}
-knitr::include_graphics("images/band2.png")
+knitr::include_graphics("www/images/band2.png")
 ```
 
 Imagine what each of the set operations below will return when applied to the data sets above. Then run the code to check if you are right.
@@ -761,7 +761,7 @@ band %>% union(band2)
 ```
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/union.png")
+knitr::include_graphics("www/images/union.png")
 ```
 
 ### intersect()
@@ -773,7 +773,7 @@ band %>% intersect(band2)
 ```
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/intersect.png")
+knitr::include_graphics("www/images/intersect.png")
 ```
 
 ### setdiff()
@@ -785,6 +785,6 @@ band %>% setdiff(band2)
 ```
 
 ```{r out.width = "90%"}
-knitr::include_graphics("images/setdiff.png")
+knitr::include_graphics("www/images/setdiff.png")
 ```
 
