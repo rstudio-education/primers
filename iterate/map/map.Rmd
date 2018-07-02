@@ -403,7 +403,7 @@ map_dbl(list1, log)
 ```
 
 ```{r map_dbl-check}
-"Good job. Now our results come back as a numeric vector. This is useful. For example, we could pass the results directly to round() without using another call to map(): list1 %>% map(log) %>% round()."
+"Good job. Now our results come back as a numeric vector. This is useful. For example, we could pass the results directly to round() without using another call to map(): list1 %>% map_dbl(log) %>% round()."
 ```
 
 ### Other types of output
