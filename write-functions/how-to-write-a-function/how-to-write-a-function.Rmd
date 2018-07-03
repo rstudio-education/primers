@@ -37,7 +37,7 @@ So what should you do if you want to do something new in R, something that doesn
 
 Write a function?
 
-No, silly. Write some code. But what should you do if you want to use that code _over and over again_, as if it were part of R?
+No, silly. Write some code. But what should you do if you want to use that code _over and over again_, as if it were a part of R?
 
 ### \t
 
@@ -50,9 +50,9 @@ This tutorial will show you how. Take the quiz below to begin.
 Suppose you need to run the following code on 20 different objects, `sqrt(sum(x^2))`.
 
 ```{r why-quiz, echo = FALSE}
-question("Why wouldn't you want to rewrite the code 20 times? (Check all that apply)",
-     answer("Typing the code 20 times means 20 chances to make a typo.", correct = TRUE),
-     answer("Retyping code takes time.", correct = TRUE),
+question("Why would you not want to rewrite the code 20 times? (Check all that apply)",
+     answer("Retyping code wastes time.", correct = TRUE),
+     answer("Typing the code 20 times creates 20 chances to make a typo.", correct = TRUE),
      answer("If you need to change the code later, you'll need to change it in 20 different places.", correct = TRUE),
      allow_retry = TRUE, 
      type = "multiple", 
@@ -70,44 +70,34 @@ To write a function in R, follow these four steps:
 3. Wrap the code in `function()`
 4. Assign the name(s) of your real objects as argument names to the function
 
-Consider them the "best practice" for writing functions in R: they assure that your function will work, which means you will spend more time using your functions and less time debugging them. 
+Consider these steps as the "best practice" for writing functions in R: they assure that your functions will work, which means that you will spend more time using your functions and less time debugging them. 
 
 Let's use the steps to create your first function.
 
-### Goal - The L~2~ norm
+### Goal - Grading
 
-Your function will calculate the "L~2~ norm" of a vector, which is the distance between the point defined by a vector and the origin in n-dimensional space. For example, the vector `c(1, 1, 1)` describes a point in three dimensional space that is 1.73 units away from the origin (i.e. `c(0, 0, 0)`).
+To make this real, put yourself in the shoes of a teacher: 
 
-```{r echo=FALSE, out.width = "100%"}
-# knitr::include_graphics("www/images/L2-norm.png")
-```
+You've given your students 10 homework assignments and announced that you will drop their lowest grade. The final grade will be the average grade of the remaining homeworks.
 
-### \t
+To make your life easier, you want to write an R function that will take a vector of 10 homework scores and return a final grade. 
 
-You can calculate the L~2~ norm of any vector of length n with the expression
-
-$$\| x \|_{2} = \sqrt{\sum_{i = 1}^{n} x_{i}^{2}}$$
-
-You might recognize the pythagorean theorem as an instance of the L~2~ norm applied to two dimensional space, $c = \sqrt{a^{2} + b^{2}}$.
-
-```{r echo=FALSE, out.width = "100%"}
-# knitr::include_graphics("www/images/L2-norm.png")
-```
+Ready to begin?
 
 ### \t
 
-Ready to begin? Remember our steps:
+Remember our steps:
 
 1. Create a real R object (or set of objects) to use with your function
 
-* Create an object named `x` that contains the vector `c(1, 1, 1)`. Then click Submit Answer.
+* Create an object named `x` that contains the vector `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)`. Then click Submit Answer. `x` will be the grades of our test student. 
 
 ```{r obj, exercise = TRUE}
 
 ```
 
 ```{r obj-solution}
-x <- c(1, 1, 1)
+x <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)
 ```
 
 ```{r obj-check}
@@ -118,14 +108,12 @@ strict_check("Now we can use x to develop and test our code")
 
 2. Write code that works with the real object(s)
 
-Recall how to compute the L~2~ norm ($\|x\|_{2}$) of a vector of length n:
+Recall the grading scheme: the final grade is the average grade of the homework scores after you drop the lowest score. Since there are many ways to calculate this, let's try to be specific and end up on the same page.
 
-$$\| x \|_{2} = \sqrt{\sum_{i = 1}^{n} x_{i}^{2}}$$
-
-* Write a piece of code that squares the values in `x`, takes their sum, and then computes the square root of the result. Click Submit Answer to check that your code works.
+* Use `sum()`, `min()`, `/`, `9` and parentheses to calculate the final grade for student `x`. Click Submit Answer to check that your code works.
 
 ```{r make-x, echo = FALSE}
-x <- c(1, 1, 1)
+x <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)
 ```
 
 ```{r norm, exercise = TRUE, setup = "make-x"}
@@ -133,11 +121,11 @@ x
 ```
 
 ```{r norm-hint}
-"You've already seen the correct code somewhere in this tutorial."
+"Your code should return 100."
 ```
 
 ```{r norm-solution}
-sqrt(sum(x^{2}))
+(sum(x) - min(x)) / 9
 ```
 
 ```{r norm-check}
@@ -180,55 +168,55 @@ foo()
 
 Let's save your code as a function.
 
-* Save the code below as a function named `l2`. Then click Submit Answer.
+* Save the code below as a function named `grade`. Then click Submit Answer.
 
-```{r l2, exercise = TRUE}
-sqrt(sum(x^2))
+```{r grade, exercise = TRUE}
+(sum(x) - min(x)) / 9
 ```
 
-```{r l2-hint}
+```{r grade-hint}
 "Use the function() {} function."
 ```
 
-```{r l2-solution}
-l2 <- function() { 
-  sqrt(sum(x^2))
+```{r grade-solution}
+grade <- function() { 
+  (sum(x) - min(x)) / 9
 }
 ```
 
-```{r l2-check}
-strict_check("Now that you've saved l2 as a function, you can call it whenever you like, but there is still one more thing to do...")
+```{r grade-check}
+strict_check("Now that you've saved grade as a function, you can call it whenever you like, but there is still one more thing to do...")
 ```
 
 ### \t
 
 4. Assign the name(s) of your real objects as argument names to the function
 
-At the moment, you `l2` function is reusable but not _generalizable_. Each time you call l2 it computes the L~2~ norm of the vector `x` that contains `c(1, 1, 1)`.
+At the moment, you `grade()` function is reusable but not _generalizable_. Each time you call `grade()` it computes the final grade of the vector `x` that contains `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)`.
 
 ```{r echo = FALSE}
-x <- c(1, 1, 1)
-l2 <- function() { 
-  sqrt(sum(x^2))
+x <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)
+grade <- function() { 
+  (sum(x) - min(x)) / 9
 }
 ```
 
 ```{r}
-l2()
-l2()
+grade()
+grade()
 ```
 
 ### \t
 
-We'd like to use `l2` with new vectors that have new values.
+We'd like to use `grade()` with new vectors that have new values.
 
 You can make any function in R generalizable by telling R that some objects in the function's code are _arguments_. An argument is an object that a user can assign a value to when he or she calls the function. The function will use the user's value for the object when it executes its code.
 
-For example, we'd like to tell R that `x` in `l2` is an argument. R shouldn't use a pre-defined value for `x`; it should let the user supply a new value for `x` each time he or she runs the function.
+For example, we'd like to tell R that `x` in `grade()` is an argument. R shouldn't use a pre-defined value for `x`; it should let the user supply a new value for `x` each time he or she runs the function.
 
 ```{r eval = FALSE}
-l2 <- function() { 
-  sqrt(sum(x^2))
+grade <- function() { 
+  (sum(x) - min(x)) / 9
 }
 ```
 
@@ -236,7 +224,7 @@ l2 <- function() {
 
 How do you tell R that an object is an argument? 
 
-You list the name of the object in the parentheses that follow `function()` in the function definition. For example, we could make `a` and `b` arguments of our `foo` function.
+You list the name of the object in the parentheses that follow `function()` in the function definition. For example, you could make `a` and `b` arguments of my `foo` function.
 
 ```{r}
 foo <- function(a, b) {
@@ -248,7 +236,7 @@ If you make more than one argument, separate their names with a comma.
 
 ### \t
 
-Now we can define a new value for `a` and `b` each time we call `foo`. 
+Now I can define a new value for `a` and `b` each time I call `foo`. 
 
 ```{r}
 foo(a = 1, b = 1)
@@ -257,7 +245,7 @@ foo(a = 100, b = 200)
 
 ### \t
 
-`foo` will always use our values of `a` and `b` to run the function---even if `a` and `b` are defined elsewhere. 
+`foo` will always use my values of `a` and `b` to run the function---even if `a` and `b` are defined elsewhere. 
 
 ```{r}
 a <- 5
@@ -267,7 +255,7 @@ foo(a = 2, b = 2)
 
 ### \t
 
-Also, our values will only be used for that current run of the function. They won't overwrite the other definitions of `a` and `b`, and `foo` won't remember them the next time we call `foo`.
+Also, `foo()` will only use my values for that current run of the function. `foo()` won't overwrite the other definitions of `a` and `b`, and `foo` won't remember my values of `a` and `b` the next time I call `foo`.
 
 ```{r}
 a
@@ -277,48 +265,48 @@ foo()
 
 ### \t
 
-Interesting, huh? Now apply what you've learned to `l2`.
+Interesting, huh? Now apply what you've learned to `grade()`.
 
-* Change the code below to define `x` as an argument of `l2`. Then click Submit Answer.
+* Change the code below to define `x` as an argument of `grade()`. Then click Submit Answer.
 
 ```{r x, exercise = TRUE}
-l2 <- function() { 
-  sqrt(sum(x^2))
+grade <- function() { 
+  (sum(x) - min(x)) / 9
 }
 ```
 
 ```{r x-solution}
-l2 <- function(x) { 
-  sqrt(sum(x^2))
+grade <- function(x) { 
+  (sum(x) - min(x)) / 9
 }
 ```
 
 ```{r x-check}
-strict_check("If you use the best practice workflow, your argument names will always be the names of the real R objects that you create in Step 1. Nice and simple.")
+strict_check('If you use the "best practice" workflow, your argument names will always be the names of the real R objects that you create in Step 1. Nice and simple.')
 ```
 
 ### \t 
 
-Good job! You can now have a finished `l2` function that you can use to calculate the Euclidean distance of _any_ vector. Try it out.
+Good job! You can now have a finished `grade()` function that you can use to calculate the final grade of _any_ vector (I mean, student). Try it out.
 
-* Calculate the Euclidean distance (L~2~ norm) of the vector `c(1, 2, 3, 4, 5)`. Then click Submit Answer.
+* Calculate the final grade of the vector `c(100, 90, 90, 90, 90, 90, 90, 90, 90, 80)`. Then click Submit Answer.
 
-```{r make-l2}
-l2 <- function(x) { 
-  sqrt(sum(x^2))
+```{r make-grade}
+grade <- function(x) { 
+  (sum(x) - min(x)) / 9
 }
 ```
 
-```{r function, exercise = TRUE, exercise.setup = "make-l2"}
+```{r function, exercise = TRUE, exercise.setup = "make-grade"}
 
 ```
 
 ```{r function-solution}
-l2(x = c(1, 2, 3, 4, 5)
+grade(x = c(100, 90, 90, 90, 90, 90, 90, 90, 90, 80))
 ```
 
 ```{r function-check}
-strict_check("We'll learn more about arguments in the next section. Let's recap the function writing workflow.")
+strict_check("We'll learn more about arguments in the next tutorial. Let's recap the function writing workflow.")
 ```
 
 ### Quiz
@@ -349,13 +337,13 @@ Use the four step workflow whenever you need to write a function:
 
 If you've been using the tidyverse for a while, there's a good chance that you've already made things that resemble functions. 
 
-Here are two examples that may be familiar. If you have either of these, it will be easy to convert your code to a function.
+Here are two examples that may be familiar. In each case, you can easily convert your code into a function.
 
 ### Purrr expressions
 
 In the Iteration primer, you learned that purrr's map functions can take an "expression" to apply to each element of a vector. An _expression_ is a piece of code that is preceded by a `~` and includes `.x`s.
 
-For example, `map()` will apply this expression iteratively to each element of vec. On each iteration, `map()` will assign the _i_th element of vec to `.x` and run the expression.
+For example, this call to `map()` will apply the expression ``~.x^2` to each element of `vec`. On each iteration, `map()` will assign the _i_th element of vec to `.x` and run the expression.
 
 ```{r message=FALSE}
 library(tidyverse)
@@ -378,7 +366,7 @@ map(vec, sq)
 
 ### Functions and pipes
 
-It is also easy to treat pipes as functions (since you can paste them behind an input value). For example, this pipe would compute the L~2~ norm of any vector you place it behind.
+It is also easy to treat pipes as functions (since you can paste a pipe behind an input value). For example, this pipe would compute the L~2~ norm of any vector you place it behind.
 
 ```{r}
 c(1, 1, 1) %>% 
@@ -406,5 +394,117 @@ l2_pipe <- . %>%
 
 l2_pipe(c(1, 1, 1))
 ```
+
+## Practice
+
+Congratulations on finishing the tutorial. Before you go, complete the following exercises to cement your skills!
+
+### Exercise 1
+
+```{r e1, echo = FALSE}
+
+question("What is the first step of writing a function?",
+         answer("Choose a name, then type <- function(){", message = "You shouldn't type function() until you have code that works with a real test case."),
+         answer("Create a real R object (or set of objects)", correct = TRUE, message = "You can then use the object to test your code."),
+         answer("Assign argument names to your function"),
+         answer("Write a help page that describes how your function will work."),
+         allow_retry = TRUE)
+```
+
+### Exercise 2
+
+Let's write a function that grades by counting a student's highest score twice and then taking an average of the 11 scores.
+
+```{r e2, echo = FALSE}
+question("Do you have a test vector that you can use?",
+         answer("Test vector? We don't need no stinking test vector.", 
+                message = "Yes you do."),
+         answer("Yes, we can reuse the vector named x."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE)
+```
+
+### Exercise 3
+
+* Write a piece of code that uses `max()` to double count the highest score in `x` and then takes the average of the 11 results. Click Submit Answer to check that your code works.
+
+```{r e3, exercise = TRUE, exercise.setup = "make-x"}
+x
+```
+
+```{r e3-hint}
+"Your code should retrun the answer 99.09091."
+```
+
+```{r e3-solution}
+(sum(x) + max(x)) / 11
+```
+
+```{r e3-check}
+strict_check("That student will be pleased!")
+```
+
+### Exercise 4
+
+* Wrap your code in `function()` and save it to the name `grade2`.
+* Then define the argument(s) for the function.
+* Then click Submit Answer.
+
+```{r e4, exercise = TRUE}
+(sum(x) + max(x)) / 11
+```
+
+```{r e4-hint}
+"When you use this workflow, the names of the argument(s) are always the names of the object(s) that you created in step 1."
+```
+
+```{r e4-solution}
+grade2 <- function(x) {
+  (sum(x) + max(x)) / 11
+}
+```
+
+```{r e4-check}
+strict_check("Your skills are almost complete.")
+```
+
+### Exercise 5
+
+It's time to put it all together. 
+
+* Use the code block below to develop a function named `l2` that calculates the Euclidean distance, or L~2~ norm ($\|x||_{2}$), of a vector of numbers named `x`. The L~2~ norm is the square root of the sum of the squared values in the vector, i.e.
+
+$$\| x \|_{2} = \sqrt{\sum_{i = 1}^{n} x_{i}^{2}}$$
+
+* When you are finished, reduce your code to just the definition of your function. Then click Submit Answer.
+
+```{r e5, exercise = TRUE}
+
+```
+
+```{r e5-hint-1}
+"You've already seen the code for the l2 function earlier in this tutorial (I do not mean the pipe example)."
+```
+
+```{r e5-hint-2}
+"Consider using sqrt(), sum(), and ^2. Your code will work with vectors of any length."
+```
+
+```{r e5-solution}
+l2 <- function(x) {
+  sqrt(sum(x^2))
+}
+```
+
+```{r e5-check}
+strict_check()
+```
+
+
+
+
+
+
+
 
 
