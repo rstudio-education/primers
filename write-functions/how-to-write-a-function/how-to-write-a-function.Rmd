@@ -1,0 +1,410 @@
+---
+title: "How to write a function"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: false
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## Functions
+
+### \t
+
+Functions are the verbs of R. When something happens in R, it happens by running a function. For example,
+
+* To take a log, you run a function named log: `log(2.71)`.
+* To fit a linear model, you run a function named lm: `lm(mpg ~ wt, data = mtcars)`.
+* To add two numbers, you run a function named "+": `1 + 2`. 
+
+This last one is a shortcut for the function `'+'(1, 2)`. Everything that does something in R is a function, even if it doesn't seem like it.
+
+### \t
+
+So what should you do if you want to do something new in R, something that doesn't yet have a function?
+
+### \t
+
+Write a function?
+
+No, silly. Write some code. But what should you do if you want to use that code _over and over again_, as if it were part of R?
+
+### \t
+
+Write a function!
+
+This tutorial will show you how. Take the quiz below to begin.
+
+### Quiz
+
+Suppose you need to run the following code on 20 different objects, `sqrt(sum(x^2))`.
+
+```{r why-quiz, echo = FALSE}
+question("Why wouldn't you want to rewrite the code 20 times? (Check all that apply)",
+     answer("Typing the code 20 times means 20 chances to make a typo.", correct = TRUE),
+     answer("Retyping code takes time.", correct = TRUE),
+     answer("If you need to change the code later, you'll need to change it in 20 different places.", correct = TRUE),
+     allow_retry = TRUE, 
+     type = "multiple", 
+     incorrect = "Did you check ALL that applied?",
+     correct = "Good job! You can avoid these outcomes by turning your code into a function. A good rule is to turn a piece of code into a function whenever you find yourself re-using the code more than three times.")
+```
+
+
+## Best practices
+
+To write a function in R, follow these four steps:
+
+1. Create a real R object (or set of objects) to use with your function
+2. Write code that works with the real object(s)
+3. Wrap the code in `function()`
+4. Assign the name(s) of your real objects as argument names to the function
+
+Consider them the "best practice" for writing functions in R: they assure that your function will work, which means you will spend more time using your functions and less time debugging them. 
+
+Let's use the steps to create your first function.
+
+### Goal - The L~2~ norm
+
+Your function will calculate the "L~2~ norm" of a vector, which is the distance between the point defined by a vector and the origin in n-dimensional space. For example, the vector `c(1, 1, 1)` describes a point in three dimensional space that is 1.73 units away from the origin (i.e. `c(0, 0, 0)`).
+
+```{r echo=FALSE, out.width = "100%"}
+# knitr::include_graphics("www/images/L2-norm.png")
+```
+
+### \t
+
+You can calculate the L~2~ norm of any vector of length n with the expression
+
+$$\| x \|_{2} = \sqrt{\sum_{i = 1}^{n} x_{i}^{2}}$$
+
+You might recognize the pythagorean theorem as an instance of the L~2~ norm applied to two dimensional space, $c = \sqrt{a^{2} + b^{2}}$.
+
+```{r echo=FALSE, out.width = "100%"}
+# knitr::include_graphics("www/images/L2-norm.png")
+```
+
+### \t
+
+Ready to begin? Remember our steps:
+
+1. Create a real R object (or set of objects) to use with your function
+
+* Create an object named `x` that contains the vector `c(1, 1, 1)`. Then click Submit Answer.
+
+```{r obj, exercise = TRUE}
+
+```
+
+```{r obj-solution}
+x <- c(1, 1, 1)
+```
+
+```{r obj-check}
+strict_check("Now we can use x to develop and test our code")
+```
+
+### \t
+
+2. Write code that works with the real object(s)
+
+Recall how to compute the L~2~ norm ($\|x\|_{2}$) of a vector of length n:
+
+$$\| x \|_{2} = \sqrt{\sum_{i = 1}^{n} x_{i}^{2}}$$
+
+* Write a piece of code that squares the values in `x`, takes their sum, and then computes the square root of the result. Click Submit Answer to check that your code works.
+
+```{r make-x, echo = FALSE}
+x <- c(1, 1, 1)
+```
+
+```{r norm, exercise = TRUE, setup = "make-x"}
+x
+```
+
+```{r norm-hint}
+"You've already seen the correct code somewhere in this tutorial."
+```
+
+```{r norm-solution}
+sqrt(sum(x^{2}))
+```
+
+```{r norm-check}
+strict_check("This is the crucial step in writing a function. It is important to get your code working in real life with a real object before you try to abstract the code into a reusable function.")
+```
+
+### \t
+
+3. Wrap the code in `function()`
+
+You can use the `function()` function to wrap any piece of code into a function. To do this, place an opening bracket `{` after `function()`, then place your code, then place a closing bracket `}`, e.g.
+
+```{r}
+foo <- function() {
+ a <- 1
+ b <- 2
+ a + b
+}
+```
+
+You can place as many lines of code between the braces as you like. `function()` will wrap everything that appears between the braces into an R function. If you'd like to save the function, you'll need to assign it in the usual way to an R object that you can call later.
+
+### \t
+
+Once you've saved a function, you can inspect its contents by calling the name of the function. This is the function that R saved in the object named `foo`.
+
+```{r}
+foo
+```
+
+### \t
+
+You can run the function by calling the name of the funciton followed by an open and closed parenthesis. The parentheses act as a trigger that causes R to run the code contained in the function.
+
+```{r}
+foo()
+```
+
+### \t
+
+Let's save your code as a function.
+
+* Save the code below as a function named `l2`. Then click Submit Answer.
+
+```{r l2, exercise = TRUE}
+sqrt(sum(x^2))
+```
+
+```{r l2-hint}
+"Use the function() {} function."
+```
+
+```{r l2-solution}
+l2 <- function() { 
+  sqrt(sum(x^2))
+}
+```
+
+```{r l2-check}
+strict_check("Now that you've saved l2 as a function, you can call it whenever you like, but there is still one more thing to do...")
+```
+
+### \t
+
+4. Assign the name(s) of your real objects as argument names to the function
+
+At the moment, you `l2` function is reusable but not _generalizable_. Each time you call l2 it computes the L~2~ norm of the vector `x` that contains `c(1, 1, 1)`.
+
+```{r echo = FALSE}
+x <- c(1, 1, 1)
+l2 <- function() { 
+  sqrt(sum(x^2))
+}
+```
+
+```{r}
+l2()
+l2()
+```
+
+### \t
+
+We'd like to use `l2` with new vectors that have new values.
+
+You can make any function in R generalizable by telling R that some objects in the function's code are _arguments_. An argument is an object that a user can assign a value to when he or she calls the function. The function will use the user's value for the object when it executes its code.
+
+For example, we'd like to tell R that `x` in `l2` is an argument. R shouldn't use a pre-defined value for `x`; it should let the user supply a new value for `x` each time he or she runs the function.
+
+```{r eval = FALSE}
+l2 <- function() { 
+  sqrt(sum(x^2))
+}
+```
+
+### \t
+
+How do you tell R that an object is an argument? 
+
+You list the name of the object in the parentheses that follow `function()` in the function definition. For example, we could make `a` and `b` arguments of our `foo` function.
+
+```{r}
+foo <- function(a, b) {
+ a + b
+}
+```
+
+If you make more than one argument, separate their names with a comma.
+
+### \t
+
+Now we can define a new value for `a` and `b` each time we call `foo`. 
+
+```{r}
+foo(a = 1, b = 1)
+foo(a = 100, b = 200)
+```
+
+### \t
+
+`foo` will always use our values of `a` and `b` to run the function---even if `a` and `b` are defined elsewhere. 
+
+```{r}
+a <- 5
+b <- 6
+foo(a = 2, b = 2)
+```
+
+### \t
+
+Also, our values will only be used for that current run of the function. They won't overwrite the other definitions of `a` and `b`, and `foo` won't remember them the next time we call `foo`.
+
+```{r}
+a
+b
+foo()
+```
+
+### \t
+
+Interesting, huh? Now apply what you've learned to `l2`.
+
+* Change the code below to define `x` as an argument of `l2`. Then click Submit Answer.
+
+```{r x, exercise = TRUE}
+l2 <- function() { 
+  sqrt(sum(x^2))
+}
+```
+
+```{r x-solution}
+l2 <- function(x) { 
+  sqrt(sum(x^2))
+}
+```
+
+```{r x-check}
+strict_check("If you use the best practice workflow, your argument names will always be the names of the real R objects that you create in Step 1. Nice and simple.")
+```
+
+### \t 
+
+Good job! You can now have a finished `l2` function that you can use to calculate the Euclidean distance of _any_ vector. Try it out.
+
+* Calculate the Euclidean distance (L~2~ norm) of the vector `c(1, 2, 3, 4, 5)`. Then click Submit Answer.
+
+```{r make-l2}
+l2 <- function(x) { 
+  sqrt(sum(x^2))
+}
+```
+
+```{r function, exercise = TRUE, exercise.setup = "make-l2"}
+
+```
+
+```{r function-solution}
+l2(x = c(1, 2, 3, 4, 5)
+```
+
+```{r function-check}
+strict_check("We'll learn more about arguments in the next section. Let's recap the function writing workflow.")
+```
+
+### Quiz
+
+```{r recap-quiz, echo = FALSE}
+question("Which is not a step of the best practice workflow for writing functions?",
+         allow_rety = TRUE, random_answer_order = TRUE,
+         answer("Create a real R object (or set of objects) to use with your function"),
+         answer("Write code that works with the real object(s)"),
+         answer("Wrap the code in `function()`"),
+         answer("Assign the name(s) of your real objects as argument names to the function"),
+         answer("Predict how the function should be written and try it out.", correct = "This looks like a tempting way to save time, but more often than not it will lead to lengthy debugging sessions.")
+)
+```
+
+### Recap
+
+Use the four step workflow whenever you need to write a function:
+
+1. Create a real R object (or set of objects) to use with your function
+2. Write code that works with the real object(s)
+3. Wrap the code in `function()`
+4. Assign the name(s) of your real objects as argument names to the function
+
+## Function look-alikes
+
+### \t
+
+If you've been using the tidyverse for a while, there's a good chance that you've already made things that resemble functions. 
+
+Here are two examples that may be familiar. If you have either of these, it will be easy to convert your code to a function.
+
+### Purrr expressions
+
+In the Iteration primer, you learned that purrr's map functions can take an "expression" to apply to each element of a vector. An _expression_ is a piece of code that is preceded by a `~` and includes `.x`s.
+
+For example, `map()` will apply this expression iteratively to each element of vec. On each iteration, `map()` will assign the _i_th element of vec to `.x` and run the expression.
+
+```{r message=FALSE}
+library(tidyverse)
+
+vec <- c(1, 2, 3)
+map(vec, ~.x^2)
+```
+
+### \t
+
+In other words, purrr's map expressions work exactly like functions. To transform an expression to a function, remove the `~`, wrap the code in `function()` and list `.x` as an argument.
+
+```{r}
+sq <- function(.x) {
+  .x^2
+}
+
+map(vec, sq)
+```
+
+### Functions and pipes
+
+It is also easy to treat pipes as functions (since you can paste them behind an input value). For example, this pipe would compute the L~2~ norm of any vector you place it behind.
+
+```{r}
+c(1, 1, 1) %>% 
+  sq() %>% 
+  sum() %>% 
+  sqrt()
+
+c(1, 2, 3, 4, 5) %>% 
+  sq() %>% 
+  sum() %>% 
+  sqrt()
+```
+
+### \t 
+
+It is a good idea to turn a pipe into a function when you find yourself using it often. You don't need to rewrite the pipe to do this. Pipes come with a handy shortcut for creating single argument functions.
+
+To turn a pipe into a function, replace its initial object with a `.`, and then save the pipe to an object. R will treat the object as a function that passes its argument to the beginning of the pipe.
+
+```{r}
+l2_pipe <- . %>% 
+  sq() %>% 
+  sum() %>% 
+  sqrt()
+
+l2_pipe(c(1, 1, 1))
+```
+
+
