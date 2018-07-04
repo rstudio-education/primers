@@ -5,7 +5,7 @@ tutorial:
 output: 
   learnr::tutorial:
     progressive: true
-    allow_skip: false
+    allow_skip: true
 runtime: shiny_prerendered
 ---
 
@@ -17,27 +17,19 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
-## Functions
+## When to write a function
 
 ### \t
 
-Functions are the verbs of R. When something happens in R, it happens by running a function. For example,
+R comes with thousands of functions, and more are written everyday and published in R packages. If you want to something in R, there is a good chance that a function already exists somewhere that does it.
 
-* To take a log, you run a function named log: `log(2.71)`.
-* To fit a linear model, you run a function named lm: `lm(mpg ~ wt, data = mtcars)`.
-* To add two numbers, you run a function named "+": `1 + 2`. 
-
-This last one is a shortcut for the function `'+'(1, 2)`. Everything that does something in R is a function, even if it doesn't seem like it.
-
-### \t
-
-So what should you do if you want to do something new in R, something that doesn't yet have a function?
+But what if you want to do something new in R, something that doesn't yet have a function? What should you do?
 
 ### \t
 
 Write a function?
 
-No, silly. Write some code. But what should you do if you want to use that code _over and over again_, as if it were a part of R?
+No, silly. Write some code. But what if you want to use that code _over and over again_, as if it were a part of R? Then what should you do?
 
 ### \t
 
@@ -51,7 +43,7 @@ Suppose you need to run the following code on 20 different objects, `sqrt(sum(x^
 
 ```{r why-quiz, echo = FALSE}
 question("Why would you not want to rewrite the code 20 times? (Check all that apply)",
-     answer("Retyping code wastes time.", correct = TRUE),
+     answer("Retyping code takes time.", correct = TRUE),
      answer("Typing the code 20 times creates 20 chances to make a typo.", correct = TRUE),
      answer("If you need to change the code later, you'll need to change it in 20 different places.", correct = TRUE),
      allow_retry = TRUE, 
@@ -61,24 +53,28 @@ question("Why would you not want to rewrite the code 20 times? (Check all that a
 ```
 
 
-## Best practices
+## Workflow
 
-To write a function in R, follow these four steps:
+### \t
+
+You can follow the same four steps to write any function in R. The steps easy to follow, and they ensure that your functions will work, which frees you to spend more time using your functions and less time debugging them.
+
+### \t
+
+The steps are:
 
 1. Create a real R object (or set of objects) to use with your function
 2. Write code that works with the real object(s)
 3. Wrap the code in `function()`
-4. Assign the name(s) of your real objects as argument names to the function
+4. Assign the names of your real objects as argument names to the function
 
-Consider these steps as the "best practice" for writing functions in R: they assure that your functions will work, which means that you will spend more time using your functions and less time debugging them. 
-
-Let's use the steps to create your first function.
+Consider these steps as the "best practice" for writing functions in R. Let's use them to create your first function.
 
 ### Goal - Grading
 
 To make this real, put yourself in the shoes of a teacher: 
 
-You've given your students 10 homework assignments and announced that you will drop their lowest grade. The final grade will be the average grade of the remaining homeworks.
+You've given your students 10 homework assignments and announced that you will drop their lowest homework score. The final grade will be the average score of the remaining homeworks.
 
 To make your life easier, you want to write an R function that will take a vector of 10 homework scores and return a final grade. 
 
@@ -90,7 +86,7 @@ Remember our steps:
 
 1. Create a real R object (or set of objects) to use with your function
 
-* Create an object named `x` that contains the vector `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)`. Then click Submit Answer. `x` will be the grades of our test student. 
+* Create an object named `x` that contains the vector `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)` (hint: copy and paste can save you a lot of typing here). Then click Submit Answer. `x` will be the grades of your test student. 
 
 ```{r obj, exercise = TRUE}
 
@@ -101,14 +97,14 @@ x <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)
 ```
 
 ```{r obj-check}
-strict_check("Now we can use x to develop and test our code")
+strict_check("Now you can use x to develop and test your code")
 ```
 
 ### \t
 
 2. Write code that works with the real object(s)
 
-Recall the grading scheme: the final grade is the average grade of the homework scores after you drop the lowest score. Since there are many ways to calculate this, let's try to be specific and end up on the same page.
+Recall the grading scheme: the final grade is the average homework score after you drop the lowest score. Since there are many ways to calculate this, let's be specific and end up on the same page.
 
 * Use `sum()`, `min()`, `/`, `9` and parentheses to calculate the final grade for student `x`. Click Submit Answer to check that your code works.
 
@@ -146,25 +142,18 @@ foo <- function() {
 }
 ```
 
-You can place as many lines of code between the braces as you like. `function()` will wrap everything that appears between the braces into an R function. If you'd like to save the function, you'll need to assign it in the usual way to an R object that you can call later.
+You can place as many lines of code between the braces as you like. `function()` returns an R function that uses everything between the braces in its body. If you'd like to save the function, you'll need to assign it in the usual way to an R object that you can call later.
 
 ### \t
 
-Once you've saved a function, you can inspect its contents by calling the name of the function. This is the function that R saved in the object named `foo`.
+Once you save a function, you can run it and inspect its contents in the usual ways.
 
 ```{r}
 foo
-```
-
-### \t
-
-You can run the function by calling the name of the funciton followed by an open and closed parenthesis. The parentheses act as a trigger that causes R to run the code contained in the function.
-
-```{r}
 foo()
 ```
 
-### \t
+### Your turn
 
 Let's save your code as a function.
 
@@ -190,9 +179,9 @@ strict_check("Now that you've saved grade as a function, you can call it wheneve
 
 ### \t
 
-4. Assign the name(s) of your real objects as argument names to the function
+4. Assign the names of your real objects as argument names to the function
 
-At the moment, you `grade()` function is reusable but not _generalizable_. Each time you call `grade()` it computes the final grade of the vector `x` that contains `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)`.
+At the moment, your `grade()` function is reusable but not _generalizable_. Each time you call `grade()` it computes the final grade of the vector `x` that contains `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)`.
 
 ```{r echo = FALSE}
 x <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)
@@ -206,11 +195,11 @@ grade()
 grade()
 ```
 
-### \t
+### Arguments
 
 We'd like to use `grade()` with new vectors that have new values.
 
-You can make any function in R generalizable by telling R that some objects in the function's code are _arguments_. An argument is an object that a user can assign a value to when he or she calls the function. The function will use the user's value for the object when it executes its code.
+You can make a function generalizable by turning some of the objects in its code body into _formal arguments_. A formal argument is an object that a user can assign a value to when he or she calls the function. The function will use the user's value for the object when it executes its code body.
 
 For example, we'd like to tell R that `x` in `grade()` is an argument. R shouldn't use a pre-defined value for `x`; it should let the user supply a new value for `x` each time he or she runs the function.
 
@@ -222,19 +211,15 @@ grade <- function() {
 
 ### \t
 
-How do you tell R that an object is an argument? 
+How do you tell R that an object is a formal argument? 
 
-You list the name of the object in the parentheses that follow `function()` in the function definition. For example, you could make `a` and `b` arguments of my `foo` function.
+You list the name of the object in the parentheses that follow `function()` in the function definition. If you make more than one argument, separate their names with a comma. For example, you could make `a` and `b` arguments of my `foo` function.
 
 ```{r}
 foo <- function(a, b) {
  a + b
 }
 ```
-
-If you make more than one argument, separate their names with a comma.
-
-### \t
 
 Now I can define a new value for `a` and `b` each time I call `foo`. 
 
@@ -243,31 +228,23 @@ foo(a = 1, b = 1)
 foo(a = 100, b = 200)
 ```
 
-### \t
+### Default values
 
-`foo` will always use my values of `a` and `b` to run the function---even if `a` and `b` are defined elsewhere. 
+To give an argument a default value, set it equal to a value when you define the function. For example, the code below will set the default value of `b` in `foo` to one.
 
 ```{r}
-a <- 5
-b <- 6
+foo <- function(a, b = 1) {
+ a + b
+}
+foo(a = 2)
 foo(a = 2, b = 2)
-```
-
-### \t
-
-Also, `foo()` will only use my values for that current run of the function. `foo()` won't overwrite the other definitions of `a` and `b`, and `foo` won't remember my values of `a` and `b` the next time I call `foo`.
-
-```{r}
-a
-b
-foo()
 ```
 
 ### \t
 
 Interesting, huh? Now apply what you've learned to `grade()`.
 
-* Change the code below to define `x` as an argument of `grade()`. Then click Submit Answer.
+* Change the code below to list `x` as a formal argument of `grade()`. Then click Submit Answer.
 
 ```{r x, exercise = TRUE}
 grade <- function() { 
@@ -306,7 +283,7 @@ grade(x = c(100, 90, 90, 90, 90, 90, 90, 90, 90, 80))
 ```
 
 ```{r function-check}
-strict_check("We'll learn more about arguments in the next tutorial. Let's recap the function writing workflow.")
+strict_check("Let's recap the function writing workflow.")
 ```
 
 ### Quiz
@@ -317,8 +294,8 @@ question("Which is not a step of the best practice workflow for writing function
          answer("Create a real R object (or set of objects) to use with your function"),
          answer("Write code that works with the real object(s)"),
          answer("Wrap the code in `function()`"),
-         answer("Assign the name(s) of your real objects as argument names to the function"),
-         answer("Predict how the function should be written and try it out.", correct = "This looks like a tempting way to save time, but more often than not it will lead to lengthy debugging sessions.")
+         answer("Assign the names of your real objects as argument names to the function"),
+         answer("Predict how the function should be written and try it out.", correct = "This looks like a tempting way to save time, but it will lead to long debugging sessions more often than you think.")
 )
 ```
 
@@ -329,21 +306,21 @@ Use the four step workflow whenever you need to write a function:
 1. Create a real R object (or set of objects) to use with your function
 2. Write code that works with the real object(s)
 3. Wrap the code in `function()`
-4. Assign the name(s) of your real objects as argument names to the function
+4. Assign the names of your real objects as argument names to the function
 
 ## Function look-alikes
 
 ### \t
 
-If you've been using the tidyverse for a while, there's a good chance that you've already made things that resemble functions. 
+As an R user, you may have already made things that resemble functions. 
 
 Here are two examples that may be familiar. In each case, you can easily convert your code into a function.
 
 ### Purrr expressions
 
-In the Iteration primer, you learned that purrr's map functions can take an "expression" to apply to each element of a vector. An _expression_ is a piece of code that is preceded by a `~` and includes `.x`s.
+In the Iteration primer, you learned that purrr's map functions can take "expressions." _Expressions_ are a pieces of code that are preceded by `~` and include `.x`s. Map will apply expressions iteratively to each element of a vector.
 
-For example, this call to `map()` will apply the expression ``~.x^2` to each element of `vec`. On each iteration, `map()` will assign the _i_th element of vec to `.x` and run the expression.
+For example, this call to `map()` will apply the expression `~.x^2` to each element of `vec`. On each iteration, `map()` will assign the _i_th element of vec to `.x` and run the expression.
 
 ```{r message=FALSE}
 library(tidyverse)
@@ -354,7 +331,7 @@ map(vec, ~.x^2)
 
 ### \t
 
-In other words, purrr's map expressions work exactly like functions. To transform an expression to a function, remove the `~`, wrap the code in `function()` and list `.x` as an argument.
+In other words, purrr's map expressions work like functions that have `.x` as a formal argument. To transform an expression to a function, remove the `~`, wrap the code in `function()` and list `.x` as a formal argument.
 
 ```{r}
 sq <- function(.x) {
@@ -366,33 +343,40 @@ map(vec, sq)
 
 ### Functions and pipes
 
-It is also easy to treat pipes as functions (since you can paste a pipe behind an input value). For example, this pipe would compute the L~2~ norm of any vector you place it behind.
+It is also easy to use pipes like simple functions because you can copy and paste a pipe behind different objects. For example, this pipe would compute sum of squares of any vector that you place it behind.
 
 ```{r}
 c(1, 1, 1) %>% 
   sq() %>% 
-  sum() %>% 
-  sqrt()
+  sum()
 
 c(1, 2, 3, 4, 5) %>% 
   sq() %>% 
-  sum() %>% 
-  sqrt()
+  sum()
 ```
 
 ### \t 
 
-It is a good idea to turn a pipe into a function when you find yourself using it often. You don't need to rewrite the pipe to do this. Pipes come with a handy shortcut for creating single argument functions.
+It is a good idea to turn a pipe into a function when you find yourself using it often. You don't need to rewrite the pipe to do this. Pipes come with a handy shortcut for turning them into functions.
 
 To turn a pipe into a function, replace its initial object with a `.`, and then save the pipe to an object. R will treat the object as a function that passes its argument to the beginning of the pipe.
 
 ```{r}
 l2_pipe <- . %>% 
   sq() %>% 
-  sum() %>% 
-  sqrt()
+  sum()
 
 l2_pipe(c(1, 1, 1))
+```
+
+### Extract function
+
+There is one final way to generate a function. You can use the Extract Function feature of the RStudio IDE to turn a piece of code into a function. 
+
+To do so, highlight a section of code in the scripts pane. Then navigate to **Code > Extract Function** in the RStudio menu bar. RStudio will prompt you to type in a name for the function. It will then surround your code with `function()`, making an educated guess about which objects to list as formal arguments.
+
+```{r echo=FALSE, out.width = "100%"}
+knitr::include_graphics("images/extract.png")
 ```
 
 ## Practice
