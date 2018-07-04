@@ -1,0 +1,319 @@
+---
+title: "Function Basics"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: false
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+library(tidyverse)
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+
+## Functions
+
+### \t
+
+Functions are the verbs of R. When you do something in R, you do it by running a function. For example,
+
+* To take a log, you run a function named log: `log(2.71)`.
+* To fit a linear model, you run a function named lm: `lm(mpg ~ wt, data = mtcars)`.
+* To add two numbers, you run a function named "+": `1 + 2`. 
+
+This last one is an alternative way to call the function `'+'(1, 2)`. In R, even things that do not look like functions are functions. 
+
+### \t
+
+But what is a function? 
+
+A function is simply a piece of code that is packaged in a way that makes it easy to reuse.
+
+This very short tutorial will show you how R functions are packaged and how you can work with R functions. It is a pre-requisite for the next tutorial, which will show you how to write your own R functions. Let's begin!
+
+## Parts of a function
+
+### \t
+
+Every R function has three parts:
+
+1. A body of code
+1. A set of formal arguments
+1. An environment (where the function will look up the values of the objects within it)
+
+### \t
+
+You can inspect each part of a function with three helper functions:
+
+1. `body()`
+1. `formals()`
+1. `environment()`
+
+Let's use these helpers to see how the `xor` function works. `xor` is a logical operator that returns `TRUE` if one, but not both, or its arguments evaluates to `TRUE`.
+
+### body()
+
+* Run `body(xor)` to see the code body of `xor`. Then click Submit Code.
+
+```{r xor-body, exercise = TRUE}
+
+```
+
+```{r xor-body-solution}
+body(xor)
+```
+
+```{r xor-body-check}
+strict_check("xor contains one line of code in its body (you can ignore the braces). This isn't always the case. A function can have as many lines of code as it needs in its body. If you don't believe me check out the body for lm. R will run the code in a function's code's body each time you call the function; but as you can see, the code in a function's body may not be self-contained. What is x? What is y? Click Continue to find out.")
+```
+
+### formals()
+
+Often times, a function will need one or more values to do its job. For example, `xor` cannot return a result unless you provide it both a value for `x` and a value for `y`. These objects are the _formal arguments_ of the `xor` function
+
+`formals()` returns a list of the formal arguments of a function. If an argument in the list does not come with a value, you will need to supply a value when you call the function. If a function does not have any formal arguments (always possible), `formals()` will return `NULL`.
+
+* Use `formals()` to see the formal arguments of `xor` (hint: they are `x` and `y`). Then click Submit Answer.
+
+```{r xor-formals, exercise = TRUE}
+
+```
+
+```{r xor-formals-solution}
+formals(xor)
+```
+
+```{r xor-formals-check}
+strict_check("A function can have zero, one, or many many formal arguments. Do not be distracted by the $'s that appear before the argument names. Those are an artifact of how R displays lists.")
+```
+
+### environment()
+
+Each function is associated with an R environment. The association tells R how to look up any objects that are used by a function, but not defined in its arguments. We'll learn more about environments later, so you do not need to worry about them now. However, looking up a function's environment is a handy way to tell which package the function comes in.
+
+* Use `environment()` to see the environment associated with the `gather` function.
+
+```{r gather-env, exercise = TRUE}
+
+```
+
+```{r gather-env-solution}
+environment(gather)
+```
+
+```{r gather-env-check}
+strict_check("The gather() function comes in the tidyr package. If a function's environment is namespace:base, that is a good sign that the function comes in base R, the part of R that loads before you load any optional packages.")
+```
+
+### names
+
+You can look up all three parts of a function at once by typing the name of the object that the function is stored in. This is what you think of as the "name of the function." (In reality, functions do not have names, but they are stored in objects that have names.)
+
+For example, the `xor` function is a nameless function stored in the object named `xor`. To see the function in full, type `xor`.
+
+```{r}
+xor
+```
+
+### Help pages
+
+And _never_ forget: you can learn more about any R function by looking up its help page. To do this, type the "function's name" preceded by a question mark, e.g.
+
+```{r eval = FALSE}
+?xor
+```
+
+When you type this into an R IDE, a help page will open in a separate tab.
+
+### Quiz
+
+```{r q1, echo = FALSE}
+question("Which of the following is not a part of a function?",
+         allow_retry = TRUE,
+         random_answer_order = TRUE,
+         answer("A name", correct = TRUE, message = "That's right, functions contain a code body, a set of formal arguments, and an environment, but not a name. They just happen to inherit a name from the object they are stored in."),
+         answer("A code body"),
+         answer("A (potentially empty) set of formal arguments"),
+         answer("An environment"))
+```
+
+### Primitives
+
+You should also know about an important class of R functions called _primitives_. Most R functions call other R functions in their code body, but primitives do not. Instead primitives call internally implemented algorithms that are written in a lower level programming language (i.e. a more primitive programming language) like C, C++, or FORTRAN. 
+
+R's primitive functions are designed to be very fast, but you won't be able to inspect their components. See what happens if you inspect the contents of `log`, which is a primitive function.
+
+```{r}
+body(log)
+formals(log)
+environment(log)
+```
+
+That's enough minutiae! Now, how do you _run_ a function?
+
+## Calling functions
+
+### \t
+
+To call an R function, type its name followed immediately by an open parenthesis and eventually by a closed parenthesis. The parentheses act as a "trigger" that causes R to run the code in the function's code body. Note the difference:
+
+```{r}
+Sys.Date
+Sys.Date()
+```
+
+If you ever try to run a function and nothing happens, double check to see if you included the closing parenthesis.
+
+### \t
+
+If a function requires you to provide values for formal arguments, provide the values between the parentheses. 
+
+```{r}
+xor(x = TRUE, y = FALSE)
+```
+
+The best practice is to explicitly write out each argument name followed by an equals sign and then a value. If you leave out the argument names, R will match your values to arguments in the order that they are listed. It is common practice among R users to skip the first one or two argument names and then write out the rest.
+
+### Default values
+
+Some R functions will provide a default value for one or more of arguments. In this case, you do not need to pass a value to the argument when you call the function. If you do not provide a value, the function will use the default value. 
+
+You will know that an argument comes with a default value, if the argument appears with a value in the `formals()` list.
+
+* `rnorm` generates n random values from a normal distribution. When you call `rnorm` you can supply the mean and standard deviation of the distribution to draw the values from. Check to see if `rnorm` uses any default values. For which arguments? What are the values? Click Submit Answer to see if you are right.
+
+```{r rnorm, exercise = TRUE}
+
+```
+
+```{r rnorm-solution}
+formals(rnorm)
+```
+
+```{r rnorm-check}
+strict_check("rnorm provides a default value of zero for the mean argument and a default argument of one for the sd argument. In other words, if you do not supply a mean and sd value when you call rnorm, rnorm will randomly generate results from a standard normal distribution. Default values can be very handy!")
+```
+
+### \t
+
+You can also spot a function's default values by examining the function itself. Do you see them?
+
+```{r}
+rnorm
+```
+
+### \t
+
+There is one last thing you should know about functions: functions are like Las Vegas:
+
+> What happens in a function stays in the function.
+
+For example, suppose I've saved values as `x` and `y`. 
+
+```{r}
+x <- 1
+y <- FALSE
+```
+
+### \t
+
+Calling `xor` will not change those values, even though I'm defining new values for `x` and `y` in the function.
+
+```{r}
+xor(x = TRUE, y = TRUE)
+x
+y
+```
+
+### \t 
+
+Moreover, `xor` won't remember which values I've used in the past. If I forget to define `x` and `y` the next time I call `xor`, `xor` will return an error. `xor` won't even be able to look up the values that I assigned to `x` and `y` outside of the function.
+
+```{r}
+xor()
+```
+
+_What happens in a function stays in the function._ 
+
+So don't worry about using functions. (Ahem, technically you _could_ write a function that would change things outside of the function, but that would be a bad idea, and you would have to try to do it on purpose, and it would be rather hard at that. So don't worry.)
+
+## Quiz
+
+### Exercise 1
+
+```{r e1, echo = FALSE}
+question("Which of these will run the `Sys.time` function?",
+         answer("Sys.time"),
+         answer("Sys.time()", correct = TRUE, 
+         message = "The open and closed parentheses tell R to execute the code in the code body of the function stored in the object names Sys.time."))
+```
+
+### Exercise 2
+
+* Find the code body of `foo`
+
+```{r foo, exercise = TRUE}
+
+```
+
+```{r foo-setup}
+foo <- function() {
+  a <- 10
+  a
+}
+```
+
+```{r foo-solution}
+body(foo)
+```
+
+```{r foo-check}
+strict_check("")
+```
+
+### Exercise 3
+
+Recall the code in `foo`:
+
+```{r echo = FALSE}
+foo <- function() {
+  a <- 10
+  a
+}
+```
+
+```{r}
+body(foo)
+```
+
+What will be the final value of `a` if I run the following three lines of code in order?
+
+```{r eval = FALSE}
+a <- 1
+foo()
+a
+```
+
+```{r e3, echo = FALSE}
+question("",
+         answer("1", correct = TRUE, message = "What happens in a function, stays in the function. foo() will not change the value of a outside of foo()."),
+         answer("10"),
+         answer("Running a will return an error."),
+         allow_retry = TRUE)
+```
+
+### Congratulations!
+
+You have finished the tutorial.
+
+
+
+
