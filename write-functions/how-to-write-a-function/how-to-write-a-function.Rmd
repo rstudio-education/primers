@@ -21,7 +21,7 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 ### \t
 
-R comes with thousands of functions, and more are written everyday and published in R packages. If you want to something in R, there is a good chance that a function already exists somewhere that does it.
+R comes with thousands of functions, and more are written everyday (these are published in R packages). If you want to do something in R, there is a good chance that a function already exists somewhere that does it.
 
 But what if you want to do something new in R, something that doesn't yet have a function? What should you do?
 
@@ -52,29 +52,26 @@ question("Why would you not want to rewrite the code 20 times? (Check all that a
      correct = "Good job! You can avoid these outcomes by turning your code into a function. A good rule is to turn a piece of code into a function whenever you find yourself re-using the code more than three times.")
 ```
 
-
 ## Workflow
 
 ### \t
 
-You can follow the same four steps to write any function in R. The steps easy to follow, and they ensure that your functions will work, which frees you to spend more time using your functions and less time debugging them.
-
-### \t
-
-The steps are:
+How should you turn your code into functions? Always follow these four steps: 
 
 1. Create a real R object (or set of objects) to use with your function
 2. Write code that works with the real object(s)
 3. Wrap the code in `function()`
 4. Assign the names of your real objects as argument names to the function
 
-Consider these steps as the "best practice" for writing functions in R. Let's use them to create your first function.
+These steps are the best practice for writing functions in R. When you follow these steps, your functions are guaranteed to work for at least one case, which means you will spend more time using your functions and less time debugging them.
+
+Let's use the steps to create your first function.
 
 ### Goal - Grading
 
 To make this real, put yourself in the shoes of a teacher: 
 
-You've given your students 10 homework assignments and announced that you will drop their lowest homework score. The final grade will be the average score of the remaining homeworks.
+You've given your students 10 homework assignments and announced that you will drop their lowest homework score. Their final grade will be the average score of the remaining homeworks.
 
 To make your life easier, you want to write an R function that will take a vector of 10 homework scores and return a final grade. 
 
@@ -86,7 +83,7 @@ Remember our steps:
 
 1. Create a real R object (or set of objects) to use with your function
 
-* Create an object named `x` that contains the vector `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)` (hint: copy and paste can save you a lot of typing here). Then click Submit Answer. `x` will be the grades of your test student. 
+* Create an object named `x` that contains the vector `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)` (hint: use copy and paste!). Then click Submit Answer. `x` will be the grades of your test student. 
 
 ```{r obj, exercise = TRUE}
 
@@ -132,7 +129,7 @@ strict_check("This is the crucial step in writing a function. It is important to
 
 3. Wrap the code in `function()`
 
-You can use the `function()` function to wrap any piece of code into a function. To do this, place an opening bracket `{` after `function()`, then place your code, then place a closing bracket `}`, e.g.
+The `function()` function builds a function from a piece of R code. To use it, call `function()` followed by an opening brace, `{`. Then write one or more lines of R code followed by a closed brace, `}`, e.g.
 
 ```{r}
 foo <- function() {
@@ -142,15 +139,17 @@ foo <- function() {
 }
 ```
 
-You can place as many lines of code between the braces as you like. `function()` returns an R function that uses everything between the braces in its body. If you'd like to save the function, you'll need to assign it in the usual way to an R object that you can call later.
+`function()` will return a function that uses everything between the braces as its code body. If you'd like to save the function, you'll need to assign it in the usual way to an R object that you can call later.
+
+As you write your functions, recall that R will only return the result of the last line in the code body when you call the function (we'll learn about some exceptions to this rule in the Control Flow tutorial). 
 
 ### \t
 
-Once you save a function, you can run it and inspect its contents in the usual ways.
+Once you save a function, you can run it and inspect its contents.
 
 ```{r}
-foo
 foo()
+foo
 ```
 
 ### Your turn
@@ -179,8 +178,6 @@ strict_check("Now that you've saved grade as a function, you can call it wheneve
 
 ### \t
 
-4. Assign the names of your real objects as argument names to the function
-
 At the moment, your `grade()` function is reusable but not _generalizable_. Each time you call `grade()` it computes the final grade of the vector `x` that contains `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)`.
 
 ```{r echo = FALSE}
@@ -195,9 +192,11 @@ grade()
 grade()
 ```
 
+We'd like to use `grade()` with new vectors that have new values.
+
 ### Arguments
 
-We'd like to use `grade()` with new vectors that have new values.
+4. Assign the names of your real objects as argument names to the function
 
 You can make a function generalizable by turning some of the objects in its code body into _formal arguments_. A formal argument is an object that a user can assign a value to when he or she calls the function. The function will use the user's value for the object when it executes its code body.
 
@@ -386,7 +385,6 @@ Congratulations on finishing the tutorial. Before you go, complete the following
 ### Exercise 1
 
 ```{r e1, echo = FALSE}
-
 question("What is the first step of writing a function?",
          answer("Choose a name, then type <- function(){", message = "You shouldn't type function() until you have code that works with a real test case."),
          answer("Create a real R object (or set of objects)", correct = TRUE, message = "You can then use the object to test your code."),
@@ -396,6 +394,29 @@ question("What is the first step of writing a function?",
 ```
 
 ### Exercise 2
+
+What will the following code return?
+
+```{r eval = FALSE}
+f <- function(a, b, c) {
+  a
+  b
+  c
+}
+f(1, 2, 3)
+```
+
+```{r q2, echo = FALSE}
+question("",
+         answer("1"),
+         answer("2"),
+         answer("3", correct =TRUE, message = "A function will return the result of its *last* line."),
+         answer("A vector that contains 1, 2, and 3"),
+         answer("An error"),
+         allow_retry = TRUE)
+```
+
+### Exercise 3
 
 Let's write a function that grades by counting a student's highest score twice and then taking an average of the 11 scores.
 
@@ -408,7 +429,7 @@ question("Do you have a test vector that you can use?",
          random_answer_order = TRUE)
 ```
 
-### Exercise 3
+### Exercise 4
 
 * Write a piece of code that uses `max()` to double count the highest score in `x` and then takes the average of the 11 results. Click Submit Answer to check that your code works.
 
@@ -428,7 +449,7 @@ x
 strict_check("That student will be pleased!")
 ```
 
-### Exercise 4
+### Exercise 5
 
 * Wrap your code in `function()` and save it to the name `grade2`.
 * Then define the argument(s) for the function.
@@ -452,7 +473,7 @@ grade2 <- function(x) {
 strict_check("Your skills are almost complete.")
 ```
 
-### Exercise 5
+### Exercise 6
 
 It's time to put it all together. 
 
