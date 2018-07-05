@@ -37,7 +37,7 @@ But what is a function?
 
 A function is simply a piece of code that is packaged in a way that makes it easy to reuse.
 
-This very short tutorial will show you how R functions are packaged and how you can work with R functions. It is a pre-requisite for the next tutorial, which will show you how to write your own R functions. Let's begin!
+This short tutorial will show you how R functions are packaged and how you can work with R functions. It is a pre-requisite for the next tutorial, which will show you how to write your own R functions. Let's begin!
 
 ## Parts of a function
 
@@ -72,12 +72,32 @@ body(xor)
 ```
 
 ```{r xor-body-check}
-strict_check("xor contains one line of code in its body (you can ignore the braces). This isn't always the case. A function can have as many lines of code as it needs in its body. If you don't believe me check out the body for lm. R will run the code in a function's code's body each time you call the function; but as you can see, the code in a function's body may not be self-contained. What is x? What is y? Click Continue to find out.")
+strict_check("xor contains one line of code in its body (you can ignore the braces). This isn't always the case. A function can have as many lines of code as it needs in its body. If you don't believe me check out the body for lm. R will run the code in a function's code body each time you call the function; but as you can see, the code in a function's body may not be self-contained. What is x? What is y? Click Continue to find out.")
 ```
+
+### \t
+
+`xor` contains one line of code in its body (you can ignore the braces). This isn't always the case. A function can have as many lines of code as it needs in its body. For example, `as.list.data.frame` has three lines (most R functions have much more).
+
+```{r}
+body(as.list.data.frame)
+```
+
+When a function contains more than one line of code in its body, R will run the entire body and return the result of the **last** line.
+
+### \t
+
+R will run the code in a function's code body each time you call the function; but as you can see with `xor`, the code in a function's body may not be self-contained. 
+
+```{r}
+xor
+```
+
+What is `x`? What is `y`? Click Continue to find out.
 
 ### formals()
 
-Often times, a function will need one or more values to do its job. For example, `xor` cannot return a result unless you provide it both a value for `x` and a value for `y`. These objects are the _formal arguments_ of the `xor` function
+Often times, a function will need one or more named values to do its job. These values are the _formal arguments_ of the function. The formal arguments of `xor` are `x` and `y`.
 
 `formals()` returns a list of the formal arguments of a function. If an argument in the list does not come with a value, you will need to supply a value when you call the function. If a function does not have any formal arguments (always possible), `formals()` will return `NULL`.
 
