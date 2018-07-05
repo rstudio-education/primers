@@ -1,0 +1,261 @@
+---
+title: "Argument Matching"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## Matching Quiz
+
+### \t
+
+Assigning the right values to the right arguments can make or break your code. 
+
+```{r}
+log(1, 2)
+log(2, 1)
+## Uh oh.
+```
+
+But how much do you know about assigning arguments? Take this quiz to find out.
+
+### methods
+
+```{r methods, echo = FALSE}
+question("Which method(s) can you use to match values to arguments? (Check all that apply.)",
+         answer("Complete names (e.g. na.rm = TRUE)", correct = TRUE),
+         answer("Partial names (e.g. na = TRUE)", correct = TRUE),
+         answer("Numbers (e.g. 2 = TRUE)"),
+         answer("Position (e.g. TRUE)", correct = TRUE),
+         allow_retry = TRUE, type = "multiple", 
+         incorrect = "Did you check _every_ method that works?",
+         correct = "Good job! R can match values to arguments in three ways, but some of these methods are more foolproof then others.")
+```
+
+### Not matching
+
+Consider this brilliant function:
+
+```{r}
+foo <- function(aaa, abb, abc) {
+  c(aaa, abb, abc)
+}
+```
+
+```{r no-args, echo = FALSE}
+question("What will `foo()` return?",
+         answer('[1] "aaa" "abb" "abc"'),
+         answer("An error", correct = TRUE, message = "`foo` will not be able to find a value for `aaa` (or the rest)."),
+         allow_retry = TRUE)
+```
+
+### Default values
+
+Let's make `foo` even more brilliant:
+
+```{r}
+foo <- function(aaa = 1, abb = 2, abc = 3) {
+  c(aaa, abb, abc)
+}
+```
+
+```{r default-args, echo = FALSE}
+question("Now what will `foo()` return?",
+         answer('[1] "aaa" "abb" "abc"'),
+         answer('[1] 1 2 3', correct = TRUE, message = "An argument with a default value is optional, R will use the default value if you do not provide one."),
+         answer("An error"),
+         allow_retry = TRUE)
+```
+
+### \t
+
+```{r default-args-2, echo = FALSE}
+question("Which of these could you run to see the names and default values of `foo`'s arguments?",
+         answer("`foo`"),
+         answer("`?foo`"),
+         answer("`formals(foo)`"),
+         answer("`args(foo)`"),
+         answer("All of the above.", correct = TRUE, message = "Each of these will return output that contains `foo`'s argument names and default values (somewhere in the output)."),
+         incorrect = "Is that the only way?",
+         allow_retry = TRUE)
+```
+
+### Position
+
+Remember `foo`:
+
+```{r}
+foo <- function(aaa = 1, abb = 2, abc = 3) {
+  c(aaa, abb, abc)
+}
+```
+
+```{r position-1, echo = FALSE}
+question("What will `foo(0)` return?",
+         answer("[1] 1 2 3"),
+         answer("[1] 0 2 3", correct = TRUE, message = "If you do not provide an argument name in your call, R will match your value to the first unmatched argument name."),
+         answer("[1] 1 0 3"),
+         answer("[1] 1 2 0"),
+         answer("[1] 0 0 0"),
+         answer("An error"),
+         allow_retry = TRUE)
+```
+
+### \t
+
+```{r}
+foo <- function(aaa = 1, abb = 2, abc = 3) {
+  c(aaa, abb, abc)
+}
+```
+
+```{r position-2, echo = FALSE}
+question("What will `foo(0, 5)` return?",
+         answer("[1] 1 2 3"),
+         answer("[1] 0 5 3", correct = TRUE, message = "I think you have the hang of position matching."),
+         answer("[1] 0 5 0"),
+         answer("[1] 0 5 5"),
+         answer("An error"),
+         allow_retry = TRUE)
+```
+
+### Names
+
+```{r}
+foo <- function(aaa = 1, abb = 2, abc = 3) {
+  c(aaa, abb, abc)
+}
+```
+
+```{r complete-names, echo = FALSE}
+question("What will `foo(aaa = 0, abc = 5)` return?",
+         answer("[1] 1 2 3"),
+         answer("[1] 0 5 3"),
+         answer("[1] 0 5 0"),
+         answer("[1] 0 2 5", correct = TRUE, message = "Using complete argument names is the easiest way to avoid an error (and to write comprehensible code). But what if you use a partial argument name?"),
+         answer("An error"),
+         allow_retry = TRUE)
+```
+
+### Partial names
+
+```{r}
+foo <- function(aaa = 1, abb = 2, abc = 3) {
+  c(aaa, abb, abc)
+}
+```
+
+```{r partial-names, echo = FALSE}
+question("What will `foo(aa = 0)` return?",
+         answer("[1] 1 2 3"),
+         answer("[1] 0 2 3", correct = TRUE, message = "You do not need to spell out the full argument name, so long as you provide enough of the name to uniquely identify the argument. Here `aa` could only be the beginning of the `aaa` argument."),
+         answer("[1] 0 0 0"),
+         answer("An error"),
+         allow_retry = TRUE)
+```
+
+### \t
+
+```{r}
+foo <- function(aaa = 1, abb = 2, abc = 3) {
+  c(aaa, abb, abc)
+}
+```
+
+```{r partial-names-2, echo = FALSE}
+question("What will `foo(a = 0)` return?",
+         answer("[1] 1 2 3"),
+         answer("[1] 0 2 3"),
+         answer("[1] 0 0 0"),
+         answer("An error", correct = TRUE, message = "Here `a` does not uniquely match an argument name: it is the beginning of all three argument names. R isn't psychic, so it won't guess which argument you meant. Instead R returns an error. It's the right thing to do because it lets you fix your code."),
+         allow_retry = TRUE)
+```
+
+### Dots
+
+Now for some dark magic:
+
+```{r}
+foodoo <- function(...) {
+  c(...)
+}
+```
+
+```{r dots-1, echo = FALSE}
+question("What will `foodoo(1, 2, 3)` return?",
+         answer("[1] 1 2 3", correct = TRUE, message = "`...` is a special mechanism for passing arguments. `...` will match any argument not otherwise matched and pass those arguments on as a group. This is a convenient way to pass a set of arguments through to a function in the function body."),
+         answer("An error."),
+         answer("Oh my goodness! You've broken R!"),
+         allow_retry = TRUE)
+```
+
+### \t
+
+```{r}
+foodoo <- function(...) {
+  c(...)
+}
+```
+
+```{r dots-2, echo = FALSE}
+question("What will `foodoo(a = 1, b = 2, c = 3)` return?",
+         answer("[1] 1 2 3"),
+         answer("[1] 1 2 3 _but with the names a b c above the values_", correct = TRUE, message = "If you provide names to your values, `...` will capture those as well and pass them on. So here, our code essentially runs `c(a = 1, b = 2, c = 3)`."),
+         answer("An error."),
+         allow_retry = TRUE)
+```
+
+### \t
+
+Here is one last wrinkle. Suppose we rewrite `foodoo` slightly:
+
+```{r}
+foodoo <- function(a, ...) {
+  c(...)
+}
+```
+
+```{r dots-3, echo = FALSE}
+question("What will `foodoo(a = 1, b = 2, c = 3)` return?",
+         answer("[1] 1 2 3 with the names a b c above the values"),
+          answer("[1] 2 3 with the names b c above the values", correct = TRUE, message = "Remember that `...` only captures _unmatched_ values. Now that `a` is a formal argument, `a = 1` will be matched to it, leaving `b = 2` and `c = 3` to be captured and passed on."),
+         answer("An error."),
+         allow_retry = TRUE)
+```
+
+## Tips
+
+### \t 
+
+Congratulations! You've finished the quiz and know a lot about how R parses arguments. As a reward, here are two useful things that you can do with arguments in the RStudio IDE:
+
+
+### \t
+
+After you've written a function name followed by an opening parenthesis, look for a small yellow window to pop up that tells you the names, order, and default values of the function's arguments. This can be handy when you are not very familiar with the function.
+
+```{r echo=FALSE, out.width = "100%"}
+knitr::include_graphics("images/popup.png")
+```
+
+### \t
+
+After you've written a function name followed by an opening parenthesis, press tab to invoke RStudio's tab completion. RStudio will open a pop up menu that contains the names of the function's arguments. Use the up and down arrow keys to navigate to a name, and then press enter to insert the name into your code. This can save you a lot of time once you get a feel for it.
+
+```{r echo=FALSE, out.width = "100%"}
+knitr::include_graphics("images/tab-completion.png")
+```
+
+
