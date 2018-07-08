@@ -92,7 +92,7 @@ Wow! `lm()` runs a lot of code. What does it do? Open the help page for `lm()` i
 
 ### Code comments
 
-What do you think the chunk below will return? Run it and see. RThe result should be nothing. R will not run anything on a line after a `#` symbol. This is useful because it lets you write human readable comments in your code: just place the comments after a `#`. Now delete the `#` and re-run the chunk. You should see a result.
+What do you think the chunk below will return? Run it and see. The result should be nothing. R will not run anything on a line after a `#` symbol. This is useful because it lets you write human readable comments in your code: just place the comments after a `#`. Now delete the `#` and re-run the chunk. You should see a result.
 
 ```{r functions-5, exercise = TRUE}
 # sqrt(961)
@@ -111,7 +111,7 @@ sqrt(961)
 
 ### args()
 
-`rnorm()` is a function that generates random variables from a normal distribution. Fins the arguments of `rnorm()`.
+`rnorm()` is a function that generates random variables from a normal distribution. Find the arguments of `rnorm()`.
 
 ```{r arguments-1, exercise = TRUE}
 
@@ -272,7 +272,7 @@ c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
 ### :
 
-If your vector contaisn a sequence of contiguous integers, you can create it with the `:` shortcut. Run `1:10` in the chunk below. What do you get? What do you suppose `1:20` would return?
+If your vector contains a sequence of contiguous integers, you can create it with the `:` shortcut. Run `1:10` in the chunk below. What do you get? What do you suppose `1:20` would return?
 
 ```{r vectors-2, exercise = TRUE}
 
@@ -284,7 +284,7 @@ If your vector contaisn a sequence of contiguous integers, you can create it wit
 
 ### []
 
-You can extract any element of a vector by placinga pair of brackets behind the vector. Inside the brackets place the number of the element that you'd like to extract. For example, `vec[3]` would return the third element of the vector named `vec`.
+You can extract any element of a vector by placing a pair of brackets behind the vector. Inside the brackets place the number of the element that you'd like to extract. For example, `vec[3]` would return the third element of the vector named `vec`.
 
 Use the chunk below to extract the fourth element of `vec`.
 
@@ -531,7 +531,7 @@ question('What does this common error message suggest? `object _____ does not ex
 
 ### Load a package
 
-In the code chunk below, load the `tidyverse` package. Whenever you load a package R will also load all of the packages that the first package depends on. `tidyverse` takes advantage of this to create a shortcut for laoding several common packages at once. Whenever you load `tidyverse`, `tidyverse` also loads `ggplot2`, `dplyr`, `tibble`, `tidyr`, `readr`, and `purrr`.
+In the code chunk below, load the `tidyverse` package. Whenever you load a package R will also load all of the packages that the first package depends on. `tidyverse` takes advantage of this to create a shortcut for loading several common packages at once. Whenever you load `tidyverse`, `tidyverse` also loads `ggplot2`, `dplyr`, `tibble`, `tidyr`, `readr`, and `purrr`.
 
 ```{r packages2, exercise = TRUE}
 
