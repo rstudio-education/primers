@@ -1,0 +1,316 @@
+---
+title: "Loops"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## Loops in R
+
+### \t
+
+Many tasks require repetition: doing nearly the same thing over and over again. And when it comes to repetition, computers outperform humans hands down. They work fast and do not make careless mistakes.
+
+But how do you ask your computer to repeat a task? The purrr package provides one way, and I recommend that you check out the iteration primer to learn how to use purrr and its map functions.
+
+This tutorial will show you another way. You will learn how to repeat tasks with R's loop functions. Why learn about loops now? Because loops can be a very useful ingredient in the functions you write.
+
+### \t
+
+Before we go on, you should know that some languages, like C, C++ and python, use loops as an _all purpose_ programming tool. This approach will not serve you well in R.
+
+R's loops are the right tool for a very specific job, but they lose out to other R methods for most jobs. This is a result of R's user oriented design: most R tasks implement their own pre-optimized loops, and these loops are much faster than the loops you run from the command line. 
+
+To learn everything that you need to know about R and loops, make sure to read all the way through _Recursion and Vectorization_ before leaving this tutorial.
+
+### loops
+
+R contains three loop constructors
+
+1. `repeat`
+1. `while` 
+1. `for`
+
+The simplest of these is `repeat`.
+
+### repeat 
+
+`repeat` repeats an expression over and over again. To use `repeat`, type repeat without trailing parentheses. Then use braces to enclose one or more lines of code to repeat, e.g.
+
+```{r eval = FALSE}
+repeat {
+  print("Hello")
+}
+```
+
+`repeat` will execute all of the code between the braces. Then it will execute it again. And again. And again...
+
+### \t
+
+```{r repeat-quiz, echo = FALSE}
+question("When will `repeat` stop executing the code?",
+         answer("After 10 tries."),
+         answer("Never. Unless you or your computer intervene.", correct = TRUE),
+         message = "Repeat will repeat your code until the end of time. This isn't particularly useful, so you will almost always use repeat with...")
+```
+
+### break
+
+When an R loop encounters the `break` command, it will exit the loop. This provides a handy way to reign in a `repeat` loop.
+
+* How many times will R repeat the code in the loop below. Make a prediction then Click Submit Answer to see if you were right.
+
+```{r repeat, exercise = TRUE}
+n <- 1
+repeat {
+  print(n)
+  if (n == 5) break
+  n <- n + 1
+}
+```
+
+```{r repeat-solution}
+n <- 1
+repeat {
+  print(n)
+  if (n == 5) break
+  n <- n + 1
+}
+```
+
+```{r repeat-check}
+strict_check("R repeats the print statement five times and then exits the loop. Notice how we created an n variable to use with the loop. The loop reaches the end because we increment n by one each time we run the code. What would happen if you left out `n <- n + 1`. Don't try! The loop would print `1` for a very long time.")
+```
+
+### \t 
+
+Here is a good question: what will be the value of `n` after you run the loop?
+
+```{r results='hide'}
+n <- 1
+repeat {
+  print(n)
+  if (n == 5) break
+  n <- n + 1
+}
+```
+
+* Click Submit Answer to find out.
+
+```{r n, exercise = TRUE}
+n
+```
+
+```{r n-solution}
+n
+```
+
+```{r n-check}
+strict_check("n = 5. Are you surprised? This is important to know. R's loops are not like functions, which safely execute code in a new environment. R's loops execute code in the environment that calls them, which means that loops can and will modify the objects in the environment. This can be very useful---unless you forget that it happens.")
+```
+
+### count
+
+One way to prevent loops from altering objects in your workspace is to put the loop into a function. For example, here is a function that counts from one to the number `x`. Can you write something similar?
+
+```{r}
+count <- function(x) {
+  n <- 1
+  repeat {
+    print(n)
+    if (n == x) break
+    n <- n + 1
+  }
+}
+```
+
+* Write a function named `count_down` that counts from `x` to zero. Be sure to arrange for the loop to end! Then click Submit Answer.
+
+```{r countdown, exercise = TRUE}
+count_down <- function(x) {
+
+  
+  
+  
+  
+  
+}
+```
+
+```{r countdown-hint-1}
+"Begin by setting n = x. In which direction should you increment n to get to zero?"
+```
+
+```{r countdown-hint-2}
+"Increment n by subtracting one from it on each repetition. You will want to do this _after_ you print the value of n for that repetition."
+```
+
+```{r countdown-hint-3}
+"Arrange to break the loop after you print n when n = 0."
+```
+
+```{r countdown-solution}
+count_down <- function(x) {
+  n <- x
+  repeat {
+    print(n)
+    if (n == 0) break
+    n <- n - 1
+  }
+}
+```
+
+```{r countdown-check}
+strict_check("You know this sounds a lot like a rocket launch...")
+```
+
+### return
+
+`break` is not the only way to end a loop in R. You can also end a loop with a `return()` statement (i.e. R will exit the loop when it runs `return()`. This is a useful way to return a message or value from the loop. For example, `return(n)` would return the value of `n` at the end of the loop.
+
+* Alter your function below to `return()` `"Blast off!"` at the end of the loop. You will no longer need the `break` command. Then click Submit Answer.
+
+```{r blastoff-solution}
+count_down <- function(x) {
+  n <- x
+  repeat {
+    print(n)
+    if (n == 0) break
+    n <- n - 1
+  }
+}
+```
+
+```{r blastoff-hint}
+"Replace `break` with something else."
+```
+
+```{r blastoff-solution}
+count_down <- function(x) {
+  n <- x
+  repeat {
+    print(n)
+    if (n == 0) return("Blast off!")
+    n <- n - 1
+  }
+}
+```
+
+```{r blastoff-check}
+strict_check("You now know how to repeat yourself in a function. This opens up many new possibilities. Let's explore one.")
+```
+
+### \t Prime numbers
+
+In mathematics, a _prime_ number is a number that can only be divided evenly by itself and the number one. In other words, if you try to divide a prime number by any other number, you get a remainder. For example, five is a prime number:
+
+```{r}
+5 / 5
+5 / 4
+5 / 3
+5 / 2
+5 / 1
+```
+
+One thing that makes prime numbers interesting is that it is so hard to prove that a number is prime.  
+
+### \t
+
+...unless you are a computer. Then you can prove that a number is prime by dividing the number by every number less than itself and checking whether or not the  result has a remainder.
+
+Do you see where this is going? Yes! You're going to write a function that determines whether or not a number is prime (consider this a computer science right of passage).
+
+###  %%
+
+To do this, you'll need to use the modulo function, `a %% b`. Modulo is an arithmetic operator that returns the remainder of dividing `b` from `a`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
+
+```{r}
+5 %% 5
+5 %% 4
+5 %% 3
+5 %% 2
+5 %% 1
+```
+
+### \t
+
+If `x`
+
+
+
+
+
+```{r}
+prime <- function(x) {
+  n <- 2
+  repeat {
+    print(n)
+    if (n == x) return(TRUE)
+    if (x %% n == 0) return(FALSE)
+    n <- n + 1
+  }
+}
+```
+
+### while
+
+```{r}
+prime <- function(x) {
+  n <- 2
+  while (n < x) {
+    print(n)
+    if (x %% n == 0) return(FALSE)
+    n <- n + 1
+  }
+  TRUE
+}
+```
+
+### for
+
+```{r}
+prime <- function(x) {
+  for (n in seq_len(x)) {
+    print(n)
+    if (x %% n == 0) return(FALSE)
+  }
+  TRUE
+}
+```
+
+### next
+
+```{r}
+prime <- function(x) {
+  for (n in seq_len(x)) {
+    print(n)
+    if (n == 1) next
+    if (x %% n == 0) return(FALSE)
+  }
+  TRUE
+}
+```
+
+## Recursion and vectorization
+
+```{r}
+prime <- function(x, n = 2) {
+  if (n == x) TRUE
+  else if (x %% n == 0) return(FALSE)
+  else prime(x, n = n + 1)
+}
+```
+
+## Practice
