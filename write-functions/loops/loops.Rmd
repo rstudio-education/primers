@@ -13,6 +13,12 @@ runtime: shiny_prerendered
 library(learnr)
 library(grader)
 
+grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  strict_check <- function(x) x
+  check_code <- eval(parse(text = check_code))
+  list(message = check_code, correct = TRUE, location = "append")
+}
+
 tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
@@ -21,33 +27,35 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 ### \t
 
-Many tasks require repetition: doing nearly the same thing over and over again. And when it comes to repetition, computers outperform humans hands down. They work fast and do not make careless mistakes.
+Many Data Science tasks require you to do the same thing over and over again. This is boring, drugerous work---but not for your computer! Computers are excellent at repetitive tasks.
 
-But how do you ask your computer to repeat a task? The purrr package provides one way, and I recommend that you check out the iteration primer to learn how to use purrr and its map functions.
+But how do you ask your computer to repeat a task? 
 
-This tutorial will show you another way. You will learn how to repeat tasks with R's loop functions. Why learn about loops now? Because loops can be a very useful ingredient in the functions you write.
+* The purrr package provides one way. I recommend that you check out the Iteration primer to learn how to use purrr and its map functions.
 
-### \t
+* This tutorial will show you another way. You will learn how to repeat tasks with R's loop functions. Why learn about loops now? Because you know enough about R to understand loops, and loops will expand what you can do with your functions.
 
-Before we go on, you should know that some languages, like C, C++ and python, use loops as an _all purpose_ programming tool. This approach will not serve you well in R.
+### Did you know?
 
-R's loops are the right tool for a very specific job, but they lose out to other R methods for most jobs. This is a result of R's user oriented design: most R tasks implement their own pre-optimized loops, and these loops are much faster than the loops you run from the command line. 
+Before we go on, you should know that some languages, like C, C++ and python, use loops as an _all purpose_ programming tool. This approach will not work well in R.
 
-To learn everything that you need to know about R and loops, make sure to read all the way through _Recursion and Vectorization_ before leaving this tutorial.
+R's loops are the right tool for a very specific job, but they lose out to other methods for most jobs. This is due to R's user-oriented design: most R functions implement their own pre-optimized loops behind the scenes in a lower level language. These built-in loops are much faster than any loop you could write at the command line. 
+
+But don't let this drive you loopy! You'll learn all you need to know about loops in R if you read through to the end of _Recursion and Vectorization_ before you leave this tutorial.
 
 ### loops
 
-R contains three loop constructors
+R contains three types of loops
 
 1. `repeat`
 1. `while` 
 1. `for`
 
-The simplest of these is `repeat`.
+The simplest of these are `repeat` loops.
 
 ### repeat 
 
-`repeat` repeats an expression over and over again. To use `repeat`, type repeat without trailing parentheses. Then use braces to enclose one or more lines of code to repeat, e.g.
+`repeat` repeats an expression over and over again. To use `repeat`, type `repeat` without trailing parentheses. Then use braces to enclose one or more lines of code, e.g.
 
 ```{r eval = FALSE}
 repeat {
@@ -61,16 +69,16 @@ repeat {
 
 ```{r repeat-quiz, echo = FALSE}
 question("When will `repeat` stop executing the code?",
-         answer("After 10 tries."),
-         answer("Never. Unless you or your computer intervene.", correct = TRUE),
-         message = "Repeat will repeat your code until the end of time. This isn't particularly useful, so you will almost always use repeat with...")
+         answer("After 10 times.", message = "Repeat will repeat your code until the end of time. This isn't particularly useful, so you will almost always use repeat with..."),
+         answer("Never, unless you or your computer intervene.", correct = TRUE, 
+         message = "Repeat will repeat your code until the end of time. This isn't particularly useful, so you will almost always use repeat with..."))
 ```
 
 ### break
 
-When an R loop encounters the `break` command, it will exit the loop. This provides a handy way to reign in a `repeat` loop.
+When an R loop encounters the `break` command in a loop, it exits the loop. This provides a handy way to schedule the end of a `repeat` loop.
 
-* How many times will R repeat the code in the loop below. Make a prediction then Click Submit Answer to see if you were right.
+* How many times will R repeat the code in the loop below? Make a prediction then Click Submit Answer to see if you are right.
 
 ```{r repeat, exercise = TRUE}
 n <- 1
@@ -91,12 +99,16 @@ repeat {
 ```
 
 ```{r repeat-check}
-strict_check("R repeats the print statement five times and then exits the loop. Notice how we created an n variable to use with the loop. The loop reaches the end because we increment n by one each time we run the code. What would happen if you left out `n <- n + 1`. Don't try! The loop would print `1` for a very long time.")
+strict_check("R repeats the print statement five times and then exits the loop. Notice how we created an n variable to use with the loop. The loop reaches the end because we increment n by one each time we run the code. What would happen if you left out n <- n + 1? Don't try! The loop would print 1 for a very long time.")
 ```
 
 ### \t 
 
-Here is a good question: what will be the value of `n` after you run the loop?
+Here is a good question: 
+
+What happens to the value of `n` when you run the loop? 
+
+`n` is defined as `1` _outside_ of the loop. Is it still `1` outside of the loop when the loop is finished?
 
 ```{r results='hide'}
 n <- 1
@@ -105,6 +117,7 @@ repeat {
   if (n == 5) break
   n <- n + 1
 }
+n
 ```
 
 * Click Submit Answer to find out.
@@ -118,12 +131,12 @@ n
 ```
 
 ```{r n-check}
-strict_check("n = 5. Are you surprised? This is important to know. R's loops are not like functions, which safely execute code in a new environment. R's loops execute code in the environment that calls them, which means that loops can and will modify the objects in the environment. This can be very useful---unless you forget that it happens.")
+strict_check("n = 5. Are you surprised? R's loops are not like functions, which safely execute code in a new environment. R's loops execute code in the environment that calls them, which means that loops will modify the objects in the environment. This is important to know. It can be very useful---but not if you forget that it happens.")
 ```
 
 ### count
 
-One way to prevent loops from altering objects in your workspace is to put the loop into a function. For example, here is a function that counts from one to the number `x`. Can you write something similar?
+One way to prevent loops from altering objects in your workspace is to put the loop into a function. For example, here is a function that counts from one to the number `x`. Do you see how it works?
 
 ```{r}
 count <- function(x) {
@@ -136,7 +149,7 @@ count <- function(x) {
 }
 ```
 
-* Write a function named `count_down` that counts from `x` to zero. Be sure to arrange for the loop to end! Then click Submit Answer.
+* Can you write something similar? Write a function named `count_down` that counts from `x` to zero. Be sure to arrange for the loop to end! Then click Submit Answer.
 
 ```{r countdown, exercise = TRUE}
 count_down <- function(x) {
@@ -173,16 +186,16 @@ count_down <- function(x) {
 ```
 
 ```{r countdown-check}
-strict_check("You know this sounds a lot like a rocket launch...")
+strict_check("You know, this sounds a lot like a rocket launch...")
 ```
 
 ### return
 
-`break` is not the only way to end a loop in R. You can also end a loop with a `return()` statement (i.e. R will exit the loop when it runs `return()`. This is a useful way to return a message or value from the loop. For example, `return(n)` would return the value of `n` at the end of the loop.
+`break` is not the only way to end a loop in R. You can also end a loop with a `return()` statement. R will exit the loop and return the value supplied by `return()`. 
 
-* Alter your function below to `return()` `"Blast off!"` at the end of the loop. You will no longer need the `break` command. Then click Submit Answer.
+* Alter your function below to end the loop with `return("Blast off!")`. You will no longer need the `break` command. Then click Submit Answer.
 
-```{r blastoff-solution}
+```{r blastoff, exercise = TRUE}
 count_down <- function(x) {
   n <- x
   repeat {
@@ -209,14 +222,44 @@ count_down <- function(x) {
 ```
 
 ```{r blastoff-check}
-strict_check("You now know how to repeat yourself in a function. This opens up many new possibilities. Let's explore one.")
+strict_check("Return is a useful way to return a message or value from a loop.")
 ```
 
-### \t Prime numbers
+### \t
 
-In mathematics, a _prime_ number is a number that can only be divided evenly by itself and the number one. In other words, if you try to divide a prime number by any other number, you get a remainder. For example, five is a prime number:
+And for satisfaction's sake:
+
+```{r echo = FALSE}
+count_down <- function(x) {
+  n <- x
+  repeat {
+    print(n)
+    if (n == 0) return("Blast off!")
+    n <- n - 1
+  }
+}
+```
 
 ```{r}
+count_down(10)
+```
+
+### \t
+
+`repeat` captures the essence of loops in R, but it is the least commonly used type of loop. In the next section, you will learn how to refine `repeat` loops into two common types of loops: 
+
+1. `while` loops, and
+1. `for` loops
+
+## while and for
+
+### \t Case study - Prime numbers
+
+In mathematics, a _prime_ number is a number that can only be divided evenly by itself and the number one. In other words, if you try to divide a prime number by any number less than itself, you get a remainder (_to keep things simple, we will only consider positive numbers_). 
+
+For example, five is a prime number because you get a remainder when you divide it by two, three, and four:
+
+```{r results ='hold'}
 5 / 5
 5 / 4
 5 / 3
@@ -224,25 +267,29 @@ In mathematics, a _prime_ number is a number that can only be divided evenly by 
 5 / 1
 ```
 
-One thing that makes prime numbers interesting is that it is so hard to prove that a number is prime.  
+Interestingly, it is hard to prove that a number is prime...
 
 ### \t
 
-...unless you are a computer. Then you can prove that a number is prime by dividing the number by every number less than itself and checking whether or not the  result has a remainder.
+...unless you are a computer. Then you can divide the number by every number less than itself and show that the result has a remainder.
 
-Do you see where this is going? Yes! You're going to write a function that determines whether or not a number is prime (consider this a computer science right of passage).
+Do you see where this is going? 
+
+Yes! You are going to write a function that checks if a number is prime. (Consider this a computer science right of passage).
 
 ###  %%
 
-To do this, you'll need to use the modulo function, `a %% b`. Modulo is an arithmetic operator that returns the remainder of dividing `b` from `a`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
+To do this, you'll need to use the modulo function, `a %% b`. Modulo is an arithmetic operator that returns the remainder of dividing `a` by `b`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
 
-```{r}
+```{r results='hold'}
 5 %% 5
 5 %% 4
 5 %% 3
 5 %% 2
 5 %% 1
 ```
+
+Modulo doesn't return a decimal, it returns the number that remains once you subtract from `a` the largest multiple of `b` (i.e the number you would get for the remainder if you did long division).
 
 ### \t
 
