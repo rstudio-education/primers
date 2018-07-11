@@ -1,11 +1,12 @@
 ---
-title: "Loops"
+title: "Loops in R"
 tutorial:
   version: 0.01
 output: 
   learnr::tutorial:
     progressive: true
     allow_skip: true
+    highlight: tango
 runtime: shiny_prerendered
 ---
 
@@ -23,25 +24,27 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
-## Loops in R
+## repeat
 
 ### \t
 
-Many Data Science tasks require you to do the same thing over and over again. This is boring, drugerous work---but not for your computer! Computers are excellent at repetitive tasks.
+Many Data Science tasks require you to do the same thing over and over again. This is boring work---but not for your computer!
 
 But how do you ask your computer to repeat a task? 
 
 * The purrr package provides one way. I recommend that you check out the Iteration primer to learn how to use purrr and its map functions.
 
-* This tutorial will show you another way. You will learn how to repeat tasks with R's loop functions. Why learn about loops now? Because you know enough about R to understand loops, and loops will expand what you can do with your functions.
+* This tutorial will show you another way. You will learn how to repeat tasks with R's loop functions. You know know enough to understand loops, and loops will expand your ability to write useful functions.
 
 ### Did you know?
 
-Before we go on, you should know that some languages, like C, C++ and python, use loops as an _all purpose_ programming tool. This approach will not work well in R.
+Did you know that some languages, like C, C++ and python, use loops as an _all purpose_ programming tool. This approach will not work well in R.
 
-R's loops are the right tool for a very specific job, but they lose out to other methods for most jobs. This is due to R's user-oriented design: most R functions implement their own pre-optimized loops behind the scenes in a lower level language. These built-in loops are much faster than any loop you could write at the command line. 
+R's loops are the right tool for a very specific job, but they lose out to other methods for other jobs. This is due to R's user-oriented design: most R functions implement their own pre-optimized loops behind the scenes in a lower level language. These built-in loops are much faster than any loop you could write at the command line. 
 
-But don't let this drive you loopy! You'll learn all you need to know about loops in R if you read through to the end of _Recursion and Vectorization_ before you leave this tutorial.
+But don't let this drive you loopy! You'll learn when and when not to use loops in R if you read through to the end of _When to use loops_. But first, we have a more pressing topic:
+
+What is a loop anyways?
 
 ### loops
 
@@ -63,20 +66,24 @@ repeat {
 }
 ```
 
+```{r echo = FALSE}
+cat("Hello\nHello\nHello\nHello\nHello\n...")
+```
+
 `repeat` will execute all of the code between the braces. Then it will execute it again. And again. And again...
 
 ### \t
 
 ```{r repeat-quiz, echo = FALSE}
 question("When will `repeat` stop executing the code?",
-         answer("After 10 times.", message = "Repeat will repeat your code until the end of time. This isn't particularly useful, so you will almost always use repeat with..."),
+         answer("After five times.", message = "Repeat will repeat your code until the end of time (I shortened things in the example above). This isn't particularly useful, so you will almost always use repeat with..."),
          answer("Never, unless you or your computer intervene.", correct = TRUE, 
          message = "Repeat will repeat your code until the end of time. This isn't particularly useful, so you will almost always use repeat with..."))
 ```
 
 ### break
 
-When an R loop encounters the `break` command in a loop, it exits the loop. This provides a handy way to schedule the end of a `repeat` loop.
+When an R loop encounters the `break` command, it exits the loop. This lets you schedule the end of a `repeat` loop.
 
 * How many times will R repeat the code in the loop below? Make a prediction then Click Submit Answer to see if you are right.
 
@@ -108,7 +115,7 @@ Here is a good question:
 
 What happens to the value of `n` when you run the loop? 
 
-`n` is defined as `1` _outside_ of the loop. Is it still `1` outside of the loop when the loop is finished?
+`n` is defined as `1` _outside_ of the loop. Is `n` still `1` when the loop is finished?
 
 ```{r results='hide'}
 n <- 1
@@ -136,7 +143,7 @@ strict_check("n = 5. Are you surprised? R's loops are not like functions, which 
 
 ### count
 
-One way to prevent loops from altering objects in your workspace is to put the loop into a function. For example, here is a function that counts from one to the number `x`. Do you see how it works?
+One way to prevent loops from altering objects in your environment is to put the loop into a function. For example, here is a function that counts from one to the number `x`. Do you see how it works?
 
 ```{r}
 count <- function(x) {
@@ -149,7 +156,7 @@ count <- function(x) {
 }
 ```
 
-* Can you write something similar? Write a function named `count_down` that counts from `x` to zero. Be sure to arrange for the loop to end! Then click Submit Answer.
+* Can you write something similar? Write a function named `count_down` that counts from `x` to one. Be sure to arrange for the loop to end! Then click Submit Answer.
 
 ```{r countdown, exercise = TRUE}
 count_down <- function(x) {
@@ -163,7 +170,7 @@ count_down <- function(x) {
 ```
 
 ```{r countdown-hint-1}
-"Begin by setting n = x. In which direction should you increment n to get to zero?"
+"Begin by setting n = x. In which direction should you increment n to get to one?"
 ```
 
 ```{r countdown-hint-2}
@@ -171,7 +178,7 @@ count_down <- function(x) {
 ```
 
 ```{r countdown-hint-3}
-"Arrange to break the loop after you print n when n = 0."
+"Arrange to break the loop after you print n when n = 1."
 ```
 
 ```{r countdown-solution}
@@ -179,14 +186,14 @@ count_down <- function(x) {
   n <- x
   repeat {
     print(n)
-    if (n == 0) break
+    if (n == 1) break
     n <- n - 1
   }
 }
 ```
 
 ```{r countdown-check}
-strict_check("You know, this sounds a lot like a rocket launch...")
+strict_check("You know, this sounds a lot like a rocket launch. Let's try to make the loop return the words 'Blast off!' when it ends. If we can do that, we could make loops return _anything_ when they end.")
 ```
 
 ### return
@@ -202,7 +209,7 @@ count_down <- function(x) {
   n <- x
   repeat {
     print(n)
-    if (n == 0) break
+    if (n == 1) break
     n <- n - 1
   }
 }
@@ -217,26 +224,24 @@ count_down <- function(x) {
   n <- x
   repeat {
     print(n)
-    if (n == 0) return("Blast off!")
+    if (n == 1) return("Blast off!")
     n <- n - 1
   }
 }
 ```
 
 ```{r blastoff-check}
-strict_check("Return is a useful way to return a message or value from a loop within a function.")
+strict_check("Return is a useful way to return a message or value from a loop within a function. And for satisfaction's sake...")
 ```
 
 ### \t
-
-And for satisfaction's sake:
 
 ```{r echo = FALSE}
 count_down <- function(x) {
   n <- x
   repeat {
     print(n)
-    if (n == 0) return("Blast off!")
+    if (n == 1) return("Blast off!")
     n <- n - 1
   }
 }
@@ -246,18 +251,27 @@ count_down <- function(x) {
 count_down(10)
 ```
 
+Congratulations! 
+
+A loop executes a piece of code multiple times, perhaps allowing changes to accumulate as it goes.
+
 ### \t
 
-`repeat` captures the essence of loops in R, but it is the least commonly used type of loop. In the next section, you will learn how to refine `repeat` loops into two common types of loops: 
-
+You've learned the essence of loops, now it is time to learn the forms. In the next sections, you will learn how to refine `repeat` loops into two common types of loops: 
 1. `while` loops, and
 1. `for` loops
 
-## while and for
+Each of these is a `repeat` loop adapted to a specific task.
 
-### \t Case study - Prime numbers
+### \t
 
-In mathematics, a _prime_ number is a number that can only be divided evenly by itself and the number one. In other words, if you try to divide a prime number by any number less than itself, you get a remainder (_to keep things simple, we will only consider positive numbers_). 
+Along the way, you will work through a simple project: you will write and then refine a function that checks whether a number is prime. (This is a common computer science right of passage).
+
+Let's begin the project now with a `repeat` loop. You'll need to know some things about prime numbers and `%%` to begin...
+
+### \t Prime numbers
+
+In mathematics, a _prime_ number is a number that can be divided evenly only by itself and the number one. In other words, if you try to divide a prime number by any number less than itself, you get a remainder (_to keep things simple, let's not worry about zero or negative numbers_). 
 
 For example, five is a prime number because you get a remainder when you divide it by two, three, and four:
 
@@ -275,10 +289,6 @@ Interestingly, it is hard to prove that a number is prime...
 
 ...unless you are a computer. Then you can divide the number by every number less than itself and show that the result has a remainder.
 
-Do you see where this is going? 
-
-Yes! You are going to write a function that checks if a number is prime. (Consider this a computer science right of passage).
-
 ###  %%
 
 To do this, you'll need to use the modulo function, `a %% b`. Modulo is an arithmetic operator that returns the remainder of dividing `a` by `b`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
@@ -291,19 +301,19 @@ To do this, you'll need to use the modulo function, `a %% b`. Modulo is an arith
 5 %% 1
 ```
 
-Modulo doesn't return a decimal, it returns the number that remains once you subtract from `a` the largest multiple of `b` (i.e the number you would get for the remainder if you did long division).
+Modulo doesn't return a decimal, it returns the number that remains once you subtract the largest multiple of `b` from `a` (i.e the number that you would get for the remainder if you did long division).
 
-### prime
+### is_prime
 
-The code below uses a `repeat` loop to provide the beginnings of a prime function.
+The code below uses a `repeat` loop to provide the beginnings of a function. Complete the loop:
 
 1. Change `n` to begin at `2` instead of `1`
-1. Add an `if` statement that checks whether `x %% n == 0` and returns `FALSE` if so.
-1. Add a second `if` statement that ends the loop and returns `TRUE` if/when the loop gets to `n == x`.
+1. Add an `if` statement that ends the loop and returns `TRUE` if/when `n == x`.
+1. Add a second `if` statement that that checks whether `x %% n == 0` and returns `FALSE` if so.
 1. Then Click Submit Answer
 
 ```{r prime-repeat, exercise = TRUE}
-prime <- function(x) {
+is_prime <- function(x) {
   n <- 1
   repeat {
     print(n)
@@ -315,32 +325,32 @@ prime <- function(x) {
 ```
 
 ```{r prime-repeat-solution}
-prime <- function(x) {
+is_prime <- function(x) {
   n <- 2
   repeat {
     print(n)
-    if (x %% n == 0) return(FALSE)
     if (n == x) return(TRUE)
+    if (x %% n == 0) return(FALSE)
     n <- n + 1
   }
 }
 ```
 
 ```{r prime-repeat-check}
-strict_check("Your loop works because a non-prime number will trigger the first if statement and return FALSE before the loop progresses to n = x. On the other hand, a prime number will not trigger the first if statement. It may not be the fanciest way to test for a prime number, but it works.")
+strict_check("The function works because a non-prime number will trigger the second if statement and return FALSE before the loop progresses to n = x. A prime number will reach n = x and return TRUE.")
 ```
 
 ### \t
 
-* Use `prime` to check whether or not 89 is a prime number. Click Submit Answer to run your code.
+* Use `is_prime` to check whether or not 89 is a prime number. Click Submit Answer to run your code.
 
 ```{r make-prime-repeat}
-prime <- function(x) {
+is_prime <- function(x) {
   n <- 2
   repeat {
     print(n)
-    if (x %% n == 0) return(FALSE)
     if (n == x) return(TRUE)
+    if (x %% n == 0) return(FALSE)
     n <- n + 1
   }
 }
@@ -351,50 +361,40 @@ prime <- function(x) {
 ```
 
 ```{r eighty-nine-solution}
-prime(89)
+is_prime(89)
 ```
 
 ```{r eighty-nine-check}
 strict_check("89 *is* prime. Now that you have a working prime function, let's modify it to use a more streamlined loop.")
 ```
 
-### A common pattern
+## while
 
-It is common for `repeat` loops to run until a logical condition is met. 
+### \t
 
-For example, `prime` runs until `n == x` (or until `x %% n == 0`, if that happens first):
+`while` loops run while a logical condition is true. 
+
+And, hey! So does our `repeat` loop! It runs _while_ n is less than x. How do you know? Because it stops and returns `TRUE` when n equals x.
 
 ```{r eval = FALSE}
-prime <- function(x) {
-  # n <- 2
+is_prime <- function(x) {
+  n <- 2
   repeat {
-    # print(n)
-    # if (x %% n == 0) return(FALSE)
+    print(n)
     if (n == x) return(TRUE)
-    # n <- n + 1
+    if (x %% n == 0) return(FALSE)
+    n <- n + 1
   }
 }
 ```
 
-### while
+Let's replace `repeat` with `while`.
 
-This pattern is so common that it gets its own type of loop: the `while` loop.
+### \t
 
-`while` takes a logical test, like `if`, and a chunk of code, like `repeat`. It will repeat the code until the logical test returns `FALSE` (unless something in the code ends the loop first).
-
-So for example, these two loops do the same thing:
+`while` takes a logical test, like `if`, and a chunk of code, like `repeat`. `while` will repeat the code until the logical test returns `FALSE` (unless something in the code ends the loop first). 
 
 ```{r}
-
-# repeat
-n <- 1
-repeat {
-  print(n)
-  if (n == 5) break
-  n <- n + 1
-}
-
-# while
 n <- 1
 while (n <= 5) {
   print(n)
@@ -402,25 +402,22 @@ while (n <= 5) {
 }
 ```
 
-### \t
+You can read `while` as "while this condition is true, repeat that."
 
-`while` loops can be easier to write than `repeat` loops; you do not need to insert your own `if` statement. 
+### Can you use while?
 
-`while` loops are also easier to read: `while` makes the code author's intentions obvious.
-
-### \t
-
-1. Rewrite the `prime` function to use a `while` loop instead of a `repeat` loop. The new loop should run while `n` is less than `x`. 
-1. Arrange for `prime` to return `TRUE` in its last line, after the loop is run. Under which conditions, will `prime` return this `TRUE`?
-1. Then click Submit Answer.
+* Rewrite `is_prime` to use `while` instead of `repeat`. The new loop should run while n is less than x. 
+* Have `is_prime` return `TRUE` in its last line, after the loop is run. 
+    * Under which conditions, will the function return `TRUE`?
+* Then click Submit Answer.
 
 ```{r prime-while, exercise = TRUE}
-prime <- function(x) {
+is_prime <- function(x) {
   n <- 2
   repeat {
     print(n)
-    if (x %% n == 0) return(FALSE)
     if (n == x) return(TRUE)
+    if (x %% n == 0) return(FALSE)
     n <- n + 1
   }
 }
@@ -431,7 +428,27 @@ prime <- function(x) {
 ```
 
 ```{r prime-while-solution}
-prime <- function(x) {
+is_prime <- function(x) {
+  n <- 2
+  while (n < x) {
+    print(n)
+    if (x %% n == 0) return(FALSE)
+    n <- n + 1
+  }
+  TRUE
+}
+```
+
+```{r prime-while-check}
+strict_check("`is_prime` will return TRUE if the loop comes to a natural end. That will only happen if `x` is a prime number.")
+```
+
+### \t
+
+Congratulations! Your `while` loop works.
+
+```{r echo = FALSE}
+is_prime <- function(x) {
   n <- 2
   while (n < x) {
     print(n)
@@ -443,50 +460,50 @@ prime <- function(x) {
 ```
 
 ```{r}
-strict_check("`prime` will only return TRUE if the loop comes to a natural end. That will only happen if `x` is a prime number. You already have the concept of loops down. Now you're just mastering the forms!")
+is_prime(7)
 ```
 
-### Another pattern
-
-Embedded in both your `while` loop and your `repeat` loop is another common pattern:
-
-Many loops increment over a defined set of values.
-
-In the first version of `prime`, the loop incremented over the values `2`, `3`, `4`,  ...`x` (to check whether any of the numbers would prematurely end the loop).
-
-You can see this in the code below: the loop begins at n = 2, ends at n = x, and advances one integer at a time between 2 and x.
-
-```{r eval = FALSE}
-# prime <- function(x) {
-  n <- 2
-  # repeat {
-    # print(n)
-    # if (x %% n == 0) return(FALSE)
-    if (n == x) return(TRUE)
-    n <- n + 1
-  # }
-# }
-```
+In fact, it does the same thing as your `repeat` loop. So why use `while`? 
 
 ### \t
 
-The while loop increments over the same set of values, `2`, `3`, `4`,  ...`x`, for the same reasons.
+`while` loops can be easier to write than `repeat` loops; you do not need to insert your own `if` statement. 
+
+`while` loops are also easier to read: `while` makes the code author's intentions obvious.
+
+Now let's look at `for`. `for` loops provide the same advantages for a different situation. A for loop says "for each of these values do this." 
+
+## for
+
+### \t
+
+A for loop takes a defined set of values and repeats the loop once for each of the values. 
+
+And, hey! So does our while loop! It runs once for each value in the set {2, 3, 4,  ...x}. How do you know? Because the loop begins with n = 2, increments n by one, and ends when n = x. 
 
 ```{r eval = FALSE}
-# prime <- function(x) {
+is_prime <- function(x) {
   n <- 2
   while (n < x) {
-    # print(n)
-    # if (x %% n == 0) return(FALSE)
+    print(n)
+    if (x %% n == 0) return(FALSE)
     n <- n + 1
-  # }
-  # TRUE
-# }
+  }
+  TRUE
+}
 ```
 
-### for
+Let's replace `while` with `for`.
 
-This task is so common, that R contains a third type of loop for incrementing over a set of values: the _for_ loop.
+
+### for syntax
+
+The syntax of `for` is similar to `while`, but instead of taking a logical test, `for` takes a three part statement:
+
+1. An object that may, or may not, be used in the code chunk that follows `for`.
+2. `in` (this never changes)
+3. A vector of values to iterate over. On each run of the loop, `for` will assign a different value of the vector to the object named in step 1.
+
 
 ```{r}
 for (n in c(1, 2, 3, 4, 5)) {
@@ -494,19 +511,11 @@ for (n in c(1, 2, 3, 4, 5)) {
 }
 ```
 
-### for syntax
-
-The syntax of `for` is similar to `while`, but instead of taking a logical test, `for` takes a three part statement:
-
-1. A name. The name does not need to appear in the code chunk that follows `for`, but it often does.
-2. `in` (this never changes)
-3. A vector of values to iterate over. `for` will assign a different value of the vector to the name for each run of the loop.
-
 `for` automatically ends the loop once it has iterated over each value in the vector.
 
-### \t
+### for example
 
-The `for` loop is very versatile. With `for`, you do not need to worry about how to increment over strange sets of values:
+`for` loops are very versatile. For example, `for` makes it easy to increment over strange sets of values:
 
 ```{r}
 for (i in c(1, 10, 200)) {
@@ -514,9 +523,9 @@ for (i in c(1, 10, 200)) {
 }
 ```
 
-### \t
+### for the win
 
-Nor do you need to stick to ordered sets, or even numbers:
+You can also increment over "un-ordered" sets. You don't even need to stick to numbers:
 
 ```{r}
 for (person in c("Betty", "Veronica", "Archie")) {
@@ -525,36 +534,26 @@ for (person in c("Betty", "Veronica", "Archie")) {
 }
 ```
 
-### for the win
+### seq
 
-I'd like you to replace the `while` loop in prime with a `for` loop. 
+That's great! But how can you pass `for` the set {2, 3, 4,  ...x}? You'll need to do something like that to retool `is_prime`.
 
-```{r eval = FALSE}
-prime <- function(x) {
-  n <- 2
-  while (n < x) {
-    print(n)
-    if (x %% n == 0) return(FALSE)
-    n <- n + 1
-  }
-  TRUE
-}
-```
-
-To do that you will need to figure out how to create the set `2`, `3`, `4`,  ...`x`.
-
-### \t seq_len
-
-One possibility is to use `seq_len(x)`, which creates a sequence of integers from `1` to `x`.
+One possibility is to use `seq(2, x)`, which creates a sequence of integers from 2 to x.
 
 ```{r}
-seq_len(10)
+seq(1, 10)
 ```
 
-* Convert `prime` to use a for loop that iterates over `n in seq_len(x)`. Then click Submit Answer.
+`seq`, `seq_len` and `seq_along` form a complete family of helper functions for creating sequences in R.
+
+### Can you use for?
+
+* Convert `is_prime` to use a for loop that iterates over `n in seq(2, x - 1)`. 
+    * Why wouldn't you want the loop to go all the way to n = x?
+* Then click Submit Answer.
 
 ```{r for-1, exercise = TRUE}
-prime <- function(x) {
+is_prime <- function(x) {
   n <- 2
   while (n < x) {
     print(n)
@@ -570,8 +569,8 @@ prime <- function(x) {
 ```
 
 ```{r for-1-solution}
-prime <- function(x) {
-  for (n in seq_len(x)) {
+is_prime <- function(x) {
+  for (n in seq(2, x - 1)) {
     print(n)
     if (x %% n == 0) return(FALSE)
   }
@@ -579,32 +578,34 @@ prime <- function(x) {
 }
 ```
 
-```{r}
-strict_check("You are so close, but this version of prime has a bug. Can you see what it is?")
+```{r for-1-check}
+strict_check("You don't want the loop to continue to the case where n = x because x %% x always returns zero, even if x is prime, which means our function would always return FALSE. That wouldn't be good.")
 ```
 
 ### \t
 
-You did great converting the `while` loop to a `for` loop, but there is one small problem: `seq_len(x)` creates the set `1`, `2`, `3`, `4`,  ...`x`, but we want the set `2`, `3`, `4`,  ...`x`. 
+Here's an odd question: what if you wanted to skip some value in a loop?
 
-See the difference? We don't want that `1`. It undermines our entire code strategy (no number will be returned as prime).
+For example, what if  we wanted to skip n = 5 when we run our loop?
+
+You can do that with the last loop helper provided by R, `next`.
 
 ### next
 
-One way around the problem is to use `next`, which is the last code helper provided by R. 
-
-When R encounters `next` in a loop, it will move on to the next iteration of the loop without executing the rest of the loop. Here, when n = 1, `next` causes R to move on to the next iteration of the loop (where n will equal 2).
+When R encounters `next` in a loop, it will move on to the next iteration of the loop without executing the rest of the loop. Here, when n = 5, `next` causes R to move on to the next iteration of the loop (where n will equal 6).
 
 ```{r eval = FALSE}
-prime <- function(x) {
-  for (n in seq_len(x)) {
-    if (n == 1) next
+is_prime <- function(x) {
+  for (n in seq(2, x - 1)) {
+    if (n == 5) next
     print(n)
     if (x %% n == 0) return(FALSE)
   }
   TRUE
 }
 ```
+
+If five is the last value in the loop, `next` will cause R to exit the loop.
 
 ### Quiz
 
@@ -620,55 +621,18 @@ while (n < 2) {
 ```{r next-quiz, echo = FALSE}
 question("Will this loop run forever?",
          answer("No"),
-         answer("Yes", correct = TRUE, message = "n will never increment to two  because R will skip over the end of the loop each time it encounters next. Be thoughtful when you write loops."),
+         answer("Yes", correct = TRUE, message = "n will never increment to two  because R will skip over the end of the loop each time it encounters next. Be thoughtful when you write loops!"),
          allow_retry = TRUE)
 ```
 
-### seq
-
-Another way around our `for` problem is to use `seq`, which creates a sequence of integers between two numbers.
-
-```{r}
-seq(2, 10)
-```
-
-`seq`, `seq_len` and `seq_along` form a complete family of helper functions for creating sequences in R.
-
 ### \t
 
-Refine your prime function one last time.
+Congratulations! You've learned how to use all of R's loop constructors! To be a loop master, click on the button to learn when to use loops in R and when not to.
 
-* Use `seq` to make `prime` work correctly. Then click Submit Answer.
-
-```{r for-2, exercise = TRUE}
-prime <- function(x) {
-  for (n in seq_len(x)) {
-    print(n)
-    if (x %% n == 0) return(FALSE)
-  }
-  TRUE
-}
-```
-
-```{r for-2-solution}
-prime <- function(x) {
-  for (n in seq(2, x)) {
-    print(n)
-    if (x %% n == 0) return(FALSE)
-  }
-  TRUE
-}
-```
-
-```{r for-2-check}
-strict_check("You've learned how to use all of R's loop constructors! To be a loop master, click on the continue to learn when to use loops in R and when not to.")
-```
-
-
-## Recursion and vectorization
+## When to use loops
 
 ```{r}
-prime <- function(x, n = 2) {
+is_prime <- function(x, n = 2) {
   if (n == x) TRUE
   else if (x %% n == 0) return(FALSE)
   else prime(x, n = n + 1)
