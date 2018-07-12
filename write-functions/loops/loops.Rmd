@@ -291,7 +291,7 @@ Interestingly, it is hard to prove that a number is prime...
 
 ###  %%
 
-To do this, you'll need to use the modulo function, `a %% b`. Modulo is an arithmetic operator that returns the remainder of dividing `a` by `b`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
+To do this, you'll need to use the modulo function, `a %% b`, which we met in the control flow tutorial. Modulo is an arithmetic operator that returns the remainder of dividing `a` by `b`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
 
 ```{r results='hold'}
 5 %% 5
@@ -627,16 +627,83 @@ question("Will this loop run forever?",
 
 ### \t
 
-Congratulations! You've learned how to use all of R's loop constructors! To be a loop master, click on the button to learn when to use loops in R and when not to.
+Congratulations! You've learned how to use all of R's loop functions! To be a loop master, click on the button to learn when to use loops in R and when not to.
 
 ## When to use loops
 
+### \t
+
+I mentioned earlier that loops should not appear as frequently in your R code as they would in your C, C++, or python code. Why is this? Because R is an extremely vectorized language.
+
+### Vectorization
+
+By "vectorized" I mean that most R functions are designed to take vectors as input and to return vectors as output. So if, for example, you'd like to take the square root of every value in a vector, you do not need to loop over the values in the vector...
+
+```{r}
+x <- c(1, 2, 3, 4, 5)
+y <- double(length = 5)
+for (i in seq_along(x)) {
+  y[i] <- sqrt(i)
+}
+y
+```
+
+...you can just pass the vector to the square root function.
+
+```{r}
+sqrt(x)
+```
+
+And the best part about R's vectorization is that it is very fast!
+
+### \t
+
+R's arithmetic operators are also vectorized. If you add two vectors, R will add each pair of elements in the vectors and return the results as a new vector.
+
+```{r}
+c(1, 2, 3, 4, 5) + c(1, 2, 3, 4, 5)
+```
+
+### \t
+
+And if you use R functions to build your functions, then your functions will inherit R's vectorization:
+
+```{r}
+round_square <- function(vec) {
+  sqs <- sqrt(vec)
+  round(sqs, digits = 2)
+}
+
+round_square(x)
+```
+
+### \t 
+
+Vectorization reduces the need to use loops. You can think of each vectorized function as implementing a loop for you.
+
+### recursion
+
+Some problems cannot be solved with vectorized functions, but even for these you do not necessarily need to use a loop. 
+
+For example, we could solve the prime problem with recursion. This is the strategy of having a function call itself. Until one of the recursively recalled functions returns an answer that is then passed up the call stack.
+
 ```{r}
 is_prime <- function(x, n = 2) {
-  if (n == x) TRUE
+  if (n == x) return(TRUE)
   else if (x %% n == 0) return(FALSE)
-  else prime(x, n = n + 1)
+  else is_prime(x, n = n + 1)
 }
 ```
 
-## Practice
+```{r}
+is_prime(89)
+is_prime(88)
+```
+
+### map
+
+Or you could use a map function from the purrr package.
+
+It is all up to you. The moral is that loops are not an all purpose tool in R. They are best reserved for problems that are not easy to solve with a vectorized function.
+
+To learn more about when you definitely _should_ use a loop, check out Hadley Wickham's three suggestions in [Advanced R](http://adv-r.had.co.nz/Functionals.html#functionals-not) (be aware, it is advanced).

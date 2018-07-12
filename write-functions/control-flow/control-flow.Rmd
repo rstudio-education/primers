@@ -1,0 +1,226 @@
+---
+title: "Control Flow"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+
+grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  strict_check <- function(x) x
+  check_code <- eval(parse(text = check_code))
+  list(message = check_code, correct = TRUE, location = "append")
+}
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## if and else
+
+### Control Flow
+
+_Control Flow_ refers to the order in which your function executes the statements in its code body.
+
+By default, R functions will execute each line of code in the body in order, and then return the result of the last line of code.
+
+But it doesn't have to be this way. This tutorial will show you how to write sophisticated functions that run different pieces of code in different situations.
+
+### evenness
+
+Here's a concrete example. Let's write a function that returns `TRUE` if (and only if) you give it an even number. Something like:
+
+```{r}
+is_even(2)
+```
+
+### %%
+
+You can test for evenness with the modulo operator,`a %% b`. Modulo returns the remainder of dividing `a` by `b`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
+
+```{r results='hold'}
+5 %% 5
+5 %% 4
+5 %% 3
+5 %% 2
+5 %% 1
+```
+
+Modulo doesn't return a decimal, it returns the number that remains once you subtract the largest multiple of `b` from `a` (i.e the number that you would get for the remainder if you did long division).
+
+### \t
+
+So x will be even if `x %% 2 == 0`. Do you follow?
+
+```{r}
+x <- 4
+x %% 2 == 0
+```
+
+Okay, so how do we make this a function?
+
+### \t
+
+* Wrap the test into a function named `is_even` and takes one argument named `x`. Then click Submit Answer.
+
+```{r is_even-1, exercise = TRUE}
+x %% 2 == 0
+```
+
+```{r is_even-1-solution}
+is_even <- function(x) {
+  x %% 2 == 0
+}
+```
+
+```{r is_even-1-check}
+strict_check("You might be thinking that this function is lame, but is it? It is true: the function only does what x %% 2 == 0 already does by itself. is_even(x) is easier to type and to read with understanding than x %% 2 == 0. However, you don't have to worry about that. We're going to make this function much cooler. Let's begin.")
+```
+
+### NAs
+
+Both of `is_even()` and `x %% 2 == 0` break down when x = NA, R's missing value character:
+
+```{r echo = FALSE}
+is_even <- function(x) {
+  x %% 2 == 0
+}
+```
+
+```{r}
+is_even(NA)
+```
+
+
+
+### if
+
+What if you want to run a line of code only in certain conditions?
+
+Is `x` even?
+
+```{r}
+is_even <- function(x) {
+  if (x %% 2 == 0) TRUE
+}
+```
+
+### else
+
+```{r}
+even <- function(x) {
+  if (x %% 2 == 0) TRUE
+  else FALSE
+}
+```
+
+### else if
+
+```{r}
+even <- function(x) {
+  if (is.na(x)) NA
+  else if (x %% 2 == 0) TRUE
+  else FALSE
+}
+```
+
+## stop and return
+
+### stop
+
+```{r}
+even <- function(x) {
+  if (is.null(x)) stop("x is NULL")
+  if (is.na(x)) NA
+  else if (x %% 2 == 0) TRUE
+  else FALSE
+}
+```
+
+### stopifnot
+
+```{r}
+even <- function(x) {
+  stopifnot(!is.null(x), "x is NULL")
+  if (is.na(x)) NA
+  else if (x %% 2 == 0) TRUE
+  else FALSE
+}
+```
+
+```{r}
+even <- function(x) {
+  if (x %% 2 == 0) TRUE
+  else FALSE
+}
+```
+
+### return
+
+```{r}
+even <- function(x) {
+  if (x %% 2 == 0) return(TRUE)
+  FALSE
+}
+```
+
+## && and ||
+
+* When combing tests always use one of the double forms. Their advantages really begin to shine with control flow.
+
+* only looks at first element, so no warning message
+
+* doesn't check second element unless necessary
+
+### &&
+
+```{r}
+is_natural <- function(x) {
+  if (x > 0) {
+    if (x == trunc(x)) {
+      TRUE
+    }
+  } else {
+    FALSE
+  }
+}
+```
+
+```{r}
+is_natural <- function(x) {
+  if (x > 0 && x == trunc(x)) TRUE
+  else FALSE
+}
+```
+
+## Vectorized if
+
+### if_else
+
+```{r}
+is_natural <- function(x) {
+  if_else (x > 0 && x == trunc(x), TRUE, FALSE)
+}
+```
+
+* mention base::ifelse
+
+### case_when
+
+```{r}
+sign <- function(x) {
+  case_when(x > 0 ~ "+",
+            x == 0 ~ "0",
+            x < 0 ~ "-")
+}
+```
+
+* base::switch
