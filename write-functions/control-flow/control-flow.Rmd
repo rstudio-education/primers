@@ -13,6 +13,13 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
 library(grader)
+library(lubridate)
+
+day_number <- function(date) {
+  require("lubridate")
+  date <- suppressWarnings(mdy(date))
+  yday(date)
+}
 
 grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
   strict_check <- function(x) x
@@ -34,143 +41,202 @@ By default, R functions will execute each line of code in the body in order, and
 
 But it doesn't have to be this way. This tutorial will show you how to write sophisticated functions that run different pieces of code in different situations.
 
-### evenness
+### What's your sign?
 
-Here's a concrete example. Let's write a function that returns `TRUE` if (and only if) you give it an even number. Something like:
+To make it fun, let's write a simple function that takes a date and tells you something groovy.
 
-```{r}
-is_even(2)
-```
+Our function will tell you whether a date falls under Capricorn, the smartest and most hard-working of the astrological signs.
 
-### %%
+### day_number
 
-You can test for evenness with the modulo operator,`a %% b`. Modulo returns the remainder of dividing `a` by `b`. For example, when you divide five by five, nothing is left over. When you divide five by four, one is left over. When you divide five by three, two is left over. And so on.
+To make our lives easier, we will use `day_number()` a helper function that I wrote with the lubridate package.
 
-```{r results='hold'}
-5 %% 5
-5 %% 4
-5 %% 3
-5 %% 2
-5 %% 1
-```
-
-Modulo doesn't return a decimal, it returns the number that remains once you subtract the largest multiple of `b` from `a` (i.e the number that you would get for the remainder if you did long division).
-
-### \t
-
-So x will be even if `x %% 2 == 0`. Do you follow?
+`day_number` takes a character string that contains a date and tells you which day of the year the date falls on from 1 to 365 (or 366 in a leap year).
 
 ```{r}
-x <- 4
-x %% 2 == 0
+day_number("Jan 1st, 2018")
+day_number("12/1/2020")
+day_number("10-9-2000")
 ```
 
-Okay, so how do we make this a function?
+Since `day_number` is written with lubridate, it does a good job of recognizing dates as long as the month, day, and year components of the date appear in that order: month, then day, then year.
 
-### \t
+### When is Capricorn?
 
-* Wrap the test into a function named `is_even` and takes one argument named `x`. Then click Submit Answer.
+Let's get down to business.
 
-```{r is_even-1, exercise = TRUE}
-x %% 2 == 0
-```
+Roughly speaking, any day that falls _on or before_ January 19 occurs under the sign of Capricorn. A baby born during this time would be Capricorn. The exact date changes from year to year, but we'll ignore that (the date doesn't change _too_ much).
 
-```{r is_even-1-solution}
-is_even <- function(x) {
-  x %% 2 == 0
-}
-```
+The `day_number()` of January 19 is 19.
 
-```{r is_even-1-check}
-strict_check("You might be thinking that this function is lame, but is it? It is true: the function only does what x %% 2 == 0 already does by itself. is_even(x) is easier to type and to read with understanding than x %% 2 == 0. However, you don't have to worry about that. We're going to make this function much cooler. Let's begin.")
-```
-
-### NAs
-
-Both of `is_even()` and `x %% 2 == 0` break down when x = NA, R's missing value character:
-
-```{r echo = FALSE}
-is_even <- function(x) {
-  x %% 2 == 0
-}
-```
-
-```{r}
-is_even(NA)
-```
-
-
+Now let's write a function that tests whether a date falls on or before January 19 and returns `TRUE` if so.
 
 ### if
 
-What if you want to run a line of code only in certain conditions?
-
-Is `x` even?
+Ta da! This function uses an `if` statement, one of the most important tools for controlling flow.
 
 ```{r}
-is_even <- function(x) {
-  if (x %% 2 == 0) TRUE
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n <= 19) TRUE
 }
 ```
 
-### else
+Each `if` statement begins with `if` followed by a logical condition (in parentheses) and then some code. R will evaluate the code only if the logical condition returns `TRUE`. Otherwise, R will ignore the code.
+
+Can you predict how `is_capricorn` will work?
+
+### \t
+
+```{r is-quiz, echo = FALSE}
+quiz("if",
+     question('What will `is_capricorn("Jan 1, 2018")` return?',
+              answer("TRUE", correct = TRUE, message = "The if statement is the last line of code in the function body, so R will return its result. In this case n = 1, so the if condition will be satisfied and R will evaluate the code that follows the if statement, which returns TRUE. (Yes TRUE returns TRUE: you can try it for yourself if you have a command line handy. If you type TRUE in the command line and press enter, R will return TRUE.)"),
+              answer("FALSE"),
+              answer("Nothing"),
+              allow_retry = TRUE),
+     question('What will `is_capricorn("March 1, 2018")` return?',
+              answer("TRUE", message = "R doesn't return TRUE; since n = 60 in this case, the if condition is false. As a result, R does not evaluate the code that follows it."),
+              answer("FALSE", message = "You are right that R does not return TRUE, but that doesn't mean that R will return FALSE. Let's look at why you might think this: the if condition n <= 19 does evaluate to FALSE, but R doesn't pass this information on (for example as the result of the function). R uses the condition to determine whether or not to evaluate the code that follows. Here, R determines NOT to evaluate the code that follows. R doesn't do the opposite of the code (i.e. return a FALSE because the code returns TRUE. R simply ignores the code."),
+              answer("Nothing", correct = TRUE, message = "This may seem surprising, so let's look at why this will happen. The if statement is the last line of the function, so R will return whatever the if statement returns. If the if statement does not return anything than neither will R. In this case, the condition of the if statement is not satisfied (here n = 60), so the statement does not evaluate its code and returns nothing. "),
+              allow_retry = TRUE)
+)
+```
+
+### \t
+
+If is amazingly useful, but our function isn't so useful. It returns `TRUE` if you pass it a date that occurs on or before January 19 (hooray!).
 
 ```{r}
-even <- function(x) {
-  if (x %% 2 == 0) TRUE
+is_capricorn("Jan 1, 2018")
+```
+
+...but it remains silent if you do not (boo!). 
+
+```{r}
+is_capricorn("March 1, 2018")
+```
+
+A better result would be to return `FALSE`. You can fix that with the complement of `if`: `else`.
+
+### else
+
+To use `else`, place the word else behind an if statement followed by a piece of code to run if the if condition is _not_ satisfied. Together `if` and `else` make a complete statement that says "If the condition is met do _this_. If it is not, do _that_."
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n <= 19) TRUE else FALSE
+}
+```
+
+Our new function will return `TRUE` if n is less than or equal to 19 and `FALSE` if n is not less than or equal to 19.
+
+```{r}
+is_capricorn("Jan 1, 2018")
+is_capricorn("March 1, 2018")
+```
+
+### A word about syntax
+
+Although you can put `if` and `else` on the same line, people seldom do. It is easy to miss the trailing `else` when you scan the code, and placing them on the same line can make very long lines.
+
+It would be more common to write our function like this:
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n <= 19) TRUE 
   else FALSE
+}
+```
+
+R parses the `if` and `else` lines as a single statement as long as the `else` is the first thing that follows the `if` statement.
+
+### braces
+
+You can also surround your code pieces with braces. Again R will interpret this as a single if else statement.
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n <= 19) {
+    TRUE 
+  } else {
+    FALSE
+  }
+}
+```
+
+### \t
+
+Braces provide a conveinet way to pass multiple lines of code to an if or if else statement. Depending on whether the if condition is met, R will run or not run everything between the braces.
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n <= 19) {
+    print("Is this your birthday?")
+    print("Then you must be a Capricorn!")
+    TRUE 
+  } else {
+    FALSE
+  }
 }
 ```
 
 ### else if
 
+You can also use `else` to chain together multiple `if` statements. 
+
+Did you know that you are also a Capricorn if you are born after (roughly) December 22 (n = 355)? It is true, but our original function returns `FALSE` for these dates. Let's try a new function:
+
 ```{r}
-even <- function(x) {
-  if (is.na(x)) NA
-  else if (x %% 2 == 0) TRUE
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n <= 19) TRUE
+  else if (n > 355) TRUE
   else FALSE
 }
 ```
 
-## stop and return
+### \t
 
-### stop
+```{r else-if, echo = FALSE}
+question('What will `is_capricorn("Dec 23, 2018")` return?',
+              answer("TRUE", correct = TRUE, message = "Click continue to see why."),
+              answer("FALSE"),
+              answer("Nothing"),
+              allow_retry = TRUE)
+```
+
+### \t 
 
 ```{r}
-even <- function(x) {
-  if (is.null(x)) stop("x is NULL")
-  if (is.na(x)) NA
-  else if (x %% 2 == 0) TRUE
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n <= 19) TRUE
+  else if (n > 355) TRUE
   else FALSE
 }
 ```
 
-### stopifnot
+R evaluates multi-part if else statements one part at a time. In this case:
 
-```{r}
-even <- function(x) {
-  stopifnot(!is.null(x), "x is NULL")
-  if (is.na(x)) NA
-  else if (x %% 2 == 0) TRUE
-  else FALSE
-}
-```
+1. R first checks whether n is less than or equal to 19. n is not, so R advances to the next clause, which is an else if clause. 
+1. Now R checks whether n is greater than 355. It is (n = 356), so R evaluates the code in this clause and ignores every clause that follows.
 
-```{r}
-even <- function(x) {
-  if (x %% 2 == 0) TRUE
-  else FALSE
-}
-```
+### \t
 
-### return
+You can use `else` to string together as many if statements as you like. R will treat the result as a single multi-part if else statement. R will always evaluate the clauses in order, executing the code in the first clause whose condition is met and ignoring every clause that follows. 
 
-```{r}
-even <- function(x) {
-  if (x %% 2 == 0) return(TRUE)
-  FALSE
-}
-```
+If you end the chain with an `else` statement (not followed by `if`), the `else` clause will act as a catch all case in case none of the preceding conditions are met.
+
+### Quiz
+
+(if vs. if else)
+
+What will the code below return. Click Submit Answer to check if you are right.
 
 ## && and ||
 
@@ -183,21 +249,86 @@ even <- function(x) {
 ### &&
 
 ```{r}
-is_natural <- function(x) {
-  if (x > 0) {
-    if (x == trunc(x)) {
-      TRUE
-    }
-  } else {
-    FALSE
-  }
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n < 20 | n > 355) TRUE
+  else FALSE
 }
 ```
 
 ```{r}
-is_natural <- function(x) {
-  if (x > 0 && x == trunc(x)) TRUE
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (n < 20 || n > 355) TRUE
   else FALSE
+}
+```
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (!is.na(n) && n < 20) TRUE
+  else if (!is.na(n) && n > 355) TRUE
+  else FALSE
+}
+```
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (!is.na(n) && (n < 20 || n > 355)) TRUE
+  else FALSE
+}
+```
+
+## stop and return
+
+### stop
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (is.na(n)) stop("Not a real date.")
+  if (n < 20 || n > 355) TRUE
+  else FALSE
+}
+```
+
+### stopifnot
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  stopifnot(!is.na(n), "Not a real date.")
+  if (n < 20 || n > 355) TRUE
+  else FALSE
+}
+```
+
+### return
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (is.na(n)) return(NA)
+  if (n < 20 || n > 355) TRUE
+  else FALSE
+}
+```
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (is.na(n)) return(NA)
+  n < 20 || n > 355
+}
+```
+
+```{r}
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if (is.na(n)) NA
+  else n < 20 || n > 355
 }
 ```
 
@@ -206,8 +337,9 @@ is_natural <- function(x) {
 ### if_else
 
 ```{r}
-is_natural <- function(x) {
-  if_else (x > 0 && x == trunc(x), TRUE, FALSE)
+is_capricorn <- function(date) {
+  n <- day_number(date)
+  if_else(is.na(n), NA, n < 20 | n > 355)
 }
 ```
 
@@ -216,10 +348,58 @@ is_natural <- function(x) {
 ### case_when
 
 ```{r}
-sign <- function(x) {
-  case_when(x > 0 ~ "+",
-            x == 0 ~ "0",
-            x < 0 ~ "-")
+sign <- function(date) {
+  n <- day_number(date)
+  if (is.na(n)) NA
+  else if (n > 355 || n <= 19) "Capricorn"
+  else if (n > 19 && n <= 49) "Aquarius"
+  else if (n > 49 && n <= 79) "Pisces"
+  else if (n > 79 && n <= 109) "Ares"
+  else if (n > 109 && n <= 140) "Taurus"
+  else if (n > 140 && n <= 171) "Gemini"
+  else if (n > 171 && n <= 203) "Cancer"
+  else if (n > 203 && n <= 234) "Leo"
+  else if (n > 234 && n <= 265) "Virgo"
+  else if (n > 265 && n <= 295) "Libra"
+  else if (n > 295 && n <= 325) "Scorpio"
+  else if (n > 325 && n <= 355) "Sagittarius"
+}
+```
+
+```{r}
+sign <- function(date) {
+  n <- day_number(date)
+  case_when(is.na(n) ~ NA_character_,
+            n > 355 || n <= 19 ~ "Capricorn",
+            n > 19 && n <= 49 ~ "Aquarius",
+            n > 49 && n <= 79 ~ "Pisces",
+            n > 79 && n <= 109 ~ "Ares",
+            n > 109 && n <= 140 ~ "Taurus",
+            n > 140 && n <= 171 ~ "Gemini",
+            n > 171 && n <= 203 ~ "Cancer",
+            n > 203 && n <= 234 ~ "Leo",
+            n > 234 && n <= 265 ~ "Virgo",
+            n > 265 && n <= 295 ~ "Libra",
+            n > 295 && n <= 325 ~ "Scorpio",
+            n > 325 && n <= 355 ~ "Sagittarius")
+}
+```
+
+```{r}
+sign <- function(date) {
+  n <- day_number(date)
+  case_when(n > 355 | n <= 19 ~ "Capricorn",
+            n > 19 & n <= 49 ~ "Aquarius",
+            n > 49 & n <= 79 ~ "Pisces",
+            n > 79 & n <= 109 ~ "Ares",
+            n > 109 & n <= 140 ~ "Taurus",
+            n > 140 & n <= 171 ~ "Gemini",
+            n > 171 & n <= 203 ~ "Cancer",
+            n > 203 & n <= 234 ~ "Leo",
+            n > 234 & n <= 265 ~ "Virgo",
+            n > 265 & n <= 295 ~ "Libra",
+            n > 295 & n <= 325 ~ "Scorpio",
+            n > 325 & n <= 355 ~ "Sagittarius")
 }
 ```
 
