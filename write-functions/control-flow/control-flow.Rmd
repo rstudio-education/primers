@@ -15,12 +15,6 @@ library(learnr)
 library(grader)
 library(lubridate)
 
-day_number <- function(date) {
-  require("lubridate")
-  date <- suppressWarnings(mdy(date))
-  yday(date)
-}
-
 grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
   strict_check <- function(x) x
   check_code <- eval(parse(text = check_code))
@@ -35,372 +29,525 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 ### Control Flow
 
-_Control Flow_ refers to the order in which your function executes the statements in its code body.
+_Control Flow_ refers to the order in which your function executes the statements in its body of code.
 
-By default, R functions will execute each line of code in the body in order, and then return the result of the last line of code.
+By default, R functions will execute each line of code in the body in order, and then return the result of the last line of code. But it doesn't have to be this way. You can write functions that run some code in some situations and other code in other situations. 
 
-But it doesn't have to be this way. This tutorial will show you how to write sophisticated functions that run different pieces of code in different situations.
-
-### What's your sign?
-
-To make it fun, let's write a simple function that takes a date and tells you something groovy.
-
-Our function will tell you whether a date falls under Capricorn, the smartest and most hard-working of the astrological signs.
-
-### day_number
-
-To make our lives easier, we will use `day_number()` a helper function that I wrote with the lubridate package.
-
-`day_number` takes a character string that contains a date and tells you which day of the year the date falls on from 1 to 365 (or 366 in a leap year).
-
-```{r}
-day_number("Jan 1st, 2018")
-day_number("12/1/2020")
-day_number("10-9-2000")
-```
-
-Since `day_number` is written with lubridate, it does a good job of recognizing dates as long as the month, day, and year components of the date appear in that order: month, then day, then year.
-
-### When is Capricorn?
-
-Let's get down to business.
-
-Roughly speaking, any day that falls _on or before_ January 19 occurs under the sign of Capricorn. A baby born during this time would be Capricorn. The exact date changes from year to year, but we'll ignore that (the date doesn't change _too_ much).
-
-The `day_number()` of January 19 is 19.
-
-Now let's write a function that tests whether a date falls on or before January 19 and returns `TRUE` if so.
+Let's learn how!
 
 ### if
 
-Ta da! This function uses an `if` statement, one of the most important tools for controlling flow.
+Take a look at the code below. What is happening? 
 
 ```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n <= 19) TRUE
+x <- 1
+```
+
+```{r}
+x == 1
+x > 1
+log(x)
+if (x == 1) log(x)
+```
+
+```{r}
+if (x > 1) log(x)
+```
+
+Try to describe what `if` is doing in your own words. Your best guess is okay!
+
+### \t
+
+```{r if-quiz, echo = FALSE}
+question("Which describes `if`'s behavior? (Check all that apply).",
+         answer("`if` takes a logical test and a piece of code. It runs the code _if_ the test returns TRUE.", correct = TRUE, message = "`if` is a way to run code only in certain cases. When you use `if`, you first pass it a logical test surrounded by parentheses and then a piece of code."),
+         answer("`if` takes a logical test and a piece of code. It does not run the code _if_ the logical test returns FALSE.", correct = TRUE, message = "`if` will run the piece of code if the logical test returns TRUE and not run the code if the logical test returns FALSE."),
+         answer("`if` returns the results of the code that appears in _parentheses_ behind `if`."),
+         answer("`if` always executes all of the code that follows it.", message = "`if` will always execute the logical test that appears in parentheses behind `if`. However, `if` will only execute the code that appears after the logical test if the logical test returns TRUE."),
+         allow_retry = TRUE)
+```
+
+### Data cleaner
+
+Think you have it? Let's check. We'll use `if` to write a useful function.
+
+Many data sets use their own symbols to represent missing values. For example, NOAA will often use `-99` to represent missing values in weather data sets. Let's write a function that checks whether a value is -99, and if so replaces the value with NA.
+
+```{r echo = FALSE}
+clean <- function(x) {
+  if (x == -99) x <- NA
+  x
 }
 ```
 
-Each `if` statement begins with `if` followed by a logical condition (in parentheses) and then some code. R will evaluate the code only if the logical condition returns `TRUE`. Otherwise, R will ignore the code.
-
-Can you predict how `is_capricorn` will work?
-
-### \t
-
-```{r is-quiz, echo = FALSE}
-quiz("if",
-     question('What will `is_capricorn("Jan 1, 2018")` return?',
-              answer("TRUE", correct = TRUE, message = "The if statement is the last line of code in the function body, so R will return its result. In this case n = 1, so the if condition will be satisfied and R will evaluate the code that follows the if statement, which returns TRUE. (Yes TRUE returns TRUE: you can try it for yourself if you have a command line handy. If you type TRUE in the command line and press enter, R will return TRUE.)"),
-              answer("FALSE"),
-              answer("Nothing"),
-              allow_retry = TRUE),
-     question('What will `is_capricorn("March 1, 2018")` return?',
-              answer("TRUE", message = "R doesn't return TRUE; since n = 60 in this case, the if condition is false. As a result, R does not evaluate the code that follows it."),
-              answer("FALSE", message = "You are right that R does not return TRUE, but that doesn't mean that R will return FALSE. Let's look at why you might think this: the if condition n <= 19 does evaluate to FALSE, but R doesn't pass this information on (for example as the result of the function). R uses the condition to determine whether or not to evaluate the code that follows. Here, R determines NOT to evaluate the code that follows. R doesn't do the opposite of the code (i.e. return a FALSE because the code returns TRUE. R simply ignores the code."),
-              answer("Nothing", correct = TRUE, message = "This may seem surprising, so let's look at why this will happen. The if statement is the last line of the function, so R will return whatever the if statement returns. If the if statement does not return anything than neither will R. In this case, the condition of the if statement is not satisfied (here n = 60), so the statement does not evaluate its code and returns nothing. "),
-              allow_retry = TRUE)
-)
+```{r}
+clean(1)
+clean(-99)
 ```
 
 ### \t
 
-If is amazingly useful, but our function isn't so useful. It returns `TRUE` if you pass it a date that occurs on or before January 19 (hooray!).
+Here is a start. `clean()` takes an object and returns the object, but `clean()` is missing an important piece of code.
 
-```{r}
-is_capricorn("Jan 1, 2018")
+* Add an `if` statement to the beginning of `clean()`. Your statement should assign NA to x if x equals -99. Then click Submit Answer.
+
+```{r clean-setup}
+x <- -99
 ```
 
-...but it remains silent if you do not (boo!). 
-
-```{r}
-is_capricorn("March 1, 2018")
+```{r clean, exercise = TRUE}
+clean <- function(x) {
+  # add if statement here
+  x
+}
 ```
 
-A better result would be to return `FALSE`. You can fix that with the complement of `if`: `else`.
+```{r clean-hint}
+"Don't forget to use == to check for equality."
+```
+
+
+```{r clean-solution}
+clean <- function(x) {
+  if (x == -99) x <- NA
+  x
+}
+```
+
+```{r clean-check}
+strict_check("clean() replaces x with NA if x is -99, otherwise clean() returns x as is.")
+```
 
 ### else
 
-To use `else`, place the word else behind an if statement followed by a piece of code to run if the if condition is _not_ satisfied. Together `if` and `else` make a complete statement that says "If the condition is met do _this_. If it is not, do _that_."
+Here is a second version of `clean()` that relies on a new command: `else`. Can you tell what `else` does?
 
 ```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n <= 19) TRUE else FALSE
+clean <- function(x) {
+  if (x == -99) NA else x
 }
 ```
 
-Our new function will return `TRUE` if n is less than or equal to 19 and `FALSE` if n is not less than or equal to 19.
+* Run `clean()` with several different values, `22`, `-99`, `3`. What does `clean()` return in each case? Why?
 
-```{r}
-is_capricorn("Jan 1, 2018")
-is_capricorn("March 1, 2018")
+```{r else-setup}
+clean <- function(x) {
+  if (x == -99) NA else x
+}
+```
+
+```{r else, exercise = TRUE}
+
+```
+
+### \t
+
+```{r else-quiz, echo = FALSE}
+question("Which describes `else`? (Check all that apply).",
+         answer("R interprets `else` as a continuation of the `if` statement that immediately precedes it.", correct = TRUE, message = "`else` always follows an `if` statement (if not, `else` returns an error), and R always sees the combined `if` and `else` statements as a single statement."),
+         answer("Unlike `if`, `else` does not take a logical test.", correct = TRUE),
+         answer("Like `if`, `else` takes a piece of code.", correct = TRUE),
+         answer("`else` executes the piece of code if the `if` condition returns FALSE.", correct = TRUE),
+         answer("`else` does not execute the piece of code if the `if` condition returns TRUE.", correct = TRUE, message = "Think of a combined `if` `else` statement as a complete description: if the logical test at the start of the statement returns TRUE, R will run the code that follows `if` (but not the code that follows `else`). If the condition returns FALSE, R will run the code that follows `else` (but not the code that follows `if`)."),
+         allow_retry = TRUE)
 ```
 
 ### A word about syntax
 
-Although you can put `if` and `else` on the same line, people seldom do. It is easy to miss the trailing `else` when you scan the code, and placing them on the same line can make very long lines.
+Although you can put `if` and `else` on the same line, you shouldn't because it is easy for readers to miss the trailing `else` when they scan the code. Also, placing `if` and `else` on the same line can make very long lines.
 
 It would be more common to write our function like this:
 
 ```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n <= 19) TRUE 
-  else FALSE
+clean <- function(x) {
+  if (x == -99) NA 
+  else x
 }
 ```
 
-R parses the `if` and `else` lines as a single statement as long as the `else` is the first thing that follows the `if` statement.
+R parses the `if` and `else` lines as a single statement as long as `else` is the first thing that follows the `if` statement. As a result, R will return the result of the combined if else statement if it appears at the end of a function.
 
-### braces
+### \{\}
 
-You can also surround your code pieces with braces. Again R will interpret this as a single if else statement.
+You can also pass `if` and `else` chunks of code surrounded by braces, `{}`. Braces group multiple lines of code into a single "piece." When you use braces in an if else statement, R will run (or not run) everything between the braces.
+
+In this example, R will run all three lines that follow `else` whenever x does not equal -99.
 
 ```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n <= 19) {
-    TRUE 
+clean <- function(x) {
+  if (x == -99) {
+    NA
   } else {
-    FALSE
+    x <- x^2
+    x <- sqrt(x)
+    x
   }
 }
 ```
 
-### \t
+When you use braces, indent everything between the braces by two spaces to make your code more readable. And of course, you can use braces to organize your code even if you have a single line of code between the braces.
 
-Braces provide a conveinet way to pass multiple lines of code to an if or if else statement. Depending on whether the if condition is met, R will run or not run everything between the braces.
+### If else quiz
 
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n <= 19) {
-    print("Is this your birthday?")
-    print("Then you must be a Capricorn!")
-    TRUE 
-  } else {
-    FALSE
-  }
+SAS often saves missing values as `"."`.
+
+* Write a function named `clean2` that takes a value named `x` and returns an NA if the value is `"."` (and returns the value of `x` otherwise).
+
+```{r clean2-setup}
+x <- "."
+```
+
+```{r clean2, exercise = TRUE}
+
+```
+
+```{r clean2-hint}
+"clean2() should closely resemble clean()."
+```
+
+```{r clean2-solution}
+clean <- function(x) {
+  if (x == ".") NA 
+  else x
 }
+```
+
+```{r clean2-check}
+strict_check("What if you'd like to check for both -99 and . in the same function?")
 ```
 
 ### else if
 
-You can also use `else` to chain together multiple `if` statements. 
+In that case, you can use `else` to chain together multiple `if` statements.
 
-Did you know that you are also a Capricorn if you are born after (roughly) December 22 (n = 355)? It is true, but our original function returns `FALSE` for these dates. Let's try a new function:
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n <= 19) TRUE
-  else if (n > 355) TRUE
-  else FALSE
+```{r eval = FALSE}
+clean <- function(x) {
+  if (x == -99) NA 
+  else if (x == ".") NA
+  else x
 }
 ```
 
 ### \t
 
-```{r else-if, echo = FALSE}
-question('What will `is_capricorn("Dec 23, 2018")` return?',
-              answer("TRUE", correct = TRUE, message = "Click continue to see why."),
-              answer("FALSE"),
-              answer("Nothing"),
-              allow_retry = TRUE)
-```
+This as analaogus to 
 
-### \t 
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n <= 19) TRUE
-  else if (n > 355) TRUE
-  else FALSE
+```{r eval = FALSE}
+clean <- function(x) {
+  if (x == -99) NA 
+  else {
+      if (x == ".") NA
+      else x
+  }
 }
 ```
 
-R evaluates multi-part if else statements one part at a time. In this case:
+`clean()` will:
 
-1. R first checks whether n is less than or equal to 19. n is not, so R advances to the next clause, which is an else if clause. 
-1. Now R checks whether n is greater than 355. It is (n = 356), so R evaluates the code in this clause and ignores every clause that follows.
+1. Check whether `x == -99`. If so `clean()` will return NA and skip the rest of the code. If not, `clean()` will...
+1. Check whether `x == "."`. If so, `clean()` will return NA and skip the rest of the code. If not, `clean()` will...
+1. Evaluate `x` and return its value.
+
+`else if` is more readable than nested if else statements, especially if you use many `else if`s.
 
 ### \t
 
-You can use `else` to string together as many if statements as you like. R will treat the result as a single multi-part if else statement. R will always evaluate the clauses in order, executing the code in the first clause whose condition is met and ignoring every clause that follows. 
+You can use `else` to string together as many if statements as you like. R will treat the result as a single multi-part if else statement. 
+Be thoughtful with the order. R will always evaluate the clauses in order, executing the code in the _first clause whose condition is true_ and ignoring every clause after that. 
 
-If you end the chain with an `else` statement (not followed by `if`), the `else` clause will act as a catch all case in case none of the preceding conditions are met.
+### Your turn
+
+* Write a function named `clean()` that uses `if`, `else`, and `else if` statements to replace the following four values with NA before returning x, `-99`, `"."`, `""`, `"NaN"`. Then click Submit Answer.
+
+```{r clean3-setup}
+x <- ""
+```
+
+
+```{r clean3, exercise = TRUE}
+
+```
+
+```{r clean3-solution}
+clean <- function(x) {
+  if (x == -99) NA 
+  else if (x == ".") NA
+  else if (x == "") NA
+  else if (x == "NaN") NA
+  else x
+}
+```
+
+```{r clean3-check}
+strict_check("You can add as many else if after if as you like. However, you cannot add an else if clause after an else because R will interpret the else as the end of a complete if statement.")
+```
 
 ### Quiz
 
-(if vs. if else)
+```{r eval = FALSE}
+foo <- function(x) {
+  if (x > 2) "a"
+  else if (x < 2) "b"
+  else if (x == 1) "c"
+  else "d"
+}
+foo(1)
+```
 
-What will the code below return. Click Submit Answer to check if you are right.
+```{r else-if-quiz, echo = FALSE}
+question("What will this code return?",
+         answer('"a"', message = "R will not retunr a because the condition 1 > 2 is false."),
+         answer('"b"', correct = TRUE, message = 'The condition 1 < 2 is true, so R will evaluate the code that follows it (i.e. "b") and then stop.'),
+         answer('"a" "b"', message = "The conditions 1 < 2 and 1 == 1 are both TRUE, but R will stop after the _first_ true condition."),
+         allow_retry = TRUE)
+```
+
+### Quiz
+
+```{r eval = FALSE}
+clean <- function(x) {
+  if (x == -99) NA 
+  if (x == ".") NA
+  if (x == "NaN") NA
+  x
+}
+clean(-99)
+```
+
+```{r clean3-quiz, echo = FALSE}
+question("What will this code return?",
+         answer("NA", message = "Did you notice that the `if` statements are not linked by `else`? What difference does this make?"),
+         answer("-99", correct = TRUE, message = "Since the `if` clauses are not linked by `else`, R treats them as separate statements. R checks each if statement. After the first statement it runs NA, but does not return this as the result of the function (because this is not the final statement in the function). R does not run NA for the next two if statements. Then R reaches `x`, which is the last line and last statement in the function. R evaluates `x`, which equals -99, and returns -99 as the result of the function."),
+         allow_retry = TRUE)
+```
+
+### Congratulations!
+
+You now know how to use `if` and `else` in your code. Let's look at another way to control flow in R.
+
+## return() and stop()
+
+### \t
+
+You can tell R to stop executing a function early with 
+
+* `return()`
+* `stop()`, and
+* `stopifnot()`
+
+Each will only work in the context of a function (because they stop the function). You wouldn't run these directly at the command line, but they provide a powerful way to control the flow of your functions. They can make if else statements unnecessary and can even make your code less buggy.
+
+### return()
+
+When R encounters `return()` it will stop executing the function that called `return()`. If you pass a value to `return()`, R will return that value when it stops executing the function. Let's see how it works.
+
+```{r}
+impatient_square <- function(x) {
+  return(x)
+  x^2
+}
+```
+
+```{r return-quiz, echo = FALSE}
+question("Which value will `impatient_square(2)` return?",
+         answer("2", correct = TRUE, message = "R stops executing `impatient_square()` and returns `x` when R encounters `return(x)`. It doesn't matter that `return(x)` is not the last line of the function."),
+         answer("4", message = "R stops executing `impatient_square()` when it encounters `return(x)`. As a result, R does not evaluate `x^2`."),
+         allow_retry = TRUE)
+```
+
+### R with a python accent
+
+If you are a python user, you may already be using `return()` in your R code unnecessarily. In python, you explicitly tell each function what to return, e.g. 
+
+```python
+def mysquare(x):
+  y = x * x
+  return y
+```
+
+Translated to R this becomes:
+
+```{r}
+my_square <- function(x) {
+  y <- sum(x) / length(x)
+  return(y)
+}
+```
+
+But in R, this return is not needed. R functions automatically return the result of their last line of code. In R, you can save return for unusual control flow.
+
+### Using return()
+
+Remember this function? IT didn't work as eexpected because we forgot to link our if statements with `else`.
+
+* Fix the function not by adding `else`, but by adding `return()` in the right places. Then Click Submit Answer.
+
+```{r return, exercise = TRUE}
+clean <- function(x) {
+  if (x == -99) NA 
+  if (x == ".") NA
+  if (x == "NaN") NA
+  x
+}
+```
+
+```{r return-solution}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r return-check}
+strict_check("This version is slightly easier to read than a linked if else tree because you can think about each if clause separately. You can often avoid long, nested if else trees by using return thoughtfully.")
+```
+
+### NULL
+
+`clean()` is a fairly useful function, but it does have one flaw. 
+
+* What happens when `x = NULL`. Click Submit Answer and find out.
+
+```{r null, exercise = TRUE}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+clean(NULL)
+```
+
+```{r null-solution}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+clean(NULL)
+```
+
+```{r null-check}
+strict_check("clean() cannot handle NULL because if returns an error when it evaluates `NULL == -99`. And, unfortunately, the error message isn't very clear. This is the perfect case for `stop()`.")
+```
+
+### stop()
+
+`stop()` behaves like `return()`, but instead of returning a value, `stop()` returns an error, complete with a custom error message. Can you tell how it works?
+
+```{r eval = FALSE}
+immovable_square <- function(x) {
+  stop("I refuse to proceed.")
+  x^2
+}
+```
+
+```{r stop-quiz, echo = FALSE}
+question("What does `immovable_square(2)` return?",
+         answer("4", message = 'R will stop executing `immovable_square()` and throw an error when it comes to `stop("I refuse to proceed.")`.'),
+         answer("Error in immovable_square(2) : I refuse to proceed.", correct = TRUE, message = 'R will stop executing `immovable_square()` and throw an error when it comes to `stop("I refuse to proceed. The error message will look just like this; R inserts the message tht you pass as a character string to `stop()`.'),
+         allow_retry = TRUE)
+```
+
+### \t
+
+* Use if and `is.null()` to add a `stop()` call at the beginning of `clean()`. The command should return the error message `"x is NULL"` whenever x is NULL. 
+* Then click Submit Answer.
+
+```{r stop, exercise = TRUE}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stop-solution}
+clean <- function(x) {
+  if (is.null(x)) stop("x is NULL")
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stop-check}
+strict_check("Now `clean()` can handle NULL values in an intelligent way. This pattern (if + stop) is so common that R provides a shortcut for it, `stopifnot()`.")
+```
+
+### stopifnot()
+
+`stopifnot()` is a more readable substitute for statements that combine `if` and `stop`. Can you guess how it works?
+
+```{r stopifnot-quiz, echo = FALSE}
+question('Which of these does the equivalent of `if (x < 0) stop("x is less than zero")`?',
+         answer('`stopifnot(x < 0)`', message = "Good guess! But the function isn't called `stopif()`; it's called `stopifnot()`."),
+         answer('`stopifnot(x >= 0)`', correct = TRUE),
+         allow_retry = TRUE)
+```
+
+### differences
+
+`stopifnot()` is different from `if` + `stop()` in a few important ways: 
+
+1. Instead of checking whether a condition is met, `stopifnot()` checks whether a condition is _not_ met.
+1. `stopifnot()` does not pass along a custom error message. Instead, `stopifnot()` always explains that the condition was not true,
+    ```{r}
+    x <- -1
+    stopifnot(x >= 0)
+    ```
+
+Notice that the first argument of `stopifnot()` should always be a logical condition, the inverse of the condition it replaces in the `if` + `stop()` statement.
+
+### \t
+
+Think you have it? 
+
+* Try replacing the `if` + `stop()` statement in `clean()` with `stopifnot()`. Then click Submit Answer.
+
+```{r stopifnot, exercise = TRUE}
+clean <- function(x) {
+  if (is.null(x)) stop("x is NULL")
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stopifnot-hint}
+"You can reverse the result of `is.null()` by placing an `!` in front of it: `!is.null()`."
+```
+
+```{r stopifnot-solution}
+clean <- function(x) {
+  stopifnot(!is.null(x))
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stopifnot-check}
+strict_check("stopifnot() is both very readable and very useful. Click Continue to see why.")
+```
+
+### Defensive programming with stopifnot()
+
+You can save yourself debugging time by writing your functions to _fail fast_ with clear error messages. To do this, think about situations that will lead to errors and then check for them with `stopifnot()` at the beginning of your code.
+
+If things go wrong, `stopifnot()` will help you see what you need to fix as soon as you run your function. Compare this to what will happen if you do not use `stopifnot()`:
+
+1. Your code will run until it triggers a (perhaps unhelpful) error message
+1. Your code may not trigger an error message. Instead it might return an incorrect result that you will think is true. This would be a very bad outcome.
 
 ## && and ||
 
-* When combing tests always use one of the double forms. Their advantages really begin to shine with control flow.
-
-* only looks at first element, so no warning message
-
-* doesn't check second element unless necessary
-
-### &&
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n < 20 | n > 355) TRUE
-  else FALSE
-}
-```
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (n < 20 || n > 355) TRUE
-  else FALSE
-}
-```
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (!is.na(n) && n < 20) TRUE
-  else if (!is.na(n) && n > 355) TRUE
-  else FALSE
-}
-```
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (!is.na(n) && (n < 20 || n > 355)) TRUE
-  else FALSE
-}
-```
-
-## stop and return
-
-### stop
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (is.na(n)) stop("Not a real date.")
-  if (n < 20 || n > 355) TRUE
-  else FALSE
-}
-```
-
-### stopifnot
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  stopifnot(!is.na(n), "Not a real date.")
-  if (n < 20 || n > 355) TRUE
-  else FALSE
-}
-```
-
-### return
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (is.na(n)) return(NA)
-  if (n < 20 || n > 355) TRUE
-  else FALSE
-}
-```
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (is.na(n)) return(NA)
-  n < 20 || n > 355
-}
-```
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if (is.na(n)) NA
-  else n < 20 || n > 355
-}
-```
-
 ## Vectorized if
 
-### if_else
-
-```{r}
-is_capricorn <- function(date) {
-  n <- day_number(date)
-  if_else(is.na(n), NA, n < 20 | n > 355)
-}
-```
-
-* mention base::ifelse
-
-### case_when
-
-```{r}
-sign <- function(date) {
-  n <- day_number(date)
-  if (is.na(n)) NA
-  else if (n > 355 || n <= 19) "Capricorn"
-  else if (n > 19 && n <= 49) "Aquarius"
-  else if (n > 49 && n <= 79) "Pisces"
-  else if (n > 79 && n <= 109) "Ares"
-  else if (n > 109 && n <= 140) "Taurus"
-  else if (n > 140 && n <= 171) "Gemini"
-  else if (n > 171 && n <= 203) "Cancer"
-  else if (n > 203 && n <= 234) "Leo"
-  else if (n > 234 && n <= 265) "Virgo"
-  else if (n > 265 && n <= 295) "Libra"
-  else if (n > 295 && n <= 325) "Scorpio"
-  else if (n > 325 && n <= 355) "Sagittarius"
-}
-```
-
-```{r}
-sign <- function(date) {
-  n <- day_number(date)
-  case_when(is.na(n) ~ NA_character_,
-            n > 355 || n <= 19 ~ "Capricorn",
-            n > 19 && n <= 49 ~ "Aquarius",
-            n > 49 && n <= 79 ~ "Pisces",
-            n > 79 && n <= 109 ~ "Ares",
-            n > 109 && n <= 140 ~ "Taurus",
-            n > 140 && n <= 171 ~ "Gemini",
-            n > 171 && n <= 203 ~ "Cancer",
-            n > 203 && n <= 234 ~ "Leo",
-            n > 234 && n <= 265 ~ "Virgo",
-            n > 265 && n <= 295 ~ "Libra",
-            n > 295 && n <= 325 ~ "Scorpio",
-            n > 325 && n <= 355 ~ "Sagittarius")
-}
-```
-
-```{r}
-sign <- function(date) {
-  n <- day_number(date)
-  case_when(n > 355 | n <= 19 ~ "Capricorn",
-            n > 19 & n <= 49 ~ "Aquarius",
-            n > 49 & n <= 79 ~ "Pisces",
-            n > 79 & n <= 109 ~ "Ares",
-            n > 109 & n <= 140 ~ "Taurus",
-            n > 140 & n <= 171 ~ "Gemini",
-            n > 171 & n <= 203 ~ "Cancer",
-            n > 203 & n <= 234 ~ "Leo",
-            n > 234 & n <= 265 ~ "Virgo",
-            n > 265 & n <= 295 ~ "Libra",
-            n > 295 & n <= 325 ~ "Scorpio",
-            n > 325 & n <= 355 ~ "Sagittarius")
-}
-```
-
-* base::switch
