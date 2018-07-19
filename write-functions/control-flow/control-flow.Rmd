@@ -14,6 +14,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(grader)
 library(lubridate)
+library(tidyverse)
 
 grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
   strict_check <- function(x) x
@@ -29,7 +30,7 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 ### Control Flow
 
-_Control Flow_ refers to the order in which your function executes the statements in its body of code.
+_Control flow_ refers to the order in which a function executes the statements in its body of code.
 
 By default, R functions will execute each line of code in the body in order, and then return the result of the last line of code. But it doesn't have to be this way. You can write functions that run some code in some situations and other code in other situations. 
 
@@ -71,7 +72,7 @@ question("Which describes `if`'s behavior? (Check all that apply).",
 
 Think you have it? Let's check. We'll use `if` to write a useful function.
 
-Many data sets use their own symbols to represent missing values. For example, NOAA will often use `-99` to represent missing values in weather data sets. Let's write a function that checks whether a value is -99, and if so replaces the value with NA.
+Many data sets use their own symbols to represent missing values. For example, NOAA will often use -99 to represent missing values in weather data sets. Let's write a function that checks whether a value is -99, and if so replaces the value with NA, like this:
 
 ```{r echo = FALSE}
 clean <- function(x) {
@@ -120,7 +121,7 @@ strict_check("clean() replaces x with NA if x is -99, otherwise clean() returns 
 
 ### else
 
-Here is a second version of `clean()` that relies on a new command: `else`. Can you tell what `else` does?
+Here is a second version of `clean()` that uses on a new command. Can you tell what `else` does?
 
 ```{r}
 clean <- function(x) {
@@ -230,7 +231,7 @@ clean <- function(x) {
 
 ### \t
 
-This as analaogus to 
+This does the same thing as 
 
 ```{r eval = FALSE}
 clean <- function(x) {
@@ -279,7 +280,7 @@ clean <- function(x) {
 ```
 
 ```{r clean3-check}
-strict_check("You can add as many else if after if as you like. However, you cannot add an else if clause after an else because R will interpret the else as the end of a complete if statement.")
+strict_check("You can add as many else if's after if as you like. However, you cannot add an else if clause after an else because R will interpret the else as the end of a complete if else statement.")
 ```
 
 ### Quiz
@@ -297,7 +298,7 @@ foo(1)
 ```{r else-if-quiz, echo = FALSE}
 question("What will this code return?",
          answer('"a"', message = "R will not retunr a because the condition 1 > 2 is false."),
-         answer('"b"', correct = TRUE, message = 'The condition 1 < 2 is true, so R will evaluate the code that follows it (i.e. "b") and then stop.'),
+         answer('"b"', correct = TRUE, message = 'The condition 1 < 2 is true, so R will evaluate the code that follows it (i.e. "b") and then skip the remainder of the multi-part if statement.'),
          answer('"a" "b"', message = "The conditions 1 < 2 and 1 == 1 are both TRUE, but R will stop after the _first_ true condition."),
          allow_retry = TRUE)
 ```
@@ -317,7 +318,7 @@ clean(-99)
 ```{r clean3-quiz, echo = FALSE}
 question("What will this code return?",
          answer("NA", message = "Did you notice that the `if` statements are not linked by `else`? What difference does this make?"),
-         answer("-99", correct = TRUE, message = "Since the `if` clauses are not linked by `else`, R treats them as separate statements. R checks each if statement. After the first statement it runs NA, but does not return this as the result of the function (because this is not the final statement in the function). R does not run NA for the next two if statements. Then R reaches `x`, which is the last line and last statement in the function. R evaluates `x`, which equals -99, and returns -99 as the result of the function."),
+         answer("-99", correct = TRUE, message = "Since the `if` clauses are not linked by `else`, R treats them as separate statements. R checks each if statement. After the first statement it runs NA, but does not return this as the result of the function (because this is not the final statement in the function). R does not run NA for the next two if statements because their conditions are false. Then R reaches `x`, which is the last line and last statement in the function. R evaluates `x`, which equals -99, and returns -99 as the result of the function."),
          allow_retry = TRUE)
 ```
 
@@ -335,7 +336,7 @@ You can tell R to stop executing a function early with
 * `stop()`, and
 * `stopifnot()`
 
-Each will only work in the context of a function (because they stop the function). You wouldn't run these directly at the command line, but they provide a powerful way to control the flow of your functions. They can make if else statements unnecessary and can even make your code less buggy.
+Each will work only in the context of a function (because they stop the function). You wouldn't run these directly at the command line, but they provide a powerful way to control the flow of your functions: They can make if else statements unnecessary and they can even make your code less buggy.
 
 ### return()
 
@@ -357,7 +358,7 @@ question("Which value will `impatient_square(2)` return?",
 
 ### R with a python accent
 
-If you are a python user, you may already be using `return()` in your R code unnecessarily. In python, you explicitly tell each function what to return, e.g. 
+If you are a python user, you might already use `return()` ...unnecessarily. In python, you explicitly tell each function what to return, e.g. 
 
 ```python
 def mysquare(x):
@@ -374,11 +375,11 @@ my_square <- function(x) {
 }
 ```
 
-But in R, this return is not needed. R functions automatically return the result of their last line of code. In R, you can save return for unusual control flow.
+But in R, this `return()` is not needed. R functions automatically return the result of their last line of code. In R, you can save `return()` for unusual control flow.
 
 ### Using return()
 
-Remember this function? IT didn't work as eexpected because we forgot to link our if statements with `else`.
+Remember this function? It didn't work as expected because we forgot to link our if statements with `else`.
 
 * Fix the function not by adding `else`, but by adding `return()` in the right places. Then Click Submit Answer.
 
@@ -401,14 +402,14 @@ clean <- function(x) {
 ```
 
 ```{r return-check}
-strict_check("This version is slightly easier to read than a linked if else tree because you can think about each if clause separately. You can often avoid long, nested if else trees by using return thoughtfully.")
+strict_check("This version is slightly easier to read than a linked if else tree because you can think about each if clause separately. You can often avoid long, nested if else trees by using return() thoughtfully.")
 ```
 
 ### NULL
 
 `clean()` is a fairly useful function, but it does have one flaw. 
 
-* What happens when `x = NULL`. Click Submit Answer and find out.
+* What happens when `x = NULL`? Run the code and find out.
 
 ```{r null, exercise = TRUE}
 clean <- function(x) {
@@ -430,8 +431,21 @@ clean <- function(x) {
 clean(NULL)
 ```
 
-```{r null-check}
-strict_check("clean() cannot handle NULL because if returns an error when it evaluates `NULL == -99`. And, unfortunately, the error message isn't very clear. This is the perfect case for `stop()`.")
+### \t
+
+`clean()` cannot handle `NULL` because `if` returns an error when it evaluates `NULL == -99`. And, unfortunately, the error message isn't very clear. This is the perfect case for `stop()`.
+
+```{r echo = FALSE}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r}
+clean(NULL)
 ```
 
 ### stop()
@@ -448,13 +462,13 @@ immovable_square <- function(x) {
 ```{r stop-quiz, echo = FALSE}
 question("What does `immovable_square(2)` return?",
          answer("4", message = 'R will stop executing `immovable_square()` and throw an error when it comes to `stop("I refuse to proceed.")`.'),
-         answer("Error in immovable_square(2) : I refuse to proceed.", correct = TRUE, message = 'R will stop executing `immovable_square()` and throw an error when it comes to `stop("I refuse to proceed. The error message will look just like this; R inserts the message tht you pass as a character string to `stop()`.'),
+         answer("Error in immovable_square(2) : I refuse to proceed.", correct = TRUE, message = 'R will stop executing `immovable_square()` and throw an error when it comes to `stop("I refuse to proceed")`. The error message will look just like this answer; R inserts the message that you pass as a character string to `stop()`.'),
          allow_retry = TRUE)
 ```
 
-### \t
+### Use stop()
 
-* Use if and `is.null()` to add a `stop()` call at the beginning of `clean()`. The command should return the error message `"x is NULL"` whenever x is NULL. 
+* Use `if` and `is.null()` to add a `stop()` call at the beginning of `clean()`. The command should return the error message `"x is NULL"` whenever x is NULL. 
 * Then click Submit Answer.
 
 ```{r stop, exercise = TRUE}
@@ -482,12 +496,12 @@ strict_check("Now `clean()` can handle NULL values in an intelligent way. This p
 
 ### stopifnot()
 
-`stopifnot()` is a more readable substitute for statements that combine `if` and `stop`. Can you guess how it works?
+`stopifnot()` is a more readable substitute for statements that combine `if` and `stop()`. Can you guess how it works?
 
 ```{r stopifnot-quiz, echo = FALSE}
 question('Which of these does the equivalent of `if (x < 0) stop("x is less than zero")`?',
          answer('`stopifnot(x < 0)`', message = "Good guess! But the function isn't called `stopif()`; it's called `stopifnot()`."),
-         answer('`stopifnot(x >= 0)`', correct = TRUE),
+         answer('`stopifnot(x >= 0)`', correct = TRUE, message = "`stopifnot()` stops if a condition is _not_ met, which is slightly different than `if` + `stop()`."),
          allow_retry = TRUE)
 ```
 
@@ -496,13 +510,15 @@ question('Which of these does the equivalent of `if (x < 0) stop("x is less than
 `stopifnot()` is different from `if` + `stop()` in a few important ways: 
 
 1. Instead of checking whether a condition is met, `stopifnot()` checks whether a condition is _not_ met.
-1. `stopifnot()` does not pass along a custom error message. Instead, `stopifnot()` always explains that the condition was not true,
+1. `stopifnot()` does not pass along a custom error message. Instead, `stopifnot()` always explains that the condition was not true:
     ```{r}
     x <- -1
     stopifnot(x >= 0)
     ```
 
-Notice that the first argument of `stopifnot()` should always be a logical condition, the inverse of the condition it replaces in the `if` + `stop()` statement.
+Notice that the first argument of `stopifnot()` should always be a logical condition, the inverse of the condition it replaces in an `if` + `stop()` statement. 
+
+You can include additional logical conditions for `stopifnot()` to check after the first. Separate each with a comma.
 
 ### \t
 
@@ -542,453 +558,26 @@ strict_check("stopifnot() is both very readable and very useful. Click Continue 
 
 You can save yourself debugging time by writing your functions to _fail fast_ with clear error messages. To do this, think about situations that will lead to errors and then check for them with `stopifnot()` at the beginning of your code.
 
+```{r}
+clean <- function(x) {
+  stopifnot(!is.null(x), is.numeric(x), length(x) == 1)
+  
+  if (x == -99) return(NA)
+  x
+}
+```
+
 If things go wrong, `stopifnot()` will help you see what you need to fix as soon as you run your function. Compare this to what will happen if you do not use `stopifnot()`:
 
 1. Your code will run until it triggers a (perhaps unhelpful) error message
-1. Your code may not trigger an error message. Instead it might return an incorrect result that you will think is true. This would be a very bad outcome.
-
-## && and ||
+1. Your code may not trigger an error message, but return an incorrect result that you will think is true. This would very bad.
 
 ### \t
 
-Here's what `clean()` looks like. Do you notice that all of the `if` statements have the same outcome? 
+Congratulations! You know two techniques of control flow, how to:
 
-```{r eval = FALSE}
-clean <- function(x) {
-  stopifnot(!is.null(x))
-  if (x == -99) return(NA)
-  if (x == ".") return(NA)
-  if (x == "NaN") return(NA)
-  x
-}
-```
+1. Run specific code in specific cases
+1. Stop execution early
 
-### \t 
-
-Let's use your knowledge of logical tests to trim them down to a single if statement. 
-
-* Write a logical test that returns TRUE when x is -99 OR x is "." (we will ignore the "NaN" case to keep things simple. Then click Submit Answer.
-
-```{r logic, exercise = TRUE}
-
-```
-
-```{r logic-hint}
-"You can combine two logical tests in R with `&` (and) and `|` (or), e.g. x < 0 & x > 1."
-```
-
-```{r logic-solution}
-x == -99 | x == "."
-```
-
-```{r logic-check}
-"This is the correct way to combine logical tests in R, but it has some downsides when you use it with `if` statements."
-```
-
-### & and |
-
-`&` and `|` are R's boolean operators for combining logical tests.
-
-* `&`, which stands for "and" will return `TRUE` if _both_ tests return `TRUE` and will return `FALSE` otherwise. 
-* `|`, which stands for "or" will return `TRUE` if _one or both_ tests returns `TRUE` and will return `FALSE` otherwise. So,
-
-```{r}
-x <- -99
-x == -99 | x == "."
-```
-
-### \t
-
-However, it is bad practice to use `&` and `|` to combine logical tests within an `if` condition. Why? Because
-
-1. there is something better (as you'll see in a minute)
-1. `&` and `|` tend to generate warning messages when used with `if`
-
-### \t 
-
-As R operators, both `&` and `|` are vectorized. As a result, you can use them with vectors, which is very useful.
-
-```{r}
-x <- c(-99, 0 , 1)
-x == -99
-x == "."
-x == -99 | x == "."
-```
-
-### \t
-
-However, `if` conditions are not vectorized. `if` expects the logical test contained within its parentheses to return a _single TRUE or FALSE_. If the condition returns a vector of `TRUE` or `FALSE`s, `if` will use the first value and show a warning message.
-
-```{r}
-x <- c(-99, 0 , 1)
-if (x == -99 | x == ".") NA
-```
-
-### && and ||
-
-You can avoid this by always using `&&` and `||` within your `if` conditions. `&&` and `||` are lazy substitutes for `&` and `|`. They are lazy in two ways:
-
-1. When given vectors, `&&`and `||` will only compare the first elements of the vectors (and not return a warning message).
-1. When possible, `&&` and `||` will jump to the correct conclusion without evaluating the second logical test (not so with `&` and `|`. 
-    * `&&` will return `FALSE` if the logical test on the left returns `FALSE` (because the combined test would return `FALSE`). 
-    * `||` will return `TRUE` if the logical test on the left returns `TRUE` (because the combined test would return `TRUE`)
-    
-    ```{r}
-x <- c(-99, 0 , 1)
-x == -99 || x == "."
-if (x == -99 || x == ".") NA
-```
-    
-### Use ||
-
-* Replace the two `if` statements below with a single statement that tests whether x is `-99` or `"."` without throwing error messages.
-
-```{r or, exercise = TRUE}
-clean <- function(x) {
-  stopifnot(!is.null(x))
-  if (x == -99) return(NA)
-  if (x == ".") return(NA)
-  x
-}
-```
-
-```{r or-hint}
-"Like |, || expects a _complete_ logical test on each side of ||."
-```
-
-```{r or-solution}
-clean <- function(x) {
-  stopifnot(!is.null(x))
-  if (x == -99 || x == ".") return(NA)
-  x
-}
-```
-
-```{r}
-strict_check("Now lets see what happens if you use clean() with a vector of values.")
-```
-
-### \t
-
-```{r eval = FALSE}
-clean <- function(x) {
-  stopifnot(!is.null(x))
-  if (x == -99 || x == ".") return(NA)
-  x
-}
-```
-
-```{r}
-question("What will `clean(c(-99, 0, 1))` return?",
-         answer("NA 0 1", message = "The logical test will only consider the first value of the vector x, which here contains c(-99, 0, 1). Since that value is -99, the logical test will return TRUE and R will execute the code `return(NA)`, which returns a single NA."),
-         answer("NA _with_ a warning message", message = "You certainly would get a warning message if your logical test used |, which will pass a vector of TRUEs and FALSEs to if, triggering the message. However, || will only pass on a single TRUE or FALSE."),
-         answer("NA _without_ a warning message", correct = TRUE),
-         answer("an error"),
-         allow_retry = TRUE)
-```
-
-### \t
-
-So we've avoided the warning message, but this isn't the most important reason for using `||` instead of `|`. (In fact, you might consider it an anti-reason. You might want a warning that something weird is going on if you accidentally pass a vector of values to `clean()`, but you could screen for that with `stopifnot(length(x) == 1)` if that bothers you.)
-
-The most important reason is that `||` saves unnecessary computation when possible. Remember the second quality of `&&` and `||`? You will!
-
-Remember how this code returns an error because `if` cannot handle the result of `NULL == -99`?
-
-```{r}
-clean <- function(x) {
-  if (x == -99) return(NA)
-  x
-}
-clean(NULL)
-```
-
-### Quiz
-
-Let's redefine `clean()`.
-
-```{r eval = FALSE}
-clean <- function(x) {
-  if (is.null(x) || x == -99) return(NA)
-  x
-}
-```
-
-```{r null-quiz, echo = FALSE}
-question("Now what will `clean(NULL)` return?",
-         answer("An error", message = "clean() certainly would return an error if it evaluated `x == -99` (and collapsed the results into a single result to pass to if), but _does_ `clean()` evaluate `x == -99`?"),
-         answer("NA", correct = TRUE, message = "|| first evaluates `is.null(x)` this is a problem free command that returns `TRUE`. Then `||` stops and returns `TRUE` to `if` because an or statement is always true when the first test is true. As a result, R never evaluates the code that leads to an error."),
-         allow_retry = TRUE)
-```
-
-## Vectorized if
-
-### \t
-
-The last section suggests an interesting question: what if you did want `clean()` to work with vectors of values? i.e.
-
-```{r echo = FALSE}
-clean <- function(x) ifelse(x == -99, NA, x)
-```
-
-```{r}
-clean(c(-99, 0, 1))
-```
-
-That would be a handy way to clean whole columns of data! How could you do it?
-
-### \t 
-
-Compare these two functions (one should seem familiar). What is different?
-
-```{r}
-clean <- function(x) {
-  if (x == -99) NA else x
-}
-
-clean2 <- function(x) {
-  ifelse(x == -99, NA, x)
-}
-```
-
-```{r ifelse-quiz, echo = FALSE}
-question("Make a guess: do these two functions do the same thing?",
-         answer("Yes!", correct = TRUE, message = "Well, you are sort of correct..."),
-         answer("No!", correct = TRUE, message = "Well, you are sort of correct..."),
-         answer("Sort of...", correct = TRUE, message = "You are absolutely right."), 
-         allow_retry = TRUE)
-```
-
-### ifelse()
-
-`ifelse()` is a function that replicates an if/else statement. It takes three arguments: a logical test followed by two pieces of code. If the test returns `TRUE`, `ifelse()` will return the results of the first piece of code. If the test returns `FALSE`, `ifelse()` will return the results of the second piece of code. 
-
-So `clean(-99)` and `clean2(-99)` both return `NA`.
-
-```{r}
-clean(-99)
-clean2(-99)
-```
-
-### \t
-
-However, unlike `if` and `else`, `ifelse` is vectorized. As a result, you can pass `ifelse()` a vector of values and it will apply the implied if / else statement separately to each element of the vector.
-
-```{r}
-x <- c(-99, 0, 1)
-ifelse(x == -99, NA, x)
-```
-
-`clean2()` inherits this vectorized property. Compare that to `clean()` (which is inherently non-vectorized because it relies on the non-vectorized `if` and `else` constructors.
-
-```{r}
-clean(c(-99, 0, 1))
-clean2(c(-99, 0, 1))
-```
-
-### if_else
-
-The dplyr package offers a slight improvement on `ifelse()` named `if_else()`. `if_else()` is faster than `ifelse()` because it requires you to ensure that each case returns in the if/else statement returns the same type of object. For example, the statement needs to return a real number _whether or not_ the condition is `TRUE` (or a string, or a logical, etc.).
-
-No big deal, right? Well kind of.
-
-```{r}
-x <- c(-99, 0, 1)
-if_else(x == -99, NA, x)
-```
-
-### NA
-
-Recall that data in R comes in six atomic types. 
-
-```{r type-quiz, echo = FALSE}
-qusetion("What type of data is NA?",
-         answer("double (i.e. real numbers)"),
-         answer("integer"),
-         answer("character"),
-         answer("logical", correct = TRUE, message = "It turns out that if you type NA at the command line, R saves the result as a logical."),
-         answer("complex"),
-         answer("raw"),
-         allow_retry = TRUE)
-```
-
-### \t
-
-It is true:
-
-```{r}
-typeof(NA)
-```
-
-So when you write `if_else(x == -99, NA, x)`, `if_else()` returns a logical in the first case and a double (real number) in the second (assuming `x` is a real number). 
-
-You can get around this mishap in two ways:
-
-1. Stick to `ifelse()`
-1. Use a NA that comes with a type
-
-### Types of NA
-
-You may not realize it, but R comes with five types of NA. They all appear as `NA` when printed, but they are each saved with a separate data type. These are:
-
-```{r}
-NA # logical
-NA_integer_ # integer
-NA_real_ # double
-NA_complex_ # complex
-NA_character_ # character
-```
-
-You can fix `if_else()` by being precise about which NA to use (most other R functions will convert the type of NA without bothering you).
-
-```{r}
-x <- c(-99, 0, 1)
-if_else(x == -99, NA_real_, x)
-```
-
-### Use if_else
-
-* Fix the `if_else()` statement of `clean2()` to work with real numbers. Then click Submoit Answer.
-
-```{r cleans, exercise = TRUE}
-clean2 <- function(x) {
-  ifelse(x == -99, NA, x)
-}
-```
-
-```{r cleans-solution}
-clean2 <- function(x) {
-  ifelse(x == -99, NA_real_, x)
-}
-```
-
-```{r cleans-check}
-strict_check("What if you want `clean2()` to work with all types of data? That's simple: stick with `ifelse()`.")
-```
-
-### \t
-
-What if you want to write a vectorized version of a multi-part if/else tree? Like the tree in this function:
-
-```{r eval = FALSE}
-clean <- function(x) {
-  if (x == -99) NA 
-  else if (x == ".") NA
-  else if (x == "") NA
-  else if (x == "NaN") NA
-  else x
-}
-```
-
-In this case, neither `ifelse()` or `if_else()` will do. Why? Because each can only handle a single if condition, but our tree has four.
-
-### case_when()
-
-You can vectorize multi-part if/else statements with dplyr's `case_when()` function. Here is how we would use `case_when()` to rewrite our `foo()` function.
-
-Here is the masterpiece in its original form
-
-```{r}
-foo <- function(x) {
-  if (x > 2) "a"
-  else if (x < 2) "b"
-  else if (x == 1) "c"
-  else "d"
-}
-```
-
-And here it is with `case_when()`.
-
-```{r}
-foo2 <- function(x) {
-  case_when(
-    x > 2  ~ "a",
-    x < 2  ~ "b",
-    x == 1 ~ "c",
-    TRUE   ~ "d"
-  )
-}
-```
-
-### \t
-
-And here are our foos in action to prove that `foo2()` is vectorized.
-
-```{r}
-x <- c(1, 2, 3)
-foo(x)
-foo2(x)
-```
-
-Notice that 
-
-1. `case_when()` returns a single case for each element, the first case whose left hand side evaluates to `TRUE`
-1. The left hand side of the last case evaluates to `TRUE` no matter what the value of `x` (heck the left hand side _is_ `TRUE`). This is an easy way to add an `else` clause to the end of `case_when()`.
-
-Now let's look at the unusual syntax of `case_when()`.
-
-### case_when() syntax
-
-```{r eval = FALSE}
-foo2 <- function(x) {
-  case_when(
-    x > 2  ~ "a",
-    x < 2  ~ "b",
-    x == 1 ~ "c",
-    TRUE   ~ "d"
-  )
-}
-```
-
-Each argument of `case_when()` is a pair that consists of a logical test on the left hand side and a piece of code on the right hand side. The two are _always_ separated by a `~`.
-
-Like `if_else()`, `case_when()` expects each case to return the same type of output. So keep those NA types handy: `NA`, `NA_integer_`, `NA_real_`, `NA_complex_`, `NA_character_`.
-
-### Final Challenge
-
-* Rewrite the multi-part version of `clean()` to use `case_when()`, which will allow `clean()` to handle vectors. Retain each case. Assume where necessary that `clean()` will only work with real numbers. Then click Submit Answer.
-
-```{r when, exercise = TRUE}
-clean <- function(x) {
-  if (x == -99) NA 
-  else if (x == ".") NA
-  else if (x == "") NA
-  else if (x == "NaN") NA
-  else x
-}
-```
-
-```{r when-hint}
-"Use NA's that have the right type."
-```
-
-```{r when-solution}
-clean <- function(x) {
-  case_when(
-    x == -99 ~ NA_real_, 
-    x == "." ~ NA_real_,
-    x == "" ~ NA_real_,
-    x == "NaN" ~ NA_real_,
-    TRUE ~ x
-  )
-}
-```
-
-```{r when-check}
-strict_check('And if you noticed that a vector of real numbers would never contain ".", "", and "Nan" because they are strings, you are of course right. Thanks for playing along with the charade.')
-```
-
-### Congratulations!
-
-You've learned how to alter the control flow of your functions with:
-
-* `if`
-* `else`
-* `return()`
-* `stop()`
-* `stopifnot()`
-* `ifelse()`
-
-Not only that, you tackled two advanced methods: dplyr's `if_else()` and dplyr's `case_when()`.
-
+In the Advanced Control Flow tutorial, you'll learn how to combine logical tests in an if statement as well as how to write if statements that work with vectors, which is a prerequisite if you want to write vectorized functions.
 
