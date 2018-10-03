@@ -72,7 +72,7 @@ That's the big picture. Let's look at the details.
 
 ### globalenv()
 
-`globalenv()` is a function that returns an R environment. In fact, `globalenv()` returns a very specific R environment named the _global environment_. You'll learn more about the global environment in a minute, but first take a look at how R displays environments. 
+`globalenv()` is a function that returns an R environment. In fact, `globalenv()` returns a very specific R environment named the _global environment_. You'll learn more about the global environment later, but first take a look at how R displays environments. 
 
 * Click Submit Answer to run the code below.
 
@@ -88,30 +88,9 @@ globalenv()
 strict_check("Notice that R's display is not very informative: it shows you only the label of the environment.")
 ```
 
-### The global environment 
-
-The global environment plays a very important role in R, and the function `globalenv()` makes the global environment particularly easy to access.
-
-The global environment acts like your personal workspace when you run R in an R console, like the RStudio IDE. The _global environment_ is the environment where R:
-
-1. saves all of the objects that you create at the command line 
-2. looks to find all of the objects that you call from the command line
-
-Other R environments include: 
-
-* package environments (which contain all of the objects loaded by a package) 
-* the empty environment (an empty environment with an important role) 
-* temporary environments (that R creates to do certain tasks, like execute the exercise chunks in this tutorial)
-
-### \t
-
-Today, things are a little weird because you are running R through an online tutorial. R is saving the objects that I create while I write the tutorial to the global environment, but R will save the objects that you create in the exercise chunks to a different environment. That's just how tutorials work. Its not a big deal, but I want you to be aware of it.
-
-Would you like to see what I've saved in the global environment?
-
 ### `ls.str()`
 
-You can display the contents of an R environment with `ls.str()`. 
+I've saved some objects in the global environment. Would you like to see them? You can display the contents of an R environment with `ls.str()`. 
 
 * To see what I've saved in the global environment, run `ls.str()` on the code below. Then click Submit Answer. 
 
@@ -134,7 +113,7 @@ ls.str(globalenv())
 ```
 
 ```{r ls.str-check}
-strict_check("I've only saved three objects to the global environment: `x`, `y`, and `z`. How did I do that? By running `x <- 1`, `y <- 2`, and `z <- 3` at the command line. ls.str() provides a good depiction of the global environment, because ls.str() shows the contents of the environment. However, ls.str()'s depiction of the global environment is missing one thing.")
+strict_check("I've saved three objects in the global environment named `x`, `y`, and `z`. They have the values `1`, `2`, and `3`. ls.str() provides a good depiction of an environment, because ls.str() shows the contents of the environment. However, ls.str()'s depiction of the global environment is missing one thing.")
 ```
 
 ### Parent environments
@@ -154,19 +133,78 @@ parent.env(globalenv())
 ```
 
 ```{r parent-check}
-strict_check("You can use `parent.env()` to find the parent of any environment in R, but notice that there is no way to find the children of an environment: each child knows who its parent is, but each parent does not know who its children are. Compare this to real life: you can know who you are pointing at, but you can't know who may be pointing at you. (You can ignore the extra attributes that appear with this environment label). Now that you know how to inspect an environment, let's look at how R uses environments.")
+strict_check("You can use `parent.env()` to find the parent of any environment in R, but notice that there is no way to find the children of an environment: each child knows who its parent is, but each parent does not know who its children are. Compare this to real life: you can know who you are pointing at, but you can't know who may be pointing at you. (You can ignore the extra attributes that appear with this environment label).")
 ```
 
+### parenvs()
+
+The parent of an environment will also have a parent, and so on. Together the parents will form a chain of environments that ends with the _empty environment_, which is the only environment in R that does not have a parent.
+
+Every environment can trace its lineage to the empty environment through a set of parents.
+
+You can see an environment's lineage with the `parenvs()` function that comes in the `pryr` package. Give `parenvs()` the argument `all = TRUE`; this tells `parenvs()` to display the parent of each parent. `parenvs(e, all = TRUE)` will display the parent of each environment beginning with whichever environment you pass to `e`.
+
+* Use `parenvs()` to see the "parentage" of the global environment. Then click Submit Answer.
+
+```{r search, exercise = TRUE}
+library(pryr)
+
+```
+
+```{r search-hint-1}
+"Set e = globalenv()."
+```
+
+```{r search-hint-2}
+"Don't forget the argument all = TRUE."
+```
+
+```{r search-solution}
+library(pryr)
+parenvs(globalenv(), all = TRUE)
+```
+
+```{r search-check}
+strict_check("The global environment is at the top of this list. The second line contains the parent of the global environment. Next comes the parent of that parent, and so on until we reach the empty environment.")
+```
+
+### Summary
+
+You've learned four things about environments:
+
+1. An environment is a list of name-value pairs that define the values of R objects
+2. Each environment contains a link to a parent environment (with the exception of the empty environment).
+3. Each environment is linked to the empty environment by a chain of parent environments.
+4. Every object in R is stored in an environment
+
+## Scoping rules
 
 ### The active environment
 
-At any moment in time, R is working closely with a single environment, which I will call the _active environment_. If you create a new object, R will store it in the active environment. If you call an object, R will look for its value in the active environment. 
+At any moment in time, R is working closely with a single environment, which I will call the _active environment_. If I say that R is running code in an environment, I mean that the environment is the active environment when R runs the code.
 
-Which environment is active will change from time to time depending on what R is doing. You can use the `environment()` function to return the current active environment. 
+The active environment is special in two ways:
 
-As you may have guessed, the global environment is the active environment when you run code from the command line of an R console, like the RStudio IDE; but it is not the active environment when you run code from a tutorial exercise chunk.
+1. If you create a new object, R will store it in the active environment. 
+2. If you call an object, R will look for its value in the active environment. 
 
-* Type `environment()` in the exercise chunk below to return the label of the environment that is active when R runs the exercise chunk. Then click Submit Answer.
+What is R cannot find the value in the active environment?
+
+### Search path
+
+If R cannot find an object in the active environment, then R will look in the parent of the active environment, and then the parent of the parent, and so on until R either finds the object or reaches the empty environment.
+
+If R gets to the empty environment before it finds the object, R will return the familiar error message: `Error: object not found`.
+
+In this way, the chain of environments from the active environment to the empty environment forms R's _search path_.
+
+### environment()
+
+Which environment is active will change from time to time depending on what R is doing (which means that the search path will change as well). 
+
+You can use the `environment()` function to return the current active environment. 
+
+* Type `environment()` in the exercise chunk below to return the label of the active environment. Then click Submit Answer.
 
 ```{r active, exercise = TRUE}
 
@@ -181,102 +219,60 @@ environment()
 ```
 
 ```{r active-check}
-strict_check("The label of this environment is a random string. R generated this environment for the sole purpose of running the exercise chunk. If you run the chunk again R will generate a new environment (with a new label) to use on the second run of the exercise chunk. What's one side effect of this? Objects that you create on the first run will not be available in the active environment on the second run.")
+strict_check("This is the environment that was active when R ran the exercise chunk. Notice that the label is a random string; that's true for most R environments. Also notice that if you rerun the chunk, R will use a new active environment. As a result, objects that you make on one run of the chunk will not be available on a second run.")
 ```
 
-### \t
+### The global environment 
 
-What is stored in the active environment of an exercise chunk? 
+The global environment plays a very important role in R because it is the active environment when you run code from the command line of an R console, like the RStudio IDE. 
 
-* Use the code block below to find out, then click Submit Answer.
+As a result, the global environment acts as your personal workspace: it is where R will save objects that you create at the command line, and it is where R will look for objects that you call at the command line.
 
-```{r als, exercise = TRUE}
+### Other environments
 
-```
+Other R environments include: 
 
-```{r als-hint}
-"Which function returns the active environment? Which function displays the contents of an environment?"
-```
+* the empty environment
+* package environments (which contain all of the objects loaded by a package) 
+* temporary environments (that R creates to do certain tasks, like execute the exercise chunks in this tutorial)
 
-```{r als-solution}
-ls.str(environment())
-```
+You can see each of these in the search path from the active environment of the exercise chunk below.
 
-```{r als-check}
-strict_check('There is nothing in the active environment; it is a "fresh" environment just for you.')
-```
+* Use the exercise chunk to display the search path from the active environment (i.e. the list of parents that connects the active environment ot the empty environment). Then click Submit Answer.
 
-### \t
-
-What is the parent of the active environment of the exercise chunk?
-
-* Use the code block below to find out, then click Submit Answer.
-
-```{r pls, exercise = TRUE}
+```{r path, exercise = TRUE}
 
 ```
 
-```{r pls-hint}
-"Which function returns the active environment? Which function displays the parent of an environment?"
+```{r path-hint-1}
+"Use parenvs()."
 ```
 
-```{r pls-solution}
-parent.env(environment())
+```{r path-hint-2}
+"Set e = environment(), which returns the active environment)."
 ```
 
-```{r pls-check}
-strict_check("The parent of each exercise chunk is the global environment.")
+```{r path-hint-3}
+"Don't forget to include all = TRUE."
 ```
+
+```{r path-solution}
+parenvs(e = environment(), all = TRUE)
+```
+
+```{r path-check}
+strict_check("The empty environment is at the bottom of the list. Above it are numerous package environments: one for each package that is currently loaded. At the top of the list is the active environment for the exercise chunk. This is a temporary environment that r created to run the chunk. Notice that the parent of this environment is the global environment.")
+```
+
+### Environments in tutorials
+
+Whenever you run an exercise chunk in a tutorial, R creates a temporary environment to run your code in. The parent of this environment is the global environment.
+
+Compare this to what will happen when you run code in an R console. There, the code that you run at the command line will be executed in the global environment (i.e. the global environment will be active).
+
+This is a small difference, but since we're talking about environments today, I want you to be aware of it.
 
 ### Summary
-
-You've learned three things about environments:
-
-1. Every object in R is stored in an environment
-2. An environment is a list of name-value pairs that define the values of R objects
-3. Each environment contains a link to a parent environment (with the exception of an environment known as the empty environment).
-
-### Question
-
-What does R do if you call an object that is not in the active environment? 
-
-For example, `pi` is not in the active environment, but R can clearly find `pi`
-
-```{r}
-pi
-```
-
-Let's find out. The answer has something to do with parentage.
-
-## Scoping Rules
-
-### parenvs()
-
-Environment parentage is sort of like human parentage: if every environment has a parent, then every environment should also have a grandparent, a great-grandparent and so on.
-
-You can see an environment's parentage with the `parenvs()` function that comes in the `pryr` package. Give `parenvs()` the argument `all = TRUE`; this tells `parenvs()` to display the parent of each parent. `parenvs(all = TRUE)` will display the parent of each environment beginning with the current active environment.
-
-* Use `parenvs()` to see the "parentage" of the current active environment. Then click Submit Answer.
-
-```{r search, exercise = TRUE}
-library(pryr)
-
-```
-
-```{r search-hint}
-"Don't forget the argument all = TRUE."
-```
-
-```{r search-solution}
-library(pryr)
-parenvs(all = TRUE)
-```
-
-```{r search-check}
-strict_check("The current active environment is at the top of this list. The second line contains the global environment, which is the parent of the active environment. The third line contains the parent of the global environment, and so on. The empty environment is at the bottom. The empty environment is the only R environment that does not have a parent. It is also the great ancestor of every other R environment.")
-```
-
-### R's scoping rules
 
 The chain of parent environments from the active environment to the empty environment creates a _search path_ that R uses to look for objects.
 
@@ -288,58 +284,121 @@ The chain of parent environments from the active environment to the empty enviro
 
 These three rules are R's scoping rules.
 
-### The search path
+### Keep in mind
 
 R's search path will vary based on which environment is active when you call `parenvs()` (or begin searching). 
 
-The search path will also vary based on which packages you have loaded. The environments of loaded packages appear between the global environment and the empty environment in the reverse order of which the packages were loaded. 
+The search path will also vary based on which packages you have loaded. The environments of loaded packages appear between the active environment and the empty environment in the reverse order of which the packages were loaded. 
 
-### where()
+Now that you know how R looks up objects, let's look at what can go wrong.
 
-You can check which environment an object is defined in with the `where()` function that also comes in the pryr package. To use `where()`, give `where()` the name of an object as a character string. `where()` will return the first environment on the search path that contains the name. 
 
-* Use `where()` to locate the environment that contains the name `"pi"`. Click Submit Answer to give it a try.
+## Overwriting and Masking
 
-```{r where, exercise = TRUE}
+### Overwriting
+
+In the exercise below, I've saved an object named `x` to the active environment. 
+
+* Call `x` to see its value. Then click Submit Answer.
+
+```{r makex}
+x <- "password123"
+```
+
+
+```{r x, exercise = TRUE, exercise.setup = "makex"}
 
 ```
 
-```{r where-hint}
-"Be sure to surround pi with quotation marks."
+```{r x-solution}
+x
 ```
 
-```{r where-solution}
-where("pi")
-```
-
-```{r where-check}
-strict_check("pi comes in the base package, which is always loaded when you open R.")
-```
-
-### Masking
-
-Suppose you save a new object named `pi` at the command line. R will store it in the active environment.
-
-What would happen if you then called `pi` from the command line?
-
-* Run the code below to see which value R returns. Can you explain the result? Click Submit Answer when you are finished.
-
-```{r pi, exercise = TRUE}
-pi <- "apple"
-pi
-```
-
-```{r pi-solution}
-pi
-```
-
-```{r pi-check}
-strict_check('R returns the first version of pi that R finds in the search path, and then R stops searching. Here R finds pi = "apple" in the active environment (because you defined a new pi, which is saved in the active environment). The active environment comes before the base environment on the search path, so R does not discover that there is a second version of pi (pi = 3.14) in the base environment.')
+```{r x-check}
+strict_check("This is my password. Shhh! Don't tell! It is very important.")
 ```
 
 ### \t
 
-This behavior is called masking. _Masking_ occurs whenever two objects with the same name exist in the search path. In this case, R will always use the object that apears first in the search path. 
+`x` is also stored in the active environment of the exercise chunk below (you can check if you like). 
+
+What would happen if you run the code below?
+
+* Make a prediction then click Submit Answer. What happened?
+
+```{r x2, exercise = TRUE, exercise.setup = TRUE}
+x <- "oops"
+x
+```
+
+```{r x2-solution}
+x <- "oops"
+x
+```
+
+```{r x2-check}
+strict_answer("Remember that R saves the objects that you create to the active environment. If you use a name that already exists in the active environment, R will overwrite the object with that name. Here R overwrote x = password123 with x = oops. This is a true oops because you will not be able to get x = password123 back: it is gone.")
+```
+
+### Masking
+
+This time, let's save `x <- "password123"` to the global environment (I'll no longer add `x` to the active environments for the exercise chunks).
+
+* Check the contents of the global environment to see if `x` is there. Then click Submit Answer.
+
+```{r include = FALSE}
+x <- "password123"
+```
+
+```{r x3, exercise = TRUE}
+
+```
+
+```{r x3-hint-1}
+"Use ls.str()"
+```
+
+```{r x3-hint-2}
+"Run ls.str() on globalenv()"
+```
+
+```{r x3-solution}
+ls.str(globalenv())
+```
+
+```{r x3-check}
+strict_check("x = password123 is stored in the global environment, which will be the parent environment for each of the exercise chunks that follow.")
+```
+
+### \t
+
+Now what would happen if you run the code below?
+
+* Make a prediction then click Submit Answer. What happened?
+
+```{r x4, exercise = TRUE, exercise.setup = TRUE}
+x <- "oops"
+x
+```
+
+```{r x4-solution}
+x <- "oops"
+x
+```
+
+```{r x4-check}
+strict_answer("But uh oh: the same result. This time things are not as dire. R saved your version of x to the active environment, which means that it did not overwrite the version of x in the global environment. However, when R searches for x R will find your version of x and return it, without searching further up the search path.")
+```
+
+### \t
+
+This behavior is called masking. _Masking_ occurs whenever two objects with the same name exist in the search path. When masking happens, R will always use the object that apears first in the search path. 
+
+Masking can be confusing if you do not realize that it is happening.
+
+***
+
+Tip: you can remove the version of `x` in the active environment with `rm(x)`.
 
 ### masking and packages
 
@@ -349,82 +408,54 @@ R will help you screen for one common source of masking: R will return an inform
 library(lubridate)
 ```
 
-***
-
-Note that R will not warn you if **you** create an object that masks another object, as we saw with `pi`. So be thoughtful with your object names.
-
 ### ::
 
-You can get around package masking with the `::` syntax. To use `::`, write a package name followed by `::` and then an object name. R will look up the object in the package environment, circumventing the search path and any masking conflicts.
+You can get around package masking with the `::` syntax. To use `::`, write a package name followed by `::` and then an object name. R will look for the object in the package environment, circumventing the search path and any masking conflicts.
 
-```{r eval = FALSE}
-pi
-```
-
-```{r echo = FALSE}
-"apple"
+```{r}
+lubridate::date
 ```
 
 ```{r}
-base::pi
-```
-
-### Overwriting
-
-Masking can be confusing if you do not realize that it is happening, but there is something even worse than masking.
-
-Suppose that `pi = "apple"` is stored in the active environment. (In fact, I've stored it in the active environment for you. You can click Run Code to check if you like.)
-
-Pretend `pi = "apple"`, is an important variable. What would happen if you then ran this code at the command line?
-
-* Make a prediction. Then click Submit Answer to find out.
-
-```{r pumpkin-setup}
-pi <- "apple"
-```
-
-```{r pumpkin, exercise = TRUE}
-pi <- "pumpkin"
-pi
-```
-
-```{r pumpkin-solution}
-pi <- "pumpkin"
-pi
-```
-
-```{r pumpkin-check}
-strict_check('R will overwrite `pi = "apple"` with `pi = "pumpkin"` in the active environment. `pi = "apple"` will be lost because you have replaced it in the only environment that contained it. ')
+base::date
 ```
 
 ### Summary
 
-In this section, you learned R's scoping rules:
+1. **Overwriting** happens when you assign a new value to a name that already exists in the active environment
 
-1. R first looks for objects in the current active environment.
+2. **Masking** happens when you create an object that has the same name as an object further down the search path
 
-2. If R cannot find an object in the active environment, R looks for the object in the parent of the active environment. R then looks in the parent of the parent, and so on until R finds the object or comes to the empty environment.
+### Back to functions
 
-3. If R gets to the empty environment before it finds an object, R will return the familiar error message: `Error: object not found`.
-
-
-### \t
-
-You've also learned of two dangers that R's scoping rules allow:
-
-1. Masking, which happens when you create an object that has the same name as an object further down the search path
-2. Overwriting, which happens when you assign a new value to a name that already exists in the active environment
-
-### \t 
-
-R's environment system and scoping rules are fairly straight forward; but due to masking and overwriting, R must do something special when it runs functions.
-
+You now know everything you need to know to understand R's scoping and execution rules for functions. R must follow a set of rules to execute the code in functions safely, without accidentally masking or overwriting existing variables.
 
 ## Function Rules
 
-###  
+### \t
 
-Many functions create temporary objects to do their jobs. For example, `foo()` creates an object named `z`. 
+When you call a function, R executes the code that is saved in the body of the function. To execute that code safely:
+
+1. R creates a fresh environment to run the code in. I'll call this environment the _execution environment_.
+
+2. R sets the parent of the execution environment to the function's _enclosing environment_, which is the environment where the function was first defined. This ensures that the function will use the same, predictable search path each time that it runs.
+
+3. When R finishes running the function, R returns the result to the _calling environment_, which is the environment that was active when the function was called. R also makes the calling environment the active environment again, which removes the execution environment from the search path.
+
+R repeats these steps everytime it runs a function. Let's use some quizzes to unpack these steps and their implications.
+
+### Calling Environments
+
+```{r a1, echo = FALSE}
+question("TRUE or FALSE: Every function is called from some calling environment.",
+         answer("TRUE", correct = TRUE, message = "R is always working closely with an active environment. Whichecver environment is active when you call a function will be the function's calling environment."),
+         answer("FALSE"),
+         allow_retry = TRUE)
+```
+
+### What would happen...?
+
+Consider the `foo()` function:
 
 ```{r eval = FALSE}
 foo <- function(z = 2) {
@@ -433,121 +464,35 @@ foo <- function(z = 2) {
 }
 ```
 
-Suppose there is already an object named `z` stored in the active environment. This `z` contains the important string `"password123"`. What would happen to `z` when you call `foo()`?
-
-```{r fq1, echo = FALSE}
-question("If R runs `foo()` in the active environment, which of the following would happen?",
-         answer('R will overwrite z = "password123" with z = 3.', correct = TRUE, message = "z poses a problem: R must execute the code in foo(), but if R executes the code in the active environment, foo() will add an object named z to the environment. This would overwrite the object named z that already exists in the environment."),
-         answer('R will not run z <- 3, because R notices that an object named z already exists.'),
-         answer("R will create a new object named z_2 that has the value of 3."),
-         answer("An error."),
+```{r a2, echo = FALSE}
+question("What would happen if R ran the code saved in `foo()` in `foo()`'s calling environment?",
+         answer("Nothing important"),
+         answer("If an object named z existed in the calling environment, foo() would overwrite its value with 3.", correct = TRUE, message = "foo() will pollute the calling environment with an object named z. This could overwrite an object named z in the calling environment, or mask an object named z in another environment. R avoids this problem by running foo() in a fresh execution environment."),
+         answer("An error would occur."),
+         answer("foo() will check to see if an object named z already exists in the calling environment. If so, it will use that value of z."),
          allow_retry = TRUE)
 ```
 
-### Execution environments
+### Could the execution environment stay active?
 
-R avoids this chaos by creating a new environment to run `foo()` in. In fact, each time you call a function in R:
+Suppose there _is_ an object named `z` stored in the calling environment. In fact, `z` contain my password, `"password123"`. Boy am I glad that R runs the body of `foo()` in a fresh execution environment where, `z <- 3` cannot overwrite my password!
 
-1. R creates a new environment
-2. R makes the new environment the active environment
-3. R runs the code body of the function in the new, active environment
-
-By running functions in fresh environments, R ensures that the functions will not overwrite previously existing objects.
-
-I'll call the environment that is active when you call a function the _calling environment_.
-
-I'll call the new environment that R makes to run the function in an _execution environment_, because R uses this environment to execute the function. 
-
-### \t
-
-To summarize, when you run `foo()`, R creates an execution environment to run the body of `foo()` in, i.e.
-
-```{r, eval = FALSE}
-z <- 3
-z
-```
-
-When `foo()` has finished running, this execution environment contains a single object, `z = 3` and the calling environment retains its object, `z = password123`.
-
-### Do execution environments stay active?
-
-Suppose that R does nothing else, and the execution environment remains the active environment.
-
-```{r fq2, echo = FALSE}
-question("What would happen if you now run `z` to retrieve your password?",
-         answer("R will return 3, because the new value of z masks the old value.", correct = TRUE, message = "The new value of z exists in the execution environment, which is the active environment, which is the first environment on the search path. R finds the new value of z and stops searching. This would be a problem. As you can guess, this is not how R works. But how does R work?"),
-         answer("R will return password123."),
-         answer("R will chastise you for using such a silly password."),
-         answer("R will return an error message"),
+```{r a3, echo = FALSE}
+question("But what would happen if R left the execution environment as the active environment after it finished running `foo()`?",
+         answer("Nothing important."),
+         answer("The next command would produce an immediate error."),
+         answer("z = 3 will mask z = password123 whenever I call z.", correct = TRUE, message = "If the execution environment remains the active environment, every search will begin there and its objects will mask any objects with the same names in other environments."),
          allow_retry = TRUE)
 ```
 
-### Execution environments do not remain active
+### What if...?
 
-An execution environment prevents `z <- 3` from overwriting `z = "password123"` in the calling environment, but `z <- 3` would still mask `z = "password123"` if the execution environment remains active.
-
-R solves this problem with a simple action: whenever R finishes running a function, R switches the active environment back to the calling environment. R switches the active environment back to the calling environment each time R finishes running a function. If the function returns a result, this result will be passed back to the calling environment (where you can save it with `<-`).
-
-### Execution environments and the search path
-
-Because execution environments do not remain active, and because execution environments are not the parent of the calling environment (or any of its ancestors), execution environments do not remain on the search path once a function has finished running. 
-
-Execution environments are literally safe, out-of-the-way environments to run functions in. Objects that a function creates will not mask or overwrite existing objects, nor will they appear in the search path. This last fact is a double edged sword: it means that the objects created by a function cannot be easily retrieved, so be sure to have your function return anything of importance in its result.
-
-### show_env()
-
-Let's take a peek at an execution environment in action. `show_env()` is a function in the `envtutorial` package, which is a package that I made specifically for this tutorial.
-
-The definition of `show_env()` looks like this: 
-
-```{r}
-show_env <- function() {
-  call <- parent.frame()
-  exec <- environment()
-  list(calling = call, execution = exec)
-}
-```
-
-When you run `show_env()`, R will create an execution environment to run the contents of `show_env()` in. The first line of `show_env()` will capture the name of the environment from which you called `show_env()` (pro tip: thats what `parent.frame()` does). This will be the calling environment for that run of `show_env()`. 
-
-The second line of `show_env()` will capture the environment that is active while the code in `show_env()` runs. This will be the execution environment for that run of `show_env()`.
-
-The last line will return the two results.
-
-### Your Turn
-
-* Click Run Code below a few times to see the results of `show_env()`. 
-
-```{r show, exercise = TRUE}
-show_env()
-```
-
-Here are a few things to notice:
-
-1. R runs the exercise chunk in a _new_ environment each time you click Run Code (this is how exercise chunks work in a tutorial). These environments will be the calling environments for `show_env()`.
-2. R always runs the code body of `show_env()` in a new environment that is not the calling environment. The second result shows the label of this environment, which is the execution environment of `show_env()`.
-
-See the pattern?
-
-### Quiz
-
-What will happen if you run a new line of code after `show_env()`? Here `environment()` will return the environment that is active _after_ `show_env()` finishes running.
-
-* Will this environment be familiar? Why or Why not?
-* Click Submit Answer to see if you are right.
-
-```{r show2, exercise = TRUE}
-show_env()
-environment()
-```
-
-```{r show2-solution}
-show_env()
-environment()
-```
-
-```{r show2-check}
-strict_check("environment() will always return the name of the calling environment because R always makes the calling environment active again after it runs show_env(). Think of the execution environment as a temporary side trip or errand: R begins in the calling environment, switches to the execution environment, and then returns back to the calling environment.")
+```{r a4, echo = FALSE}
+question("What would happen if one function called another function in its code body?",
+         answer("The execution environment of the first function would become the calling environment of the second function.", correct = TRUE, message = "Let's look at how this works."),
+         answer("R would make the calling environment active and return an error."),
+         answer("R would ignore the call to the second function."),
+         answer("That thing from Ghostbusters would occur. The thing where they cross the beams.")
 ```
 
 ### The Call Stack
@@ -558,7 +503,7 @@ These chains of calling environments are known as the _call stack_. Let's see on
 
 ### show_stack()
 
-The `show_stack()` function in the envtutorial package, shows the call stack at the moment it is called. The call stack does not look very impressive when you call `show_stack()` directly from the active environment (which in my case is the global environment):
+The `show_stack()` function comes in the envtutorial package, which is a package I made specifically for this tutorial. `show_stack()` shows the call stack at the moment it is called. The call stack does not look very impressive when you call `show_stack()` directly from the active environment (which in my case is the global environment):
 
 ```{r}
 show_stack()
@@ -577,7 +522,7 @@ k <- function() j()
 k()
 ```
 
-Here, the first row is the execution environment of `show_stack()`. The second row is the calling environment of `show_stack()`, which is the execution environment of `i()`. The third row is the calling environment of `i()`, which is the the execution environment of `j()`. The fourth row is the calling environment of `j()`, which is the execution environment of `k()`. And the final row is the calling environment of `k()`, which is the global environment.
+Here, the first row is the execution environment of `show_stack()`. The second row is the calling environment of `show_stack()`, which is the execution environment of `i()`. The third row is the calling environment of `i()`, which is the execution environment of `j()`. The fourth row is the calling environment of `j()`, which is the execution environment of `k()`. And the final row is the calling environment of `k()`, which is the global environment.
 
 ### Call stack life cycle
 
@@ -589,41 +534,18 @@ The calling environment of `show_env()` was the execution environment of `i()`. 
 
 Eventually, R had finished running all of the code and had removed every environment but one from the call stack. At that point, the active environment was the global environment.
 
+### Call stacks and search paths
+
+```{r a5, echo = FALSE}
+question("Will the call stack that leads to a function be the same as the search path used by the function?",
+         answer("yes"),
+         answer("No", correct = TRUE, message = "The call stack that leads to a function can vary from one run of the function to the next (as you saw with show_stack()), but you want the function to always use the same search path each time it runs. Let's see why."),
+         allow_retry = TRUE)
+```
+
 ### Masking in the call stack
 
-Call stacks create another dilemma for R. Consider the function `i()`. It calls a function named `show_stack()`. `show_stack()` is not defined in the execution environment of `i()`, but `show_stack()` is on the search path:
-
-```{r}
-parenvs(all = TRUE)
-```
-
-* Use a function from the pryr package to determine where `"show_stack"` lives on the search path. Then click Submit Answer.
-
-```{r whereshow, exercise = TRUE}
-
-```
-
-```{r whereshow-hint}
-"Surround show_stack with quotation marks")
-```
-
-```{r whereshow-solution}
-where("show_stack")
-```
-
-```{r whereshow-check}
-strict_check("show_stack() lives in the package environment for the envtutorial package.")
-```
-
-### \t
-
-The search path above is what the search path looks like from the global environment. What should the search path look like from the execution environment of `i()`?
-
-On first guess, you might assume that R would use the call stack as the search path (well the call stack to search to the global environment, and then the search path from the global environment to search to the empty environment). But this sensible approach would not work.
-
-To see why, let's write some new code.
-
-### \t
+Let's call `show_stack()` in a different way:
 
 ```{r eval = FALSE}
 i <- function() show_stack()
@@ -635,155 +557,71 @@ k <- function() j()
 k()
 ```
 
-When R runs `i()` (after running `k()` and `j()`), R will begin to search for the function named `show_stack()`. If the search path followed the call stack, R would find the function `show_stack <- function() 1 + 1`, which lives in the execution environment of `j()` before R would find the `show_stack()` that lives in the envtutorial package environment.
+This time the `j()` function defines its own version of `show_stack()`, which will live in the calling environment of `i()` (i.e. in the call stack).
 
-Since any function can use any name, there is no way to ensure that a function further up the call stack does not create objects that mask objects needed by a function further down the call stack.
+Believe it or not, but `show_stack()` isn't defined in the execution environment of `i()`---`show_stack()` is defined in the package environment for the envtutorial package. As a result, R needs to look up `show_stack()` in the same way that it looks up any other object.
 
+If R uses the call stack as its search path, R will find and use the incorrect version of `show_stack()`. 
 
+### Enclosing environments
 
+It would be a bad idea to use the call stack as the search path, since there is no way to police what might appear in the call stack that leads to a function. But what does R do instead?
 
+Every function saves a reference to the environment where it was originally defined. This environment is known as the function's _enclosing environment_.
 
+You can look up a function's enclosing environment by running `environment()` on the function, or by simply typing the name of the function: its enclosing environment will appear after its code body.
 
+* Click Submit Answer below to try it out.
 
-
-
-
-
-
-
-
-
-
-
-### Looking up function objects
-
-Execution environments also affect how R will look up values while executing a function. 
-
-As always, R will look for objects in the current active environment, which will be the execution environment while the function code runs. 
-
-Do you remember where R will look next if it does not find an object in the active environment?
-
-### \t
-
-If you said the parent of the active environment you are correct! But what is the parent of an execution environment? Let's find out. 
-
-### \t
-
-First, you will need to know that every function in R knows where it was originally defined. For example, the `date()` function in the lubridate package was originally defined in... the lubridate package environment.
-
-```{r}
-environment(date)
+```{r show, exercise = TRUE}
+environment(show_stack)
+show_stack
 ```
 
-
-
-
-
-Here is a function that I defined in the global setup chunk of this tutorial. (In other words, R ran this code when the tutorial first loaded; so `show_execution_par` was defined in a different environment than the active environment of the exercise chunk.)
-
-```{r eval = FALSE}
-show_execution_par <- function() {
-  env <- environment()
-  par <- parent.env(env)
-  list(environment = env, parent = par)
-}
+```{r show-solution}
+environment(show_stack)
+show_stack
 ```
 
-`show_execution_par()` behaves similar to `show_execution_env()`. However, `show_execution_par()` returns a list that contains both the label of the execution environment that R uses to run `show_execution_par()` _and_ the label of the parent of the execution environment.
-
-###  
-
-* Run the code below several times. Then click Submit Answer. 
-* What is the parent of the execution environment? 
-* Does the parent ever change?
-
-```{r shw2, exercise = TRUE}
-environment() # the active environment when you call show_execution_par
-show_execution_par()
+```{r show-check}
+strict_check("The enclosing environment of show_stack() is the envtutorial package, but the enclosing environment for any function that you create at an R console command line will be the global environment.")
 ```
 
-```{r shw2-solution}
-environment() # the active environment when you call show_execution_par
-show_execution_par()
+### Aside
+
+You may have noticed that there is both a package environment and a namespace environment for the envtutorial package (and for every other package). The difference between package environments and namespace environments is very technical, and not important today. We won't cover it. 
+
+If you would like to learn more about the difference between namespaces and package environments, you can read about them [here](http://adv-r.had.co.nz/Environments.html#function-envs).
+
+### Enclosing environments and the search path
+
+Everytime R runs a function, R will create a new execution environment; but each of these execution environments will use the same parent environment: the enclosing environment of the function.
+
+As a result, the function will always run with the same search path, finding the same values for undefined variables each time.
+
+In my example, `i()` was defined in the global environment, which became its enclosing environment. When R needed to look up `show_stack()` it first looked in the execution environment of `i()`, and then in the global environment(), bypassing the execution environment of `j()`.
+
+### What if you need an object from the calling environment?
+
+Enclosing environments mean that the calling environment will (usually) not be on a function's search path.
+
+```{r a6, echo = FALSE}
+question("What if your function needs to use an object from the calling environment to do its job?",
+         answer("You are out of luck"),
+         answer("You should rewrite the function to automatically fetch the object."),
+         answer("You should manually reconstruct the search path before running the function."),
+         answer("You can pass the object to the function as an argument", correct = TRUE, message = "That is exactly what the argument system is for."),
+         allow_retry = TRUE)
 ```
 
-```{r shw2-check}
-strict_check("There are two things to notice here: 1) the parent of the execution environment never changes, even though the execution environments change: R creates a new execution environment each time R runs the function, and 2) the parent of the execution environment is NOT the environment that was active when R called show_execution_par().")
-```
+### Congratulations
 
-### Enclosing Environments
+You have finished the most technical tutorial in this primer! 
 
-The parent of an execution environment will always be _the environment in which the function was originally defined_. This environment is known as the _enclosing environment_ of the function.
+The remaining tutorials will show you how to write functions that do different things, like handle cases or iterate over loops.
 
-A function's enclosing environment never changes. Each time you call the function, R will generate a new execution environment, but each execution environment will use the same enclosing environment as its parent.
 
-You can see a function's enclosing environment by running `environment()` on the function.
 
-* Give it a try. What is the enclosing environment of `show_execution_par`? Click Submit Answer when you are finished.
 
-```{r enclose, exercise = TRUE}
 
-```
 
-```{r enclose-hint}
-"Pass show_execution_par as an object name to environment(); don't surround it in quotation marks or follow it with parentheses."
-```
-
-```{r enclose-solution}
-environment(show_execution_par)
-```
-
-```{r enclose-check}
-strict_check("This is the same environment that show_execution_par() returns as the parent environment each time you run show_execution_par().")
-```
-
-### Search paths
-
-The enclosing environment plays an important role for a function. The enclosing environment determines the function's search path. (Why? Because R will look in the enclosing environment and then the parent of the enclosing environment and so on, if R does not find an object in the execution environment).
-
-If a function was defined in the global environment (or whichever environment the function was called from) then the search path of the environment from which the function was called will align with the search path of the environment in which the function's code is run. **But usually these two search paths do not align.**
-
-In other words, a function will usually not be able to find objects that are defined in your active environment.
-
-###  
-
-Once again, we can see this in action by crafting our ouwn function. I defined `show_path` in the global set up chunk of this tutorial, so `show_path`'s enclosing environment will not be the active environment of the exercise chunk below.
-
-```{r eval = FALSE}
-show_path <- function() {
-  env <- environment()
-  path <- parenvs(all = TRUE)
-  list(environment = env, path = path)
-}
-```
-
-* Run the code below and compare the two search paths.
-* Where will the object `a` be defined? 
-* Would R be able to find `a` when it runs the code inside `show_path`? Why or why not?
-* Click Submit Answer when you are finished.
-
-```{r path, exercise = TRUE}
-a <- 1
-environment() # The active environment
-parenvs(all = TRUE) # the search path from the active environment
-show_path() # the search path from the execution environment
-```
-
-```{r path-solution}
-a <- 1
-environment() # The active environment
-parenvs(all = TRUE) # the search path from the active environment
-show_path() # the search path from the execution environment
-```
-
-```{r path-check}
-strict_check("The search path for show_path() bypasses the calling environment, which contains a. This raises an important question: how could you pass a to show_path() if show_path() needed to use a? Before we look at the answer, let's summarize R's function evaluation rules.")
-```
-
-### Summary
-
-To evaluate a function, R:
-
-1. Creates a new _execution environment_ to use as the active environment while R runs the code in the function's code body.
-2. Uses the function's _enclosing environment_ as the parent of the execution environment. The enclosing environment is the environment in which the function was orginially defined. This environment determines the search path that R will use to look up objects while R runs the code in the function's body.
-3. Makes the _calling environment_ active again when R has finished running the code in the function body. The calling environment is whichever environment was active when R called the function.
