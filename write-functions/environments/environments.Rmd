@@ -437,7 +437,7 @@ Suppose there is already an object named `z` stored in the active environment. T
 
 ```{r fq1, echo = FALSE}
 question("If R runs `foo()` in the active environment, which of the following would happen?",
-         answer('R will overwrite z = "password123" with z = 3.', correct = TRUE, message = "z poses a problem: if R executes foo() in the active environment, foo() will add an object named z to the environment, which would overwrite the object named z that already exists in the environment."),
+         answer('R will overwrite z = "password123" with z = 3.', correct = TRUE, message = "z poses a problem: R must execute the code in foo(), but if R executes the code in the active environment, foo() will add an object named z to the environment. This would overwrite the object named z that already exists in the environment."),
          answer('R will not run z <- 3, because R notices that an object named z already exists.'),
          answer("R will create a new object named z_2 that has the value of 3."),
          answer("An error."),
@@ -475,7 +475,7 @@ Suppose that R does nothing else, and the execution environment remains the acti
 
 ```{r fq2, echo = FALSE}
 question("What would happen if you now run `z` to retrieve your password?",
-         answer("R will return 3, because the new value of z masks the old value.", correct = TRUE, message = "R will return the first value of z that R finds on the search path. If the execution environment is the active environment, R would find the value of z stored in the execution environment, because the active environment is the first environment on the search path. That'd be a big problem! As you can guess, this is not how R works. But how does R work?"),
+         answer("R will return 3, because the new value of z masks the old value.", correct = TRUE, message = "The new value of z exists in the execution environment, which is the active environment, which is the first environment on the search path. R finds the new value of z and stops searching. This would be a problem. As you can guess, this is not how R works. But how does R work?"),
          answer("R will return password123."),
          answer("R will chastise you for using such a silly password."),
          answer("R will return an error message"),
@@ -484,9 +484,9 @@ question("What would happen if you now run `z` to retrieve your password?",
 
 ### Execution environments do not remain active
 
-As you can see, creating an execution environment does not completely solve the `z` problem. The execution environment prevents `z <- 3` from overwriting `z = "password123"` in the calling environment, but `z <- 3` would still mask `z = "password123"` if the execution environment remains active.
+An execution environment prevents `z <- 3` from overwriting `z = "password123"` in the calling environment, but `z <- 3` would still mask `z = "password123"` if the execution environment remains active.
 
-R solves this problem with a simple action: R switches the active environment back to the calling environment each time R finishes running a function. If the function returns a result, this result will be passed back to the calling environment (where you can save it with `<-`).
+R solves this problem with a simple action: whenever R finishes running a function, R switches the active environment back to the calling environment. R switches the active environment back to the calling environment each time R finishes running a function. If the function returns a result, this result will be passed back to the calling environment (where you can save it with `<-`).
 
 ### Execution environments and the search path
 
