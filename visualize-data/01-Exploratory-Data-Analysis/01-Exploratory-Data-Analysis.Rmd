@@ -36,7 +36,7 @@ EDA is an iterative cycle that helps you understand what your data says. When yo
 
 1. Generate questions about your data
 
-1. Search for answers by visualising, transforming, and/or modelling your data
+1. Search for answers by visualising, transforming, and/or modeling your data
 
 1. Use what you learn to refine your questions and/or generate new questions
 
@@ -98,7 +98,7 @@ question("Is EDA a tool for discovery or confirmation?",
 )
 ```
 
-### Review 2 - Quality or Quanitity?
+### Review 2 - Quality or Quantity?
 
 ```{r q2, echo = FALSE}
 question("When you begin to explore data, is it better to formulate one or two high-quality questions to ask, or many, many questions to explore?",

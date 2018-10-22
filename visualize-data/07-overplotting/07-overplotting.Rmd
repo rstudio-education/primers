@@ -114,7 +114,7 @@ ggplot(data = mpg) +
 
 ### Overplotting due to large data
 
-A dataset does not need to be truly "Big Data" to be hard to visualize. The diamonds data set contains less than 54,000 points, but it still suffers from overplotting when you try to plot carat vs. price. Here the bulk of the poitns fall on top of each other in an impenetrable cloud of blackness.
+A dataset does not need to be truly "Big Data" to be hard to visualize. The diamonds data set contains less than 54,000 points, but it still suffers from overplotting when you try to plot carat vs. price. Here the bulk of the points fall on top of each other in an impenetrable cloud of blackness.
 
 ```{r out.width = "80%"}
 ggplot(data = diamonds) +
@@ -159,7 +159,7 @@ ggplot(data = diamonds) +
 
 ### geom_bin2d()
 
-`geom_bin2d()` provides a new way to summarise two dimensional continuous relationships. You can think of bin2d as working like a three dimensional histogram. It divides the cartesian field into small retangular bins, like a checkerboard. It then counts how many points fall into each bin, and maps the count to color. Bins that contain no points are left blank.
+`geom_bin2d()` provides a new way to summarise two dimensional continuous relationships. You can think of bin2d as working like a three dimensional histogram. It divides the cartesian field into small rectangular bins, like a checkerboard. It then counts how many points fall into each bin, and maps the count to color. Bins that contain no points are left blank.
 
 ```{r out.width = "80%"}
 ggplot(data = diamonds) +
@@ -235,7 +235,7 @@ ggplot(data = diamonds) +
 
 ### Exercise - density2d
 
-Often density2d plots are easiest to read when you plot them on top of the original data. In the chunk below create a plot of daimond carat size vs. price. The plot should contain density2d lines superimposed _on top of_ the raw points. Make the raw points transparent with an alpha of 0.1.
+Often density2d plots are easiest to read when you plot them on top of the original data. In the chunk below create a plot of diamond carat size vs. price. The plot should contain density2d lines superimposed _on top of_ the raw points. Make the raw points transparent with an alpha of 0.1.
 
 ```{r r6, exercise = TRUE}
 

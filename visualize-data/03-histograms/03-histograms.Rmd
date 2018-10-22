@@ -75,7 +75,7 @@ question("According to the chart, which is the most common carat size in the dat
 
 ### binwidth
 
-By default, ggplot2 will choose a binwidth for your histogram that results in about 30 bins. You can set the binwidth manually with the `binwidth` argument, which is interpretted in the units of the x axis:
+By default, ggplot2 will choose a binwidth for your histogram that results in about 30 bins. You can set the binwidth manually with the `binwidth` argument, which is interpreted in the units of the x axis:
 
 ```{r hist2, exercise = TRUE, exercise.eval = TRUE}
 ggplot(data = diamonds) +
@@ -278,7 +278,7 @@ You can avoid this with `geom_density()`.
 
 ### Density curves
 
-`geom_density()` plots a kernel density estimate (i.e. a density curve) for each distribution. This is a smoothed representation of the data, analagous to a smoothed histogram. 
+`geom_density()` plots a kernel density estimate (i.e. a density curve) for each distribution. This is a smoothed representation of the data, analogous to a smoothed histogram. 
 
 Density curves do not plot count on the $y$ axis but _density_, which is analagous to the count divided by the total number of observations. Densities makes it easy to compare the distributions of sub-groups. When you plot multiple sub-groups, each density curve will contain the same area under its curve.
 

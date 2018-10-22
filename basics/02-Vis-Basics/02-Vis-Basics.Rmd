@@ -28,7 +28,7 @@ This tutorial will teach you how to begin visualizing data with ggplot2, which i
 
 These skills will quickly add visualization to your data science toolkit. You can expand on them later with the [Visualize Data]() primer.
 
-### Acknowledgements
+### Acknowledgments
 
 These examples are excerpted from _R for Data Science_ by Hadley Wickham and Garrett Grolemund, published by O’Reilly Media, Inc., 2016, ISBN: 9781491910399. You can purchase the book at [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
 
