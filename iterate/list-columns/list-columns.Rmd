@@ -15,6 +15,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(tidyverse)
 library(gapminder)
+library(grader)
 
 nested_gapminder <- 
   gapminder %>% 
@@ -33,10 +34,7 @@ gap_final <-
   gap_coefs %>% 
   mutate(r_squared = map_dbl(models, ~summary(.x) %>% pluck("r.squared")))
 
-checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
-  list(message = check_code, correct = TRUE, location = "append")
-}
-tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
@@ -243,7 +241,7 @@ gapminder
 ```
 
 ```{r gapminder-check}
-"Good job. You've already seen this data in list form if you've taken the map tutorials in this primer."
+strict_check("Good job. You've already seen this data in list form if you've taken the map tutorials in this primer.")
 ```
 
 ### Goals
@@ -324,7 +322,7 @@ gapminder %>%
 ```
 
 ```{r nest-check}
-'Excellent! nest() returns a new data set that contains one column for each grouping variable followed by a list column. Each cell of the list column contains a tibble. You can set the name of the list column by passing nest() a .data argument, e.g. .data = "tibbles". Click continue to see what is in the tibbles.'
+strict_check('Excellent! nest() returns a new data set that contains one column for each grouping variable followed by a list column. Each cell of the list column contains a tibble. You can set the name of the list column by passing nest() a .data argument, e.g. .data = "tibbles". Click continue to see what is in the tibbles.')
 ```
 
 ### Nested data
@@ -336,13 +334,6 @@ I've saved your previous result as `nested_gapminder`.
 * Use `pluck()` to extract the `"data"` column from `nested_gapminder`.
 * Use `pluck()` a second time to extract the first cell from `nested_gapminder` (yes you should use `%>%` in this exercise to build a pipe).
 * Click Submit Answer. What did R return?
-
-```{r pluck-setup}
-nested_gapminder <- 
-  gapminder %>% 
-  group_by(country) %>% 
-  nest()
-```
 
 ```{r pluck, exercise =TRUE}
 nested_gapminder
@@ -359,7 +350,7 @@ nested_gapminder %>%
 ```
 
 ```{r pluck-check}
-"Good job extracting a cell! You can see that each tibble in the list column contains the data from the original data set that is relevant to the group it represents. For example, our result is all of the data related to Afghanistan, the group that appears in the first row of nested_gapminder."
+strict_check("Good job extracting a cell! You can see that each tibble in the list column contains the data from the original data set that is relevant to the group it represents. For example, our result is all of the data related to Afghanistan, the group that appears in the first row of nested_gapminder.")
 ```
 
 ### unnest()
@@ -384,7 +375,7 @@ nested_gapminder %>%
 ```
 
 ```{r unnest-check}
-"Good job! It is important to remember that nest() and unnest(), like all functions in the tidyverse, do not modify the original data frame. They return a modified copy of the original data frame."
+strict_check("Good job! It is important to remember that nest() and unnest(), like all functions in the tidyverse, do not modify the original data frame. They return a modified copy of the original data frame.")
 ```
 
 ### Manipulating nested data
@@ -418,7 +409,7 @@ nested_gapminder %>%
 ```
 
 ```{r lm-check}
-"Excellent! Life expectancy increased on average by 0.27 years per year in Afghanistan."
+strict_check("Excellent! Life expectancy increased on average by 0.27 years per year in Afghanistan.")
 ```
 
 ### \t
@@ -427,7 +418,7 @@ Let's push this one step further. The code below extracts the `data` column of `
 
 * Use `map()` and an expression to apply your model to every tibble in the list. Then click Submit Answer.
 
-```{r data-list, exercise = TRUE, exercise.eval = TRUE}
+```{r data-list, exercise = TRUE}
 nested_gapminder %>%  
   pluck("data")
 ```
@@ -443,7 +434,7 @@ nested_gapminder %>%
 ```
 
 ```{r data-list-check}
-"Very good job. Notice that you get the result back as a new list. Let's look at one more step that you will need to save your models in your data frame."
+strict_check("Very good job. Notice that you get the result back as a new list. Let's look at one more step that you will need to save your models in your data frame.")
 ```
 
 ### \t
@@ -466,7 +457,7 @@ iris %>%
 ```
 
 ```{r mutate-check}
-"Perfect. You can use the same operation--mutate()--to add a new column to your data, whether or not that new column contains a list."
+strict_check("Perfect. You can use the same operation--mutate()--to add a new column to your data, whether or not that new column contains a list.")
 ```
 
 ### Models
@@ -510,7 +501,7 @@ nested_gapminder %>%
 ```
 
 ```{r models-lc-check}
-"You did great! As you can see, mutate() and the other tidyverse functions know how to work with list columns. If the input to mutate() creates a list, mutate() saves the result as a list column."
+strict_check("You did great! As you can see, mutate() and the other tidyverse functions know how to work with list columns. If the input to mutate() creates a list, mutate() saves the result as a list column.")
 ```
 
 ### Coefficients
@@ -550,7 +541,7 @@ gap_models %>%
 ```
 
 ```{r dbl-check}
-"Another great job! You've now used mutate() to create a list column from a list column and to create a regular column from a list column."
+strict_check("Another great job! You've now used mutate() to create a list column from a list column and to create a regular column from a list column.")
 ```
 
 ### R-squared
@@ -596,7 +587,7 @@ gap_coefs %>%
 ```
 
 ```{r r2-check}
-"Nice! I'll save this result as gap_final. Now let's talk about what you have done."
+strict_check("Nice! I'll save this result as gap_final. Now let's talk about what you have done.")
 ```
 
 ### Why list columns?

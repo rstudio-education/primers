@@ -65,7 +65,7 @@ mpg %>%
 
 ### geom_text()
 
-`geom_text()` and `geom_label()` create scatterplots that uses words instead of points to display data. Each requires the extra aesthetic `label`, which you should map to a variable that contains text to display for each observation.
+`geom_text()` and `geom_label()` create scatterplots that use words instead of points to display data. Each requires the extra aesthetic `label`, which you should map to a variable that contains text to display for each observation.
 
 Convert the plot below from `geom_point()` to `geom_text()` and map the label aesthetic to the class variable. When you are finished convert the code to `geom_label()` and rerun the plot. Can you spot the difference?
 
@@ -292,7 +292,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 
 ### Global vs. Local data
 
-The `data` argument also follows a global vs. local system. If you set the `data` argument of a geom function, the geom will use the data tyou supply instead of the data contained in `ggplot()`. This is a convenient way to highlight groups of points.
+The `data` argument also follows a global vs. local system. If you set the `data` argument of a geom function, the geom will use the data you supply instead of the data contained in `ggplot()`. This is a convenient way to highlight groups of points.
 
 Use `data` arguments to recreate the plot below. I've started the code for you.
 

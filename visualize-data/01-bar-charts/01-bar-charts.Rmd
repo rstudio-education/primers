@@ -44,7 +44,7 @@ ggplot(data = diamonds) +
 
 ### The y axis
 
-You should not supply a $y$ aesthetic when you use `geom_bar()`; ggplot2 will count how many times each $x$ value appears in the data, and then display the counts on the $y$ axis. So, for example, the plot above shows that ove 20,000 diamonds in the data set had a value of `Ideal`.
+You should not supply a $y$ aesthetic when you use `geom_bar()`; ggplot2 will count how many times each $x$ value appears in the data, and then display the counts on the $y$ axis. So, for example, the plot above shows that over 20,000 diamonds in the data set had a value of `Ideal`.
 
 You can compute this information manually with the `count()` function from the dplyr package.
 
@@ -209,7 +209,7 @@ ggplot(data = mpg) +
 
 ### Positions
 
-If you map fill to a new variable, `geom_bar()` will display a _stacked_ bar chart:
+If you map `fill` to a new variable, `geom_bar()` will display a _stacked_ bar chart:
 
 ```{r out.width = "80%"}
 ggplot(data = diamonds) +
@@ -231,7 +231,7 @@ This plot shows the same rectangles as the previous chart; however, it lays out 
 
 ### Position = "stack"
 
-To create the familiar stacked bar chart, set `position = "stack"` or rely on the default position value. For `geom_bar()` this is `position = "stack"`.
+To create the familiar stacked bar chart, set `position = "stack"` (which is the default for `geom_bar()`).
 
 ```{r out.width = "80%"}
 ggplot(data = diamonds) +
@@ -270,7 +270,7 @@ ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut, fill = clarity), position = "identity")
 ```
 
-Position adjustments tell ggplot2 how to re-distribute objects when they overlap. `position = "identity"` is the "adjustment" that let's objects overlap each other. `position = "identity"` is a bad choice for bar graphs because the result looks like a stacked bar chart, even though it is not. 
+Position adjustments tell ggplot2 how to re-distribute objects when they overlap. `position = "identity"` is the "adjustment" that let's objects overlap each other. It is a bad choice for bar graphs because the result looks like a stacked bar chart, even though it is not. 
 
 ### Exercise 6 - Positions
 
@@ -414,9 +414,9 @@ By default, each facet in your plot will share the same $x$ and $y$ ranges. You 
 
 In this tutorial, you learned how to make bar charts; but much of what you learned applies to other types of charts as well. Here's what you should know:
 
-* bar charts are the basis for histograms, which means that you can interpret histograms in a similar way
-* bars are not the only geom in ggplot2 that use the fill aesthetic. You can use both fill and color aesthetics with any geom that has an "interior" region
-* you can use the same position adjustments with any ggplot2 geom: `"identity"`, `"stack"`, `"dodge"`, `"fill"`, `"nudge"`, and `"jitter"` (we'll learn about `"nudge"` and `"jitter"` later). Each geom comes with its own sensible default
-* you can facet any ggplot2 plot by adding `facet_grid()` or `facet_wrap()` to the plot call
+* Bar charts are the basis for histograms, which means that you can interpret histograms in a similar way.
+* Bars are not the only geom in ggplot2 that use the fill aesthetic. You can use both fill and color aesthetics with any geom that has an "interior" region.
+* You can use the same position adjustments with any ggplot2 geom: `"identity"`, `"stack"`, `"dodge"`, `"fill"`, `"nudge"`, and `"jitter"` (we'll learn about `"nudge"` and `"jitter"` later). Each geom comes with its own sensible default.
+* You can facet any ggplot2 plot by adding `facet_grid()` or `facet_wrap()` to the plot call.
 
 Bar charts are an excellent way to display the distribution of a categorical variable. In the next tutorial, we'll meet a set of geoms that display the distribution of a continuous variable.

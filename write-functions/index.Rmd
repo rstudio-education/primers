@@ -1,0 +1,35 @@
+---
+title: "Write Functions"
+output: html_document
+---
+
+Write your own reusable functions.
+
+
+### [Function Basics](https://tutorials.shinyapps.io/function-basics/)
+
+Start here to learn what a function is _really_. This quick tutorial explains the structure of functions and how to call them.
+
+### [How to Write a Function](https://tutorials.shinyapps.io/how-to-write-a-function/)
+
+Here it is! The best practice workflow for writing your own functions in R. You'll also learn some shortcuts for converting common types of code into R functions.
+
+### [Arguments](https://tutorials.shinyapps.io/arguments/)
+
+Arguments are the user interface (UI) to your functions. This extended quiz will teach you the ins and outs of writing, and using, a good function UI.
+
+### Environments and Scoping Rules
+
+Coming Soon! Here you will learn how R stores and looks up objects. 
+
+### [Control Flow](https://tutorials.shinyapps.io/control-flow/)
+
+Control flow refers to the order in which a function executes its code. Here you'll learn how to run specific code in specific cases with `if` and `else`, and how to stop function execution early with `return()` and `stop()`.
+
+### [Advanced Control Flow](https://tutorials.shinyapps.io/advanced-control-flow/)
+
+Next it is time to learn how to combine logical tests in `if` statements, as well as how to write `if` statements that work with vectors. This is a prerequisite for using `if` in vectorized functions.
+
+### [Loops](https://tutorials.shinyapps.io/loops/)
+
+Learn to repeat code with R's `repeat`, `while`, and `for` loops. You'll also learn to recognize when you should or shouldn't use a loop in R.
