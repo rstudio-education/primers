@@ -212,7 +212,7 @@ ggplot(data = diamonds) +
 
 `geom_density2d()` provides one last way to summarize a two dimensional continuous relationship. Think of density2d as the two dimensional analog of density. Instead of drawing a line that rises and falls on the y dimension, it draws a field over the coordinate axes that rises and falls on the z dimension, that's the dimension that points straight out of the graph towards you.
 
-The result is similar to a mountain that you are looking straight down upon. The high places on the mountain show where the most points fall and the low places show where the fewest points fall. To visualize this mountain, density2d draws contour lines that connect areas with the same "height." Just like a contour map draws elevation.
+The result is similar to a mountain that you are looking straight down upon. The high places on the mountain show where the most points fall and the low places show where the fewest points fall. To visualize this mountain, density2d draws contour lines that connect areas with the same "height", just like a contour map draws elevation.
 
 Here we see the "ridge" of points that occur at low values of carat and price.
 
