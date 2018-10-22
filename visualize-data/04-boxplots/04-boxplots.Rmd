@@ -188,7 +188,7 @@ The three cut functions are
 * `cut_number()` which makes `n` groups with (approximately) equal numbers of observations
 * `cut_width()` which makes groups with width `width`
 
-Use one of thre functions below to bin `continuous_vector` into groups of `width = 2`.
+Use one of three functions below to bin `continuous_vector` into groups of `width = 2`.
 
 ```{r cut-setup}
 continuous_vector <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
