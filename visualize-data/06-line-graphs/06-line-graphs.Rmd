@@ -539,4 +539,4 @@ ggplot(USArrests2) +
 
 ### Recap
 
-You can now make all of the plots recommended in the [Exploratory Data Analysis tutorial](). The last tutorial in this primer will teach you several strategies for dealing with overplotting, a problem that can occur when you have large data or low resolution data.
+You can now make all of the plots recommended in the [Exploratory Data Analysis tutorial](). The next tutorial in this primer will teach you several strategies for dealing with overplotting, a problem that can occur when you have large data or low resolution data.
