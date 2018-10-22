@@ -159,7 +159,7 @@ ggplot(data = diamonds) +
 
 ### geom_bin2d()
 
-`geom_bin2d()` provides a new way to summarise two dimensional continuous relationships. You can think of bin2d as working like a three dimensional histogram. It divides the cartesian field into small rectangular bins, like a checkerboard. It then counts how many points fall into each bin, and maps the count to color. Bins that contain no points are left blank.
+`geom_bin2d()` provides a new way to summarise two dimensional continuous relationships. You can think of bin2d as working like a three dimensional histogram. It divides the Cartesian field into small rectangular bins, like a checkerboard. It then counts how many points fall into each bin, and maps the count to color. Bins that contain no points are left blank.
 
 ```{r out.width = "80%"}
 ggplot(data = diamonds) +

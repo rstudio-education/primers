@@ -459,14 +459,14 @@ ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
 
 Altogether, ggplot2 comes with seven coord functions:
 
-* `coord_cartesian()` - (the default) cartesian coordinates
-* `coord_fixed()` - cartesian coordinates that maintain a fixed aspect ratio as the plot window is resized
-* `coord_flip()` - cartesian coordinates with x and y axes flipped
+* `coord_cartesian()` - (the default) Cartesian coordinates
+* `coord_fixed()` - Cartesian coordinates that maintain a fixed aspect ratio as the plot window is resized
+* `coord_flip()` - Cartesian coordinates with x and y axes flipped
 * `coord_map()` and `coord_quickmap()` - cartographic projections for plotting maps
 * `coord_polar()` - polar coordinates
-* `coord_trans()` - transformed cartesian coordinates
+* `coord_trans()` - transformed Cartesian coordinates
 
-By default, ggplot2 will draw a plot in cartesian coordinates unless you add one of the functions above to the plot code.
+By default, ggplot2 will draw a plot in Cartesian coordinates unless you add one of the functions above to the plot code.
 
 ### coord_polar()
 
