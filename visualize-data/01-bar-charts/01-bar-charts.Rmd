@@ -270,7 +270,7 @@ ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut, fill = clarity), position = "identity")
 ```
 
-Position adjustments tell ggplot2 how to re-distribute objects when they overlap. `position = "identity"` is the "adjustment" that let's objects overlap each other. `position = "identity"` is a bad choice for bar graphs because the result looks like a stacked bar chart, even though it is not. 
+Position adjustments tell ggplot2 how to re-distribute objects when they overlap. `position = "identity"` is the "adjustment" that let's objects overlap each other. It is a bad choice for bar graphs because the result looks like a stacked bar chart, even though it is not. 
 
 ### Exercise 6 - Positions
 
