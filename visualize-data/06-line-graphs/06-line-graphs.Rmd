@@ -502,7 +502,7 @@ ggplot(USArrests2) +
 
 ### coord_map()
 
-You may have noticed that our maps look a little off. So far, we've plotted them in cartesian coordinates, which distort the spherical surface described by latitude and longitude. Also, ggplot2 adjusts the aspect ratio of our plots to fit our graphing window, which can further distort our maps. 
+You may have noticed that our maps look a little off. So far, we've plotted them in Cartesian coordinates, which distort the spherical surface described by latitude and longitude. Also, ggplot2 adjusts the aspect ratio of our plots to fit our graphing window, which can further distort our maps.
 
 You can avoid both of these distortions by adding `coord_map()` to your plot. `coord_map()` displays the plot in a fixed cartographic projection. Note that  `coord_map()`, relies on the **mapproj** package, so you'll need to have mapproj installed before you use `coord_map()`.
 

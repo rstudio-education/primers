@@ -174,7 +174,7 @@ p + coord_flip(ylim = c(0, 7500))
 
 ### coord_cartesian()
 
-But what if your plot doesn't call a `coord_` function? Then your plot is using cartesian coordinates (the default). You can adjust the limits of your plot without changing the default coordinate system by adding `coord_cartesian()` to your plot.
+But what if your plot doesn't call a `coord_` function? Then your plot is using Cartesian coordinates (the default). You can adjust the limits of your plot without changing the default coordinate system by adding `coord_cartesian()` to your plot.
 
 Try it below. Use `coord_cartesian()` to zoom `p` to the region where price falls between 0 and 7500.
 
