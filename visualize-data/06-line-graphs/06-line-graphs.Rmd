@@ -515,7 +515,7 @@ ggplot(USArrests2) +
 
 ### projections
 
-By default, `coord_map()` replaces the coordinate system with a mercator projection. To use a different projection, set the `projection` argument of `coord_map()` to a projection name, surrounded by quotation marks. 
+By default, `coord_map()` replaces the coordinate system with a Mercator projection. To use a different projection, set the `projection` argument of `coord_map()` to a projection name, surrounded by quotation marks. 
 
 To see this, extend the code below to view the map in a `"sinusoidal"` projection.
 
