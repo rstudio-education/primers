@@ -231,7 +231,7 @@ This plot shows the same rectangles as the previous chart; however, it lays out 
 
 ### Position = "stack"
 
-To create the familiar stacked bar chart, set `position = "stack"` or rely on the default position value. For `geom_bar()` this is `position = "stack"`.
+To create the familiar stacked bar chart, set `position = "stack"` (which is the default for `geom_bar()`).
 
 ```{r out.width = "80%"}
 ggplot(data = diamonds) +
