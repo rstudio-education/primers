@@ -209,7 +209,7 @@ ggplot(data = mpg) +
 
 ### Positions
 
-If you map fill to a new variable, `geom_bar()` will display a _stacked_ bar chart:
+If you map `fill` to a new variable, `geom_bar()` will display a _stacked_ bar chart:
 
 ```{r out.width = "80%"}
 ggplot(data = diamonds) +
