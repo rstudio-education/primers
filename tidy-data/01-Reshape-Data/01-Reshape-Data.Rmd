@@ -53,7 +53,7 @@ The tools that you learned in the previous Primers work best when your data is o
 This tutorial will teach you how to recognize tidy data, as well as how to reshape untidy data into a tidy format. In it, you will learn the core data wrangling functions for the tidyverse:
 
 * `gather()` - which reshapes wide data into long data, and 
-* `select()` - which reshapes long data into wide data
+* `spread()` - which reshapes long data into wide data
 
 This tutorial uses the [core tidyverse packages](http://tidyverse.org/), including ggplot2, dplyr, and tidyr, as well as the `babynames` package. All of these packages have been pre-installed and pre-loaded for your convenience.
 
@@ -323,7 +323,7 @@ table4a %>% gather(key = "year", value = "cases", 2, 3)
 
 ### Specifying columns
 
-So far we've used numbers to describe which columns to reshape with `gather()`, but this isn't necessary. `gather()` also recognizes column names as well as all of the `select()` helpers that you learned about in [Isolating Data with dplyr](). So for eaxmple, these expressions would all do the same thing:
+So far we've used numbers to describe which columns to reshape with `gather()`, but this isn't necessary. `gather()` also recognizes column names as well as all of the `select()` helpers that you learned about in [Isolating Data with dplyr](). So for example, these expressions would all do the same thing:
 
 ```{r echo = TRUE, eval = FALSE}
 table4a %>% gather(key = "year", value = "cases", 2, 3)
@@ -351,12 +351,12 @@ table4b %>% gather(key = "year", value = "population", -country)
 ```
 
 ```{r ex8-check}
-"Good job! Together the tidy versions of table4a and table4b repeat the information in table1. In Join Data Sets you will leanr how to combine them back into a single data set."
+"Good job! Together the tidy versions of table4a and table4b repeat the information in table1. In Join Data Sets you will learn how to combine them back into a single data set."
 ```
 
 ### Converting output
 
-If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column contains character vectors. You can tell because R displays a <chr> beneath the column name.
+If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column contains character vectors. You can tell because R displays a \<chr\> beneath the column name.
 
 ```{r ex9, exercise = TRUE}
 table4b %>% gather(key = "year", value = "population", -country)
@@ -559,7 +559,7 @@ babynames %>%
 ```
 
 ```{r ex13-check}
-"Good job! You can see that the data shows that more boys than girls were born for the years prior to 1936, and more girls than boys for the years after 1936."
+"Good job! You can see that the data shows that less boys than girls were born for the years prior to 1936, and less girls than boys for the years after 1936."
 ```
 
 ### A better way to look at the data
@@ -661,7 +661,7 @@ $$x = year$$
 $$y = total$$
 $$color = sex$$
 
-To do this, we needed a data set that placed $$year$$, $$total$$, and $$color$$ each in their own columns.
+To do this, we needed a data set that placed $$year$$, $$total$$, and $$sex$$ each in their own columns.
 
 In our second case we wanted to compute $$ratio$$, where 
 
