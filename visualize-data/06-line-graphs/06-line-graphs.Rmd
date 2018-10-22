@@ -151,7 +151,7 @@ ggplot(asia) +
 
 You do not have to rely on the group aesthetic to perform a grouping. ggplot2 will automatically group a monolithic geom whenever you map an aesthetic to a categorical variable. 
 
-So for example, the code below performs an implied grouping. And since we use the color aesthetic, the plot includes a legend, the color legend.
+So for example, the code below performs an implied grouping. And since we use the color aesthetic, the plot includes the color legend.
 
 ```{r, out.width = "80%"}
 ggplot(asia) +
