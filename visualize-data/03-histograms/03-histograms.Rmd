@@ -326,7 +326,7 @@ In practice, you can obtain useful results quickly with the default parameters o
 
 ggplot2 provides a final geom for displaying one dimensional distributions: `geom_dotplot()`. `geom_dotplot()` represents each observation with a dot and then stacks dots within bins to create the semblance of a histogram.
 
-Dotplots can provide an intuitive display of the data, but they have several shortcomings. Dotplots are not ideal for large data sets like `diamonds`, and provide meaningless $y$ axis labels. I also find that the tuning parameters of `geom_dotplot()` make dotpltos too slow to work with for EDA.
+Dotplots can provide an intuitive display of the data, but they have several shortcomings. Dotplots are not ideal for large data sets like `diamonds`, and provide meaningless $y$ axis labels. I also find that the tuning parameters of `geom_dotplot()` make dotplots too slow to work with for EDA.
 
 ```{r dotplot, exercise = TRUE, exercise.eval = TRUE, message = FALSE}
 ggplot(data = mpg) +
