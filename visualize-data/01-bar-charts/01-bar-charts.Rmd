@@ -44,7 +44,7 @@ ggplot(data = diamonds) +
 
 ### The y axis
 
-You should not supply a $y$ aesthetic when you use `geom_bar()`; ggplot2 will count how many times each $x$ value appears in the data, and then display the counts on the $y$ axis. So, for example, the plot above shows that ove 20,000 diamonds in the data set had a value of `Ideal`.
+You should not supply a $y$ aesthetic when you use `geom_bar()`; ggplot2 will count how many times each $x$ value appears in the data, and then display the counts on the $y$ axis. So, for example, the plot above shows that over 20,000 diamonds in the data set had a value of `Ideal`.
 
 You can compute this information manually with the `count()` function from the dplyr package.
 
