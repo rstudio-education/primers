@@ -91,7 +91,7 @@ ggplot(data = diamonds) +
   geom_histogram(mapping = aes(x = carat), bins = 10)
 ```
 
-It is harder to determine what the actual binwidths are when you use `bins`.
+It can be hard to determine what the actual binwidths are when you use `bins`, since they may not be round numbers.
 
 ### boundary
 
