@@ -293,7 +293,7 @@ As in the histogram tutorial, it takes a lot of tweaking to make a dotplot look 
 
 You can think of a violin plot as an outline drawn around the edges of a centered dotplot. Each "violin" spans the range of the data. The violin is thick where there are many values, and then where there are few.
 
-Convert the plot below from a boxplot to a violin plot. Note that violin plots do not use the parameters tyou saw for dotplot.
+Convert the plot below from a boxplot to a violin plot. Note that violin plots do not use the parameters you saw for dotplots.
 
 ```{r r7, exercise = TRUE, exercise.eval = TRUE}
 ggplot(data = mpg) +
