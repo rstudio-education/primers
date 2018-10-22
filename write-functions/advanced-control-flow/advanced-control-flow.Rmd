@@ -1,0 +1,504 @@
+---
+title: "Advanced Control Flow"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+library(lubridate)
+library(tidyverse)
+
+grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  strict_check <- function(x) x
+  check_code <- eval(parse(text = check_code))
+  list(message = check_code, correct = TRUE, location = "append")
+}
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## && and ||
+
+### \t 
+
+This tutorial extends the Control Flow tutorial, where you learned how to use `if`, `else`, `return()`, and `stop()`.
+
+Here you will learn how to 
+
+1. combine logical tests in an if statement 
+1. write if statements that work with vectors, which is a prerequisite if you want to write vectorized functions.
+
+### \t
+
+Here's what `clean()` looked like at the end of the Control Flow tutorial. Do you notice that all of the if statements have the same outcome? 
+
+```{r eval = FALSE}
+clean <- function(x) {
+  stopifnot(!is.null(x))
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+Let's use your knowledge of logical tests to trim them down to a single if statement. 
+
+### \t 
+
+* Write a logical test that returns TRUE when x is -99 OR x is "." (Let's ignore the "NaN" case to keep things simple). Then click Submit Answer.
+
+```{r logic, exercise = TRUE}
+
+```
+
+```{r logic-hint}
+"You can combine two logical tests in R with `&` (and) and `|` (or), e.g. x < 0 & x > 1."
+```
+
+```{r logic-solution}
+x == -99 | x == "."
+```
+
+```{r logic-check}
+"This is the correct way to combine logical tests in R, but it has some downsides when you use it in an if statement."
+```
+
+### & and |
+
+`&` and `|` are R's boolean operators for combining logical tests.
+
+* `&` stands for "and" will return `TRUE` if _**both**_ tests return `TRUE` and will return `FALSE` otherwise. 
+* `|` stands for "or" will return `TRUE` if _**one or both**_ tests returns `TRUE` and will return `FALSE` otherwise. 
+
+So,
+
+```{r}
+x <- -99
+x == -99 | x == "."
+```
+
+### \t
+
+However, it is bad practice to use `&` and `|` to combine logical tests within an `if` condition. Why? Because:
+
+1. there is something better (as you'll see in a minute)
+1. `&` and `|` tend to generate warning messages when used with `if`
+
+### \t 
+
+As R operators, both `&` and `|` are vectorized which means that you can use them with vectors. This is very useful.
+
+```{r}
+x <- c(-99, 0 , 1)
+x == -99
+x == "."
+x == -99 | x == "."
+```
+
+### \t
+
+However, `if` conditions are not vectorized. `if` expects the logical test contained within its parentheses to return a **single** `TRUE` or `FALSE`. If the condition returns a vector of `TRUE` or `FALSE`s, `if` will use the first value and show a warning message.
+
+```{r}
+x <- c(-99, 0 , 1)
+if (x == -99 | x == ".") NA
+```
+
+### && and ||
+
+You can avoid this by always using `&&` and `||` within your `if` conditions. `&&` and `||` are lazy substitutes for `&` and `|`. They are lazy in two ways.
+
+First, `&&` and `||` always return a single `TRUE` or `FALSE`. If you give `&&` or `||` vectors, they will compare only the first elements of the vectors---and they will not return a warning message.
+
+```{r}
+x <- c(-99, 0 , 1)
+x == -99 || x == "."
+```
+    
+### Use ||
+
+Let's use this to our immediate advantage.
+
+* Replace the two `if` statements below with a single statement that tests whether x is `-99` or `"."` without throwing error messages.
+
+```{r or, exercise = TRUE}
+clean <- function(x) {
+  stopifnot(!is.null(x))
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  x
+}
+```
+
+```{r or-hint}
+"Like |, || expects a _complete_ logical test on each side of ||."
+```
+
+```{r or-solution}
+clean <- function(x) {
+  stopifnot(!is.null(x))
+  if (x == -99 || x == ".") return(NA)
+  x
+}
+```
+
+```{r or-check}
+strict_check("Now lets see what happens if you use clean() with a vector of values.")
+```
+
+### \t
+
+```{r eval = FALSE}
+clean <- function(x) {
+  stopifnot(!is.null(x))
+  if (x == -99 || x == ".") return(NA)
+  x
+}
+```
+
+```{r vector-quiz, echo = FALSE}
+question("What will `clean(c(-99, 0, 1))` return?",
+         answer("NA 0 1", message = "The logical test will only consider the first value of the vector x, which here contains c(-99, 0, 1). Since that value is -99, the logical test will return TRUE and R will execute the code `return(NA)`, which returns a single NA."),
+         answer("NA _with_ a warning message", message = "You certainly would get a warning message if your logical test used |, which will pass a vector of TRUEs and FALSEs to if, triggering the message. However, || will only pass on a single TRUE or FALSE."),
+         answer("NA _without_ a warning message", correct = TRUE),
+         answer("an error"),
+         allow_retry = TRUE)
+```
+
+### Computation
+
+The most important reason to use `||` instead of `|` is that `||` saves unnecessary computation when possible. This is the second way that `&&` and `||` are lazy.
+
+When possible, `&&` and `||` jump to the correct conclusion after evaluating the first of the two logical tests (not so with `&` and `|`). 
+
+* `&&` will return `FALSE` if the test on the left returns `FALSE` (because the combined test would return `FALSE`). 
+* `||` will return `TRUE` if the test on the left returns `TRUE` (because the combined test would return `TRUE`)  
+  
+In either case, `&&` and `||` will not evaluate the test on the right.
+    
+```{r}
+x <- -99
+if (x == -99 || stop("if you evaluate this.")) "I didn't evaluate stop()."
+```
+ 
+### \t
+
+How could you use this?
+
+Remember how this code returns an error because `if` cannot handle the result of `NULL == -99`?
+
+```{r}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  x
+}
+clean(NULL)
+```
+
+### Quiz
+
+Suppose we redefine `clean()` like this:
+
+```{r eval = FALSE}
+clean <- function(x) {
+  if (is.null(x) || x == -99) return(NA)
+  x
+}
+```
+
+```{r null-quiz, echo = FALSE}
+question("Now what will `clean(NULL)` return?",
+         answer("An error", message = "clean() certainly would return an error if it evaluated `x == -99` (and collapsed the results into a single result to pass to `if`), but _does_ `clean()` evaluate `x == -99`?"),
+         answer("NA", correct = TRUE, message = "|| first evaluates `is.null(x)`. `is.null(NULL)` returns `TRUE`, so `||` stops and returns `TRUE` to `if`. As a result, R never evaluates the code that leads to an error."),
+         allow_retry = TRUE)
+```
+
+## Vectorized if
+
+### \t
+
+Burried in the last section is an interesting question: what if you _do_ want `clean()` to work with vectors? i.e.
+
+```{r echo = FALSE}
+clean <- function(x) ifelse(x == -99, NA, x)
+```
+
+```{r}
+clean(c(-99, 0, 1))
+```
+
+That would be a handy way to clean whole columns of data. How could you do it?
+
+### \t 
+
+Compare these two functions (one should seem familiar). What is different?
+
+```{r}
+clean <- function(x) {
+  if (x == -99) NA else x
+}
+
+clean2 <- function(x) {
+  ifelse(x == -99, NA, x)
+}
+```
+
+```{r ifelse-quiz, echo = FALSE}
+question("Make a guess: do these two functions do the same thing?",
+         answer("Yes!", correct = TRUE, message = "Well, you are sort of correct..."),
+         answer("No!", correct = TRUE, message = "Well, you are sort of correct..."),
+         answer("Sort of...", correct = TRUE, message = "You are absolutely right."), 
+         allow_retry = TRUE,
+         type = "single")
+```
+
+### ifelse()
+
+`ifelse()` is a function that replicates an if else statement. It takes three arguments: a logical test followed by two pieces of code. If the test returns `TRUE`, `ifelse()` will return the results of the first piece of code. If the test returns `FALSE`, `ifelse()` will return the results of the second piece of code. 
+
+So `clean(-99)` and `clean2(-99)` both return `NA`.
+
+```{r}
+clean(-99)
+clean2(-99)
+```
+
+### \t
+
+However, unlike `if` and `else`, `ifelse` is vectorized. As a result, you can pass `ifelse()` a vector of values and it will apply the implied if else statement separately to each element of the vector.
+
+```{r}
+x <- c(-99, 0, 1)
+ifelse(x == -99, NA, x)
+```
+
+`clean2()` inherits this vectorized property from `ifelse()`. 
+
+```{r}
+clean2(c(-99, 0, 1))
+```
+
+Compare that to `clean()` (which is non-vectorized because it relies on `if` and `else`, which are non-vectorized).
+
+```{r}
+clean(c(-99, 0, 1))
+```
+
+### if_else
+
+The dplyr package offers a slight improvement on `ifelse()` named `if_else()`. `if_else()` is faster than `ifelse()`, but it requires you to make sure that each case in the if else statement returns the same type of object. For example, the statement needs to return a real number (or a string, or a logical, etc.) _whether or not_ the condition is `TRUE`.
+
+No big deal, right? Well kind of.
+
+```{r}
+x <- c(-99, 0, 1)
+if_else(x == -99, NA, x)
+```
+
+### NA
+
+What happened? Recall that data in R comes in six atomic types. 
+
+```{r type-quiz, echo = FALSE}
+question("What type of data is NA?",
+         answer("double (i.e. real numbers)"),
+         answer("integer"),
+         answer("character"),
+         answer("logical", correct = TRUE, message = "It turns out that if you type NA at the command line, R saves the result as a logical."),
+         answer("complex"),
+         answer("raw"),
+         allow_retry = TRUE)
+```
+
+### \t
+
+It is true:
+
+```{r}
+typeof(NA)
+```
+
+So when you write `if_else(x == -99, NA, x)`, `if_else()` returns a logical in the first case and a double (real number) in the second (assuming `x` is a real number). 
+
+You can get around this mishap in two ways:
+
+1. Stick to `ifelse()`
+1. Use a NA that comes with a type
+
+### Types of NA
+
+You may not realize it, but R comes with five types of NA. They all appear as `NA` when printed, but they are each saved with a separate data type. These are:
+
+```{r}
+NA # logical
+NA_integer_ # integer
+NA_real_ # double
+NA_complex_ # complex
+NA_character_ # character
+```
+
+You can fix `if_else()` by being precise about which NA to use (most other R functions will convert the type of NA without bothering you).
+
+```{r}
+x <- c(-99, 0, 1)
+if_else(x == -99, NA_real_, x)
+```
+
+### Use if_else
+
+* Fix the `if_else()` statement of `clean2()` to work with real numbers. Then click Submoit Answer.
+
+```{r cleans, exercise = TRUE}
+clean2 <- function(x) {
+  ifelse(x == -99, NA, x)
+}
+```
+
+```{r cleans-solution}
+clean2 <- function(x) {
+  ifelse(x == -99, NA_real_, x)
+}
+```
+
+```{r cleans-check}
+strict_check("Notice that this version of `clean2()` will work with real numbers, but not other types of data like characters. What if you want `clean2()` to work with all types of data? That's simple: stick with `ifelse()`.")
+```
+
+## Vectorized else if
+
+### \t
+
+What if you want to write a vectorized version of a multi-part if else tree? Like the tree in this function:
+
+```{r eval = FALSE}
+clean <- function(x) {
+  if (x == -99) NA 
+  else if (x == ".") NA
+  else if (x == "") NA
+  else if (x == "NaN") NA
+  else x
+}
+```
+
+In this case, neither `ifelse()` or `if_else()` will do. Why? Because each can only handle a single if condition, but our tree has four.
+
+### case_when()
+
+You can vectorize multi-part if else statements with dplyr's `case_when()` function. Here is how you would use `case_when()` to rewrite our `foo()` function from the Control Flow tutorial.
+
+Here is the masterpiece in its original form
+
+```{r}
+foo <- function(x) {
+  if (x > 2) "a"
+  else if (x < 2) "b"
+  else if (x == 1) "c"
+  else "d"
+}
+```
+
+And here it is with `case_when()`.
+
+```{r}
+foo2 <- function(x) {
+  case_when(
+    x > 2  ~ "a",
+    x < 2  ~ "b",
+    x == 1 ~ "c",
+    TRUE   ~ "d"
+  )
+}
+```
+
+### \t
+
+And here are our foos in action to prove that `foo2()` is vectorized.
+
+```{r}
+x <- c(3, 2, 1)
+foo(x)
+foo2(x)
+```
+
+Notice that 
+
+1. `case_when()` returns a single case for each element, the first case whose left hand side evaluates to `TRUE`
+1. The left hand side of the last case evaluates to `TRUE` no matter what the value of `x` is (In fact, the left hand side _is_ `TRUE`). This is an easy way to add an `else` clause to the end of `case_when()`.
+
+Now let's look at the unusual syntax of `case_when()`.
+
+### case_when() syntax
+
+```{r eval = FALSE}
+foo2 <- function(x) {
+  case_when(
+    x > 2  ~ "a",
+    x < 2  ~ "b",
+    x == 1 ~ "c",
+    TRUE   ~ "d"
+  )
+}
+```
+
+Each argument of `case_when()` is a pair that consists of a logical test on the left hand side and a piece of code on the right hand side. The two are _always_ separated by a `~`.
+
+Like `if_else()`, `case_when()` expects each case to return the same type of output. So keep those NA types handy: `NA`, `NA_integer_`, `NA_real_`, `NA_complex_`, `NA_character_`.
+
+### Final Challenge
+
+* Rewrite the multi-part version of `clean()` to use `case_when()`, which will allow `clean()` to handle vectors. Retain each case. Assume where necessary that `clean()` will only work with real numbers. Then click Submit Answer.
+
+```{r when, exercise = TRUE}
+clean <- function(x) {
+  if (x == -99) NA 
+  else if (x == ".") NA
+  else if (x == "") NA
+  else if (x == "NaN") NA
+  else x
+}
+```
+
+```{r when-hint}
+"Use NA's that have the right type."
+```
+
+```{r when-solution}
+clean <- function(x) {
+  case_when(
+    x == -99 ~ NA_real_, 
+    x == "." ~ NA_real_,
+    x == "" ~ NA_real_,
+    x == "NaN" ~ NA_real_,
+    TRUE ~ x
+  )
+}
+```
+
+```{r when-check}
+strict_check('And if you noticed that a vector of real numbers would never contain ".", "", and "Nan" because they are strings, you are of course right. Thanks for playing along with the charade.')
+```
+
+### Congratulations!
+
+You've learned how to alter the control flow of your functions with:
+
+* `if`
+* `else`
+* `return()`
+* `stop()`
+* `stopifnot()`
+* `ifelse()`
+
+Not only that, you tackled two advanced methods: dplyr's `if_else()` and dplyr's `case_when()`.
+
+

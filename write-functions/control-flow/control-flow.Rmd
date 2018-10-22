@@ -1,0 +1,583 @@
+---
+title: "Control Flow"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+library(lubridate)
+library(tidyverse)
+
+grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  strict_check <- function(x) x
+  check_code <- eval(parse(text = check_code))
+  list(message = check_code, correct = TRUE, location = "append")
+}
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## if and else
+
+### Control Flow
+
+_Control flow_ refers to the order in which a function executes the statements in its body of code.
+
+By default, R functions will execute each line of code in the body in order, and then return the result of the last line of code. But it doesn't have to be this way. You can write functions that run some code in some situations and other code in other situations. 
+
+Let's learn how!
+
+### if
+
+Take a look at the code below. What is happening? 
+
+```{r}
+x <- 1
+```
+
+```{r}
+x == 1
+x > 1
+log(x)
+if (x == 1) log(x)
+```
+
+```{r}
+if (x > 1) log(x)
+```
+
+Try to describe what `if` is doing in your own words. Your best guess is okay!
+
+### \t
+
+```{r if-quiz, echo = FALSE}
+question("Which describes `if`'s behavior? (Check all that apply).",
+         answer("`if` takes a logical test and a piece of code. It runs the code _if_ the test returns TRUE.", correct = TRUE, message = "`if` is a way to run code only in certain cases. When you use `if`, you first pass it a logical test surrounded by parentheses and then a piece of code."),
+         answer("`if` takes a logical test and a piece of code. It does not run the code _if_ the logical test returns FALSE.", correct = TRUE, message = "`if` will run the piece of code if the logical test returns TRUE and not run the code if the logical test returns FALSE."),
+         answer("`if` returns the results of the code that appears in _parentheses_ behind `if`."),
+         answer("`if` always executes all of the code that follows it.", message = "`if` will always execute the logical test that appears in parentheses behind `if`. However, `if` will only execute the code that appears after the logical test if the logical test returns TRUE."),
+         allow_retry = TRUE)
+```
+
+### Data cleaner
+
+Think you have it? Let's check. We'll use `if` to write a useful function.
+
+Many data sets use their own symbols to represent missing values. For example, NOAA will often use -99 to represent missing values in weather data sets. Let's write a function that checks whether a value is -99, and if so replaces the value with NA, like this:
+
+```{r echo = FALSE}
+clean <- function(x) {
+  if (x == -99) x <- NA
+  x
+}
+```
+
+```{r}
+clean(1)
+clean(-99)
+```
+
+### \t
+
+Here is a start. `clean()` takes an object and returns the object, but `clean()` is missing an important piece of code.
+
+* Add an `if` statement to the beginning of `clean()`. Your statement should assign NA to x if x equals -99. Then click Submit Answer.
+
+```{r clean-setup}
+x <- -99
+```
+
+```{r clean, exercise = TRUE}
+clean <- function(x) {
+  # add if statement here
+  x
+}
+```
+
+```{r clean-hint}
+"Don't forget to use == to check for equality."
+```
+
+
+```{r clean-solution}
+clean <- function(x) {
+  if (x == -99) x <- NA
+  x
+}
+```
+
+```{r clean-check}
+strict_check("clean() replaces x with NA if x is -99, otherwise clean() returns x as is.")
+```
+
+### else
+
+Here is a second version of `clean()` that uses on a new command. Can you tell what `else` does?
+
+```{r}
+clean <- function(x) {
+  if (x == -99) NA else x
+}
+```
+
+* Run `clean()` with several different values, `22`, `-99`, `3`. What does `clean()` return in each case? Why?
+
+```{r else-setup}
+clean <- function(x) {
+  if (x == -99) NA else x
+}
+```
+
+```{r else, exercise = TRUE}
+
+```
+
+### \t
+
+```{r else-quiz, echo = FALSE}
+question("Which describes `else`? (Check all that apply).",
+         answer("R interprets `else` as a continuation of the `if` statement that immediately precedes it.", correct = TRUE, message = "`else` always follows an `if` statement (if not, `else` returns an error), and R always sees the combined `if` and `else` statements as a single statement."),
+         answer("Unlike `if`, `else` does not take a logical test.", correct = TRUE),
+         answer("Like `if`, `else` takes a piece of code.", correct = TRUE),
+         answer("`else` executes the piece of code if the `if` condition returns FALSE.", correct = TRUE),
+         answer("`else` does not execute the piece of code if the `if` condition returns TRUE.", correct = TRUE, message = "Think of a combined `if` `else` statement as a complete description: if the logical test at the start of the statement returns TRUE, R will run the code that follows `if` (but not the code that follows `else`). If the condition returns FALSE, R will run the code that follows `else` (but not the code that follows `if`)."),
+         allow_retry = TRUE)
+```
+
+### A word about syntax
+
+Although you can put `if` and `else` on the same line, you shouldn't because it is easy for readers to miss the trailing `else` when they scan the code. Also, placing `if` and `else` on the same line can make very long lines.
+
+It would be more common to write our function like this:
+
+```{r}
+clean <- function(x) {
+  if (x == -99) NA 
+  else x
+}
+```
+
+R parses the `if` and `else` lines as a single statement as long as `else` is the first thing that follows the `if` statement. As a result, R will return the result of the combined if else statement if it appears at the end of a function.
+
+### \{\}
+
+You can also pass `if` and `else` chunks of code surrounded by braces, `{}`. Braces group multiple lines of code into a single "piece." When you use braces in an if else statement, R will run (or not run) everything between the braces.
+
+In this example, R will run all three lines that follow `else` whenever x does not equal -99.
+
+```{r}
+clean <- function(x) {
+  if (x == -99) {
+    NA
+  } else {
+    x <- x^2
+    x <- sqrt(x)
+    x
+  }
+}
+```
+
+When you use braces, indent everything between the braces by two spaces to make your code more readable. And of course, you can use braces to organize your code even if you have a single line of code between the braces.
+
+### If else quiz
+
+SAS often saves missing values as `"."`.
+
+* Write a function named `clean2` that takes a value named `x` and returns an NA if the value is `"."` (and returns the value of `x` otherwise).
+
+```{r clean2-setup}
+x <- "."
+```
+
+```{r clean2, exercise = TRUE}
+
+```
+
+```{r clean2-hint}
+"clean2() should closely resemble clean()."
+```
+
+```{r clean2-solution}
+clean <- function(x) {
+  if (x == ".") NA 
+  else x
+}
+```
+
+```{r clean2-check}
+strict_check("What if you'd like to check for both -99 and . in the same function?")
+```
+
+### else if
+
+In that case, you can use `else` to chain together multiple `if` statements.
+
+```{r eval = FALSE}
+clean <- function(x) {
+  if (x == -99) NA 
+  else if (x == ".") NA
+  else x
+}
+```
+
+### \t
+
+This does the same thing as 
+
+```{r eval = FALSE}
+clean <- function(x) {
+  if (x == -99) NA 
+  else {
+      if (x == ".") NA
+      else x
+  }
+}
+```
+
+`clean()` will:
+
+1. Check whether `x == -99`. If so `clean()` will return NA and skip the rest of the code. If not, `clean()` will...
+1. Check whether `x == "."`. If so, `clean()` will return NA and skip the rest of the code. If not, `clean()` will...
+1. Evaluate `x` and return its value.
+
+`else if` is more readable than nested if else statements, especially if you use many `else if`s.
+
+### \t
+
+You can use `else` to string together as many if statements as you like. R will treat the result as a single multi-part if else statement. 
+Be thoughtful with the order. R will always evaluate the clauses in order, executing the code in the _first clause whose condition is true_ and ignoring every clause after that. 
+
+### Your turn
+
+* Write a function named `clean()` that uses `if`, `else`, and `else if` statements to replace the following four values with NA before returning x, `-99`, `"."`, `""`, `"NaN"`. Then click Submit Answer.
+
+```{r clean3-setup}
+x <- ""
+```
+
+
+```{r clean3, exercise = TRUE}
+
+```
+
+```{r clean3-solution}
+clean <- function(x) {
+  if (x == -99) NA 
+  else if (x == ".") NA
+  else if (x == "") NA
+  else if (x == "NaN") NA
+  else x
+}
+```
+
+```{r clean3-check}
+strict_check("You can add as many else if's after if as you like. However, you cannot add an else if clause after an else because R will interpret the else as the end of a complete if else statement.")
+```
+
+### Quiz
+
+```{r eval = FALSE}
+foo <- function(x) {
+  if (x > 2) "a"
+  else if (x < 2) "b"
+  else if (x == 1) "c"
+  else "d"
+}
+foo(1)
+```
+
+```{r else-if-quiz, echo = FALSE}
+question("What will this code return?",
+         answer('"a"', message = "R will not retunr a because the condition 1 > 2 is false."),
+         answer('"b"', correct = TRUE, message = 'The condition 1 < 2 is true, so R will evaluate the code that follows it (i.e. "b") and then skip the remainder of the multi-part if statement.'),
+         answer('"a" "b"', message = "The conditions 1 < 2 and 1 == 1 are both TRUE, but R will stop after the _first_ true condition."),
+         allow_retry = TRUE)
+```
+
+### Quiz
+
+```{r eval = FALSE}
+clean <- function(x) {
+  if (x == -99) NA 
+  if (x == ".") NA
+  if (x == "NaN") NA
+  x
+}
+clean(-99)
+```
+
+```{r clean3-quiz, echo = FALSE}
+question("What will this code return?",
+         answer("NA", message = "Did you notice that the `if` statements are not linked by `else`? What difference does this make?"),
+         answer("-99", correct = TRUE, message = "Since the `if` clauses are not linked by `else`, R treats them as separate statements. R checks each if statement. After the first statement it runs NA, but does not return this as the result of the function (because this is not the final statement in the function). R does not run NA for the next two if statements because their conditions are false. Then R reaches `x`, which is the last line and last statement in the function. R evaluates `x`, which equals -99, and returns -99 as the result of the function."),
+         allow_retry = TRUE)
+```
+
+### Congratulations!
+
+You now know how to use `if` and `else` in your code. Let's look at another way to control flow in R.
+
+## return() and stop()
+
+### \t
+
+You can tell R to stop executing a function early with 
+
+* `return()`
+* `stop()`, and
+* `stopifnot()`
+
+Each will work only in the context of a function (because they stop the function). You wouldn't run these directly at the command line, but they provide a powerful way to control the flow of your functions: They can make if else statements unnecessary and they can even make your code less buggy.
+
+### return()
+
+When R encounters `return()` it will stop executing the function that called `return()`. If you pass a value to `return()`, R will return that value when it stops executing the function. Let's see how it works.
+
+```{r}
+impatient_square <- function(x) {
+  return(x)
+  x^2
+}
+```
+
+```{r return-quiz, echo = FALSE}
+question("Which value will `impatient_square(2)` return?",
+         answer("2", correct = TRUE, message = "R stops executing `impatient_square()` and returns `x` when R encounters `return(x)`. It doesn't matter that `return(x)` is not the last line of the function."),
+         answer("4", message = "R stops executing `impatient_square()` when it encounters `return(x)`. As a result, R does not evaluate `x^2`."),
+         allow_retry = TRUE)
+```
+
+### R with a python accent
+
+If you are a python user, you might already use `return()` ...unnecessarily. In python, you explicitly tell each function what to return, e.g. 
+
+```python
+def mysquare(x):
+  y = x * x
+  return y
+```
+
+Translated to R this becomes:
+
+```{r}
+my_square <- function(x) {
+  y <- sum(x) / length(x)
+  return(y)
+}
+```
+
+But in R, this `return()` is not needed. R functions automatically return the result of their last line of code. In R, you can save `return()` for unusual control flow.
+
+### Using return()
+
+Remember this function? It didn't work as expected because we forgot to link our if statements with `else`.
+
+* Fix the function not by adding `else`, but by adding `return()` in the right places. Then Click Submit Answer.
+
+```{r return, exercise = TRUE}
+clean <- function(x) {
+  if (x == -99) NA 
+  if (x == ".") NA
+  if (x == "NaN") NA
+  x
+}
+```
+
+```{r return-solution}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r return-check}
+strict_check("This version is slightly easier to read than a linked if else tree because you can think about each if clause separately. You can often avoid long, nested if else trees by using return() thoughtfully.")
+```
+
+### NULL
+
+`clean()` is a fairly useful function, but it does have one flaw. 
+
+* What happens when `x = NULL`? Run the code and find out.
+
+```{r null, exercise = TRUE}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+clean(NULL)
+```
+
+```{r null-solution}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+clean(NULL)
+```
+
+### \t
+
+`clean()` cannot handle `NULL` because `if` returns an error when it evaluates `NULL == -99`. And, unfortunately, the error message isn't very clear. This is the perfect case for `stop()`.
+
+```{r echo = FALSE}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r}
+clean(NULL)
+```
+
+### stop()
+
+`stop()` behaves like `return()`, but instead of returning a value, `stop()` returns an error, complete with a custom error message. Can you tell how it works?
+
+```{r eval = FALSE}
+immovable_square <- function(x) {
+  stop("I refuse to proceed.")
+  x^2
+}
+```
+
+```{r stop-quiz, echo = FALSE}
+question("What does `immovable_square(2)` return?",
+         answer("4", message = 'R will stop executing `immovable_square()` and throw an error when it comes to `stop("I refuse to proceed.")`.'),
+         answer("Error in immovable_square(2) : I refuse to proceed.", correct = TRUE, message = 'R will stop executing `immovable_square()` and throw an error when it comes to `stop("I refuse to proceed")`. The error message will look just like this answer; R inserts the message that you pass as a character string to `stop()`.'),
+         allow_retry = TRUE)
+```
+
+### Use stop()
+
+* Use `if` and `is.null()` to add a `stop()` call at the beginning of `clean()`. The command should return the error message `"x is NULL"` whenever x is NULL. 
+* Then click Submit Answer.
+
+```{r stop, exercise = TRUE}
+clean <- function(x) {
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stop-solution}
+clean <- function(x) {
+  if (is.null(x)) stop("x is NULL")
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stop-check}
+strict_check("Now `clean()` can handle NULL values in an intelligent way. This pattern (if + stop) is so common that R provides a shortcut for it, `stopifnot()`.")
+```
+
+### stopifnot()
+
+`stopifnot()` is a more readable substitute for statements that combine `if` and `stop()`. Can you guess how it works?
+
+```{r stopifnot-quiz, echo = FALSE}
+question('Which of these does the equivalent of `if (x < 0) stop("x is less than zero")`?',
+         answer('`stopifnot(x < 0)`', message = "Good guess! But the function isn't called `stopif()`; it's called `stopifnot()`."),
+         answer('`stopifnot(x >= 0)`', correct = TRUE, message = "`stopifnot()` stops if a condition is _not_ met, which is slightly different than `if` + `stop()`."),
+         allow_retry = TRUE)
+```
+
+### differences
+
+`stopifnot()` is different from `if` + `stop()` in a few important ways: 
+
+1. Instead of checking whether a condition is met, `stopifnot()` checks whether a condition is _not_ met.
+1. `stopifnot()` does not pass along a custom error message. Instead, `stopifnot()` always explains that the condition was not true:
+    ```{r}
+    x <- -1
+    stopifnot(x >= 0)
+    ```
+
+Notice that the first argument of `stopifnot()` should always be a logical condition, the inverse of the condition it replaces in an `if` + `stop()` statement. 
+
+You can include additional logical conditions for `stopifnot()` to check after the first. Separate each with a comma.
+
+### \t
+
+Think you have it? 
+
+* Try replacing the `if` + `stop()` statement in `clean()` with `stopifnot()`. Then click Submit Answer.
+
+```{r stopifnot, exercise = TRUE}
+clean <- function(x) {
+  if (is.null(x)) stop("x is NULL")
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stopifnot-hint}
+"You can reverse the result of `is.null()` by placing an `!` in front of it: `!is.null()`."
+```
+
+```{r stopifnot-solution}
+clean <- function(x) {
+  stopifnot(!is.null(x))
+  if (x == -99) return(NA)
+  if (x == ".") return(NA)
+  if (x == "NaN") return(NA)
+  x
+}
+```
+
+```{r stopifnot-check}
+strict_check("stopifnot() is both very readable and very useful. Click Continue to see why.")
+```
+
+### Defensive programming with stopifnot()
+
+You can save yourself debugging time by writing your functions to _fail fast_ with clear error messages. To do this, think about situations that will lead to errors and then check for them with `stopifnot()` at the beginning of your code.
+
+```{r}
+clean <- function(x) {
+  stopifnot(!is.null(x), is.numeric(x), length(x) == 1)
+  
+  if (x == -99) return(NA)
+  x
+}
+```
+
+If things go wrong, `stopifnot()` will help you see what you need to fix as soon as you run your function. Compare this to what will happen if you do not use `stopifnot()`:
+
+1. Your code will run until it triggers a (perhaps unhelpful) error message
+1. Your code may not trigger an error message, but return an incorrect result that you will think is true. This would very bad.
+
+### \t
+
+Congratulations! You know two techniques of control flow, how to:
+
+1. Run specific code in specific cases
+1. Stop execution early
+
+In the Advanced Control Flow tutorial, you'll learn how to combine logical tests in an if statement as well as how to write if statements that work with vectors, which is a prerequisite if you want to write vectorized functions.
+
