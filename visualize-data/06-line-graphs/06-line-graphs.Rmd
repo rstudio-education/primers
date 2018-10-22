@@ -488,7 +488,7 @@ To use `geom_map()`:
 
 1. Add `geom_map()`. Set the *map_id* aesthetic to the variable that contains the regions names. Then set the _fill_ aesthetic to the fill variable. You do not need to supply x and y aesthetics, `geom_map()` will derive these values from the map data set, which you must set with the _map_ parameter. Since map is a parameter, it should go outside the `aes()` function.
 
-1. Dfollow `geom_map()` with `expand_limits()`, and tell `expand_limits()` what the $x$ and $y$ variables in the map dataset are. This shouldn't be necessary in future iterations of `geom_map()`, but for now ggplot2 will use the x and y arguments of `expand_limits()` to build the bounding box for your plot.
+1. Follow `geom_map()` with `expand_limits()`, and tell `expand_limits()` what the $x$ and $y$ variables in the map dataset are. This shouldn't be necessary in future iterations of `geom_map()`, but for now ggplot2 will use the x and y arguments of `expand_limits()` to build the bounding box for your plot.
 
 ```{r r15, exercise = TRUE}
 ggplot(USArrests2) +
