@@ -26,8 +26,8 @@ knitr::opts_chunk$set(echo = FALSE)
 
 Data Visualization is a useful tool because it makes data accessible to your visual system, which can process large amounts of information quickly. However, two characteristics of data can short circuit this system. Data can not be easily visualized if
 
-1. Data points are all rounded to the same values
-2. The data contains so many points that they occlude each other
+1. Data points are all rounded to the same values.
+2. The data contains so many points that they occlude each other.
 
 These features both create _overplotting_, the condition where multiple geoms in the plot are plotted on top of each other, hiding each other. This tutorial will show you several strategies for dealing with overplotting, introducing new geoms along the way.
 
