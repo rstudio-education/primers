@@ -291,7 +291,7 @@ Finally, use numbers to tell `gather()` which columns to use to build the new co
 
 [To be replaced with a video]
 
-`gather()` relies on the idea of key:value pairs. A key value pair is a pair that lists a value alongside the name of the variable that the value describes. If you wanted, you could list every value in a dataset as a key value pair, but this is not how R lists values.
+`gather()` relies on the idea of key:value pairs. A key value pair is a pair that lists a value alongside the name of the variable that the value describes. (We could store every value in a dataset as a key value pair, but this is not how R works.)
 
 In a tidy data set, you will find "keys"---that is variable names---in the column names of the data set. The values will appear in the cells of the columns. Here we know that the key for each value in the year column is year. This arrangement reduces duplication.
 
