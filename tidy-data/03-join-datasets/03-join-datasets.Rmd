@@ -344,7 +344,7 @@ question("Which variable name does airports use for the airport codes?",
 
 ### Different column names
 
-`airports` and `flights` share a common variable, airport codes, but save the variable under different column names `dest` and `faa`. This is a common occurence with data. We can recreate it by making a second instrument data set that replaces the first column anme with artist.
+`airports` and `flights` share a common variable, airport codes, but save the variable under different column names `dest` and `faa`. This is a common occurence with data. We can recreate it by making a second instrument data set that replaces the first column name with artist.
 
 ```{r echo = TRUE}
 instrument2
