@@ -349,11 +349,9 @@ Although its name does not suggest it, `pmap()` is an important tool for manipul
 
 Recall from the Introduction to Iteration tutorial that a data frame is a list of column vectors that contains a special class ("data.frame") and a row.names attribute.
 
-Because a data frame is a list, you can pass a data frame to the first argument of `pmap()`. `pmap()` will do something natural when you do this...
-
-### rowwise operations
-
-`pmap()` applies a function to each row of a data frame.
+Because a data frame is a list, you can pass a data frame to the first argument of `pmap()`. `pmap()` will do something natural when you do this:
+it will apply a function to each row of a data frame
+(i.e., to corresponding elements of the columns in the list used to store the data frame).
 
 Take a look at this in action. The code below makes a small data frame of values.
 
