@@ -419,7 +419,7 @@ strict_check("Good job! Remember that pmap() is a useful tool for doing rowwise 
 
 Generating small numbers of values is a simple way to demonstrate how to use `pmap()` with a data frame.
 
-Now, let's push it one step further. What if you wanted to use a different simulation function for wach row? For example, you could use:
+Now, let's push it one step further. What if you wanted to use a different simulation function for each row? For example, you could use:
 
 1. `rnorm()` to generate normal values from the first row
 1. `rlnorm()` to generate log normal values from the second row
