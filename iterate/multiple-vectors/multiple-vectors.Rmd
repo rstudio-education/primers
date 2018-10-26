@@ -559,7 +559,7 @@ To be a true purrr master, you should know that a couple more mapping functions 
 1. `map_at()` and `map_if()`, which only map a function to specific elements of a list
 1. `modify()`, `modify_at()`, `modify_if()`, and `modify_depth()`, which return a modified version of the original data.
 
-You can learn more about each at their help pages or [purrr.tidyverse.org](purrr.tidyverse.org).
+You can learn more about each at their help pages or [purrr.tidyverse.org](http://purrr.tidyverse.org).
 
 ### Congratulations
 
