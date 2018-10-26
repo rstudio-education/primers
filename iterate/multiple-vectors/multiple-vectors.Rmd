@@ -269,7 +269,7 @@ knitr::include_graphics("www/images/pmap.png")
 
 ### \t
 
-Name each vector in your list of vectors with the name of the argument that it should map to. `pmap()` will match names to arguments whenever you provide them. So this code, for example, will round each of the long numbers to a different number of digits.
+Name each vector in your list of vectors with the name of the argument that it should map to. `pmap()` will match names to arguments whenever you provide them. So this code, for example, will round each of the long numbers to a different number of digits, and it works because `round`'s arguments are called `x` and `digits`.
 
 ```{r}
 long_numbers <- list(pi, exp(1), sqrt(2))
