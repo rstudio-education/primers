@@ -1,0 +1,22 @@
+---
+title: "Testing"
+output: html_document
+---
+
+Data analysis is only useful if it's correct, and if it's not, it [can do considerable harm](https://theconversation.com/the-reinhart-rogoff-error-or-how-not-to-excel-at-economics-13646).
+While no amount of testing can ever conclusively prove that there aren't mistakes in code, a few simple practices can reassure us that it's probably all right.
+This tutorial will introduce some of the tools R gives you for checking your code and show you how to integrate them into your workflow.
+
+## Basic Concepts
+
+Start here to learn what testing can and can't do, and how to think about building useful tests.
+
+## Writing Unit Tests
+
+Unit testing is how experienced developers check their code as they build it and re-check it as they modify it.
+This tutorial will show you how to create and run unit tests using the testthat library.
+
+## Testing in Production
+
+It doesn't matter how careful you were when writing your code if someone then feeds it data that doesn't make sense.
+This tutorial will show you how to use checkr to inspect the data flowing through your pipeline so that you can sleep easily at night.
