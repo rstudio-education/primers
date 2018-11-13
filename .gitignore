@@ -30,5 +30,4 @@ vignettes/*.pdf
 */*/rsconnect/
 */*/*.html
 */*/*_files/
-primers.Rproj
 NEXT_STEP.Rmd
