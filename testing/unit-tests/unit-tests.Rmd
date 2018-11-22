@@ -32,6 +32,14 @@ Good software is full of assertions: by some counts, 20% or more of the code in 
 
 FIXME: write an assertion to check that a vector is in sorted order.
 
+## Approximately Correct
+
+FIXME: explain `tolerance` argument to `expect_equal`
+
+FIXME: how to decide threshold?
+
+FIXME: exercise
+
 ## Writing Unit Tests
 
 If assertions are the atoms of testing, then unit tests are the molecules. Here's a broken version of the `sign` function:
@@ -329,3 +337,7 @@ monotone_sum <- function(vec) {
 
 ```{r tdd-monotone-check, code=readLines("tdd-example-specs.R")}
 ```
+
+## Randomness
+
+FIXME: explain how to `set.seed` and why.
