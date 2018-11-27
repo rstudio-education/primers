@@ -8,12 +8,154 @@ runtime: shiny_prerendered
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", error = TRUE, out.width = "100%")
 library(learnr)
 library(grader)
-library(tidyverse)
-library(assertthat)
 library(testthat)
 tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 ```
 
-FIXME: introduce `mockr` and show its use.
+## Some Things Are Hard to Reach
 
-FIXME: exercise on mocking.
+Some code is easy to test: create a couple of fixtures, pass them into a function, check the result, and we're done. Other code presents more of a challenge. For example, suppose that the function we're testing reads data from a web service. If each request takes a few seconds to complete, our tests might be unacceptably slow, and there's always the risk that the web service will lock us out because we're asking for too much, too quickly, during development.
+
+One way to solve this problem is to modify the function that fetches data so that it either gets the real thing or returns some made-up values:
+
+```{r eval=FALSE}
+IN.PRODUCTION <- FALSE # set to TRUE in real life
+
+getData() <- function(url, rowIds) {
+  if (IN.PRODUCTION) {
+    ...make web request to get real data...
+  } else {
+    ...create some data for testing...
+  }
+  data
+}
+```
+
+This approach has two problems:
+
+1.  It assumes that we are writing `getData`. If that's buried deep inside a package that we're using, we may not be able to change it easily.
+2.  Sooner or later, we're going to forget to set `IN.PRODUCTION` to `TRUE` when we start using the code for real,
+    or forget to set it to `FALSE` when we're testing.
+
+FIXME: exercise to overwrite the real `getData` with a testing version.
+
+## Replace Me Once
+
+A better solution is to replace the function in question temporarily with a **mock**, which is just a function that takes the same arguments but returns a fixed value (or a random one, or whatever else we need for testing purposes). To see how it works, load the testthat package, and then run the following code:
+
+```{r}
+realFunction <- function() {
+  "real value"
+}
+
+functionToTest <- function() {
+  result <- realFunction()
+  cat("result is", result, "\n")
+}
+
+functionToTest()
+```
+
+We want to replace `realFunction` with something that returns a different value, but only for testing purposes. Let's write the function we want:
+
+```{r}
+replacementFunction <- function() {
+  "replacement value"
+}
+```
+
+and then use `with_mock` to swap it in for `realFunction` for the duration of one call to `functionToTest`:
+
+```{r}
+with_mock(
+  realFunction = replacementFunction,
+  functionToTest()
+)
+```
+
+Exercise: replace random number generator with a function that always returns the same value.
+
+## Mocking with History
+
+The mock functions we have seen so far all return the same value over and over. Sometimes, though, we will want to pretend to be reading lines from a file or getting values from some other kind of sequence. To do that, we must create a mock function that remembers where it was the last time it was called.
+
+Our first attempt uses a pair of global variables:
+
+```{r}
+lines <- c(
+  "first line",
+  "second line",
+  "third line"
+)
+
+location <- 1
+
+replacement <- function() {
+  if (location > length(lines)) {
+    result <- NULL
+  } else {
+    result <- lines[location]
+    location <<- location + 1
+  }
+  result
+}
+```
+
+Notice the use of `<<-` to update `location`: this tells R that we want to assign to a global variable, not create a new one inside the function. Let's try it out:
+
+```{r}
+replacement()
+replacement()
+replacement()
+replacement()
+```
+
+Good: we get the three lines we want, and `NULL` thereafter. (We could equally well use `stop` to signal an error if the caller tries to go past the end of the "file" we're pretending to read.)
+
+Global variables work, but they're very fragile: if we try to use this to pretend to read from several files at once, for example, what we'll actually do is pull lines from a single sequence. What we want is a way to point `replacement` at different pretended files. We can implement that by writing a function whose job is to create the function we actually need:
+
+```{r}
+makeReplacement <- function(lines) {
+  location <- 1
+  function() {
+    if (location > length(lines)) {
+      result <- NULL
+    } else {
+      result <- lines[location]
+      location <<- location + 1
+    }
+    result
+  }
+}
+```
+
+This may look a little confusing, but we have seen all the steps before:
+
+1.  `makeReplacement` takes a character vector as its argument---these are the lines we're going to pretend to read from the file.
+2.  It creates a variable called `location`. Since this is created inside the function, a new variable is created each time `makeReplacement` is called.
+3.  It then creates and returns a function that uses that newly-created variable `location` to step through `lines`, just as we did before. The crucial thing is that no global variables are involved. (FIXME: diagram)
+
+Let's try it out:
+
+```{r}
+first <- makeReplacement(c("1A", "1B", "1C"))
+for (i in 1:4) {
+  cat(first(), "\n")
+}
+```
+
+So far so good. Let's try pretending to read from two "files" of different lengths:
+
+```{r}
+second <- makeReplacement(c("2A", "2B", "2C"))
+third <- makeReplacement(c("3A", "3B")) # shorter than second
+for (i in 1:4) {
+  cat(second(), third(), "\n")
+}
+```
+
+Excellent: each of the replacement functions is stepping through its own list of lines.
+
+The technique we have used is called a **closure**. It combines a function (in our case, the anonymous function defined inside `makeReplacement`) with some variables (in our case, `lines` and `location`) that are visible inside the function, but not outside. Using a function to create and return the function we actually want may feel strange at first, but it's a very powerful programming technique with many uses other than testing.
+
+Exercise: create a mock function that returns a monotone increasing sequence of values.
