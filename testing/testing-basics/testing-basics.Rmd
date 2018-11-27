@@ -1,5 +1,5 @@
 ---
-title: "Basic Concepts"
+title: "Testing Basics"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
