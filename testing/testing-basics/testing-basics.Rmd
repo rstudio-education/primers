@@ -18,7 +18,7 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 
 Any discussion of software and correctness has to start with three ideas. The first is that no amount of testing can ever prove that a piece of code is correct. A function that takes three arguments, each of which can have a hundred different values, theoretically needs a million tests. Even if we were to write them, how would we check that the values we're testing against are correct? And how would we tell that we had typed in those comparison values correctly, or that we were using the right equality checks in our code, or---the list goes on and on.
 
-In practice, however, the situation is far from hopeless. Suppose we want to test a function that returns the sign of a number. If it works for 3, it will almost certainly work for 4, and for 5, and so on. In fact, there are only a handful of cases that we actually need to test:
+In practice, however, the situation is far from hopeless. Suppose we want to test a function that returns the sign of a number. Can we group potential inputs, to reduce the number of cases? If it works for the number 3, it will almost certainly work for 4, and for 5, and so on. In fact, there are only a handful of cases that we actually need to test:
 
 | Value    | Expected | Reason |
 | -------- | -------- | ------ |
@@ -71,7 +71,7 @@ Here, the fixtures are 1, `NULL`, and `-Inf`, and the corresponding expected out
 A **test framework** is a library that provides us with functions that help us write tests, and includes a **test runner** that will find test functions, execute them, and report both individual results that require attention and a summary of overall results. The most popular test framework for R is [testthat](https://cran.r-project.org/web/packages/testthat/index.html), which we will explore in [the next lesson](FIXME:URL).
 
 ```{r classify-error, echo=FALSE}
-question('Suppose `sign` is supposed to give a warning if it is given a non-numeric value, but instead issues a warning when passed a string like `"0.0"`. How should this be classified for testing purposes?',
+question('Suppose `numSign` is supposed to halt with an error message if it is given a non-numeric value, but instead gives a warning when passed a string like `"0.0"` that can be interpreted as a number. How should this be classified for testing purposes?',
   answer("Error, because the function runs when it shouldn't."),
   answer("Failure, because the function doesn't produce what's expected.", correct = TRUE),
   answer("Success, because the function runs instead of halting."))

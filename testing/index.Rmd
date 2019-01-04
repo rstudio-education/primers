@@ -19,14 +19,14 @@ Unit testing is how experienced developers check their code as they build it and
 
 Writing tests before you write code helps you figure out what that code should do, and helps you tell when you're done. This tutorial will introduce the basic ideas of test-driven development.
 
-## Mocking
+## Handling Errors
 
-Some parts of your program will be more difficult to reach for testing than others.  This tutorial introduces a technique called mocking that lets you temporarily replace those bits with simplified or more predictable versions.
+You can't always prevent errors, but in R, you can always catch them and do something about them. This tutorial will show you how to handle errors yourself.
 
 ## Testing in Production
 
 It doesn't matter how careful you were when writing your code if someone then feeds it data that doesn't make sense. This tutorial will show you how to inspect the data flowing through your pipeline so that you can sleep easily at night.
 
-## Handling Errors
+## Mocking
 
-You can't always prevent errors, but in R, you can always catch them and do something about them. This tutorial will show you how to handle errors yourself.
+Some parts of your program will be more difficult to reach for testing than others.  This tutorial introduces a technique called mocking that lets you temporarily replace those bits with simplified or more predictable versions.

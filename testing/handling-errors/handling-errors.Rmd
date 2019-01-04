@@ -130,6 +130,8 @@ tryCatch(
 )
 ```
 
+FIXME: show some actual cleanup.
+
 Exercise: what is printed when this is run? (Answer: the `"final action"` message does not appear, since the statement bound to `finally` defines a functinon but does not call it. This is inconsistent with `error`, which calls the function bound to it with a single argument.)
 
 ```{r}
@@ -139,3 +141,5 @@ tryCatch(
   finally = function(){ print("final action") }
 )
 ```
+
+FIXME: exercise on cleaning up.

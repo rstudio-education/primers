@@ -14,7 +14,7 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 
 ## Some Things Are Hard to Reach
 
-Some code is easy to test: create a couple of fixtures, pass them into a function, check the result, and we're done. Other code presents more of a challenge. For example, suppose that the function we're testing reads data from a web service. If each request takes a few seconds to complete, our tests might be unacceptably slow, and there's always the risk that the web service will lock us out because we're asking for too much, too quickly, during development.
+Some code is easy to test: create a couple of fixtures, pass them into a function, compare the actual output to the expected output, and we're done. Other code presents more of a challenge. For example, suppose that the function we're testing reads data from a web service. If each request takes a few seconds to complete, our tests might be unacceptably slow, and there's always the risk that the web service will lock us out because we're asking for too much, too quickly, during development.
 
 One way to solve this problem is to modify the function that fetches data so that it either gets the real thing or returns some made-up values:
 

@@ -42,7 +42,13 @@ FIXME: exercise
 
 ## Writing Unit Tests
 
-If assertions are the atoms of testing, then unit tests are the molecules. Here's a broken version of the `sign` function:
+If assertions are the atoms of testing, then unit tests are the molecules. A unit test is typically one call to a function followed by one or more assertions that check whether that function did the right thing. The call to the function may be preceded by some setup code (for example, creating a table to operate on), but each unit test should focus on one aspect of the function's operation.
+
+Unit tests in R are typically written using `test_that`. Each call to `test_that` takes a descriptive string and a code block as arguments. Inside the code block, tests are written using the `expect_*` family of functions: these do the same sorts of things as the assertions we saw above, but also report back to `test_that` so that it can display a summary of how testing is going.
+
+If any tests fail, `test_that` displays a message. Crucially, testing doesn't stop at the first failure: when `numSign` returns the wrong value for the sign of 0, `test_that` keeps going so that we have as much information as possible.
+
+Here's a broken version of the `numSign` function:
 
 ```{r numsign-defined}
 numSign <- function(x) {
@@ -69,8 +75,6 @@ test_that("sign of a positive number is 1", {
   expect_equal(numSign(43214), 1)
 })
 ```
-
-Each call to `test_that` takes a descriptive string and a code block as arguments. Inside the code block, tests are written using the `expect_*` family of functions.  If any of them fail, `test_that` displays a message. Crucially, testing doesn't stop at the first failure: when `numSign` returns the wrong value for the sign of 0, `test_that` keeps going so that we have as much information as possible.
 
 We could have put all of these checks inside one call to `test_that`:
 
@@ -217,7 +221,7 @@ FIXME: show a simple-minded implementation of `expect_error` and ask what cases 
 
 FIXME: explain how to `set.seed` and why.
 
-## Packaging Tests
+## Organizing Tests
 
 Every good R package has tests, and every set of package tests must follow a few simple rules. Let's create `tests/testthat/test_example.R`:
 
