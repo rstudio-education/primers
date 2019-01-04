@@ -22,7 +22,7 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
 
 As we said in the introduction, it doesn't matter how careful you were when writing your code if someone then feeds it data in production that doesn't make sense. This can happen for any number of reasons: the problem itself could slowly shift over time, for example, or new hires could interpret the instructions for collecting data differently. It's impossible to predict and forestall all of these, so the best thing you can do is sound the alarm when something goes wrong.
 
-Monitoring operational code is a different problem that testing that code's correctness during development, and requires a different set of tools. What we want to do is look at the data flowing through our analysis pipeline and make sure it meets expectations. When it doesn't, we want generate a message and possibly stop processing. As with unit testing, it's important that we don't ask for attention when nothing has gone wrong, because if we do, people will soon learn to ignore us.
+Monitoring operational code is a different problem than testing that code's correctness during development, and requires a different set of tools. What we want to do is look at the data flowing through our analysis pipeline and make sure it meets expectations. When it doesn't, we want generate a message and possibly stop processing. As with unit testing, it's important that we don't ask for attention when nothing has gone wrong, because if we do, people will soon learn to ignore us.
 
 ```{r include = FALSE, code = readLines("survey-data.R")}
 ```
@@ -52,12 +52,21 @@ Here's an annotated pipeline that checks for all of these conditions, which we h
 ```{r}
 annotated <- function(data, msg) {
   print(msg)
+  
   data %>%
-    nickr_col(!is.nan(score) & score > 0, msg = "scores must be non-negative", logger = print) %>%
-    nickr_col(str_detect(person, "[A-Z][A-Z][0-9]"), msg = "subject IDs must be letter-letter-digit", logger = print) %>%
+    nickr_col(!is.nan(score) &
+              score > 0, 
+              msg = "scores must be non-negative", 
+              logger = print) %>%
+    nickr_col(str_detect(person, "[A-Z][A-Z][0-9]"),
+              msg = "subject IDs must be letter-letter-digit",
+              logger = print) %>%
     group_by(person) %>%
-    nickr_group(n() == 2, msg = "require two scores per subject", logger = print) %>%
+    nickr_group(n() == 2, 
+                msg = "require two scores per subject", 
+                logger = print) %>%
     mutate(adjusted = score - min(score))
+  
   invisible(data) # to hide result
 }
 annotated(survey, "full checks")
@@ -139,7 +148,7 @@ If we were building this pipeline for real, we would do the following:
 5.  Change `logger` to `stop`.
 6.  Deploy.
 
-If someone then wanted to turn off logging in production, they could simply change the variable `active` to `FALSE` and all the loggers will stop checking their conditions. (Someone might want to do this out of a misplaced concern for performance, but honestly, if they don't care about getting the right answer, they can speed things up considerably by replacing the entire pipeline with a random number generator.) Similarly, if someone wanted to sent the error messages somewhere special, they could either assign a different function of one argument to the variable `logger` or override the `logger` argument of individual checking functions.
+If someone then wanted to turn off logging in production, they could simply change the variable `active` to `FALSE` and all the loggers will stop checking their conditions. (Someone might want to do this out of a misplaced concern for performance, but honestly, if they don't care about getting the right answer, they can speed things up considerably by replacing the entire pipeline with a random number generator.) Similarly, if someone wanted to send the error messages somewhere special, they could either assign a different function of one argument to the variable `logger` or override the `logger` argument of individual checking functions.
 
 A more structured way to handle this is to use a logging framework like [futile.logger](https://github.com/zatonovo/futile.logger). Just as testthat is similar to testing libraries for other languages, futile.logger works like Java's log4j library, Python's logging, and related tools. At its simplest, it provides a set of functions to log messages with increasing urgency called `flog.trace`, `flog.debug`, `flog.info`, `flog.warn`, `flog.error`, and `flog.fatal`. It also provides symbolic names for these levels, from `TRACE` to `FATAL`, and a function `flog.threshold` that allows the user to change the logging threshold to control which messages appear. If, for example, the threshold is currently `WARN` (set with `flog.threshold(WARN)`), then messages at the `TRACE`, `DEBUG`, and `INFO` levels are discarded. This allows users to leave fine-grained messages in their code rather than commenting them out so that if something does go wrong in production, whoever is using the software can re-set the logging threshold and get more information.
 

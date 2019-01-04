@@ -43,9 +43,9 @@ question("What is the sign of `.Machine$double.eps`?",
 
 The second big idea is that each test can have three possible outcomes:
 
-1.  **success**, meaning that the test passed correctly,
-2.  **failure**, meaning that the software being tested didn't do what it was supposed to, and
-3.  **error**, meaning that the test itself failed (in which case, we don't know anything about the software being tested).
+1.  **success**, meaning that the test passed correctly
+2.  **failure**, meaning that the software being tested didn't do what it was supposed to
+3.  **error**, meaning that the test itself failed (in which case, we don't know anything about the software being tested)
 
 A **unit test** is a function that runs some code and produces one of these three results. The input data to the unit test is called the **fixture**; we tell if the test passed or not by comparing the **actual output** to the **expected output**. For example, here's a very badly written version of `numSign` and an equally badly written pair of tests for it:
 
@@ -81,7 +81,7 @@ question('Suppose `numSign` is supposed to halt with an error message if it is g
 
 The diagram below, taken from the [TDDA website](http://tdda.info), shows that making mistakes during coding is only one of the places where data analysis can go wrong:
 
-<img src="images//tdda-errors-5stage-1920x1020.png" style="width:80%" alt="Test-Driven Data Analysis"/>
+<img src="images//tdda-errors-5stage-1920x1020.png" style="width:100%" alt="Test-Driven Data Analysis"/>
 
 Software testing cannot help with the first and last stages (choosing an approach and interpreting the results), but it *can* help with running the process and producing results. This is sometimes called **production testing**, and is meant to guard against things like mistaken configuration, changes in upgraded packages, and data that differs from what the pipeline was designed to handle. What we want to put checks in between the stages of our pipeline that don't modify the data. For example, suppose we have table:
 
