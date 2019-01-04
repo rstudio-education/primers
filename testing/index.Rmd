@@ -7,6 +7,15 @@ Data analysis is only useful if it's correct, and if it's not, it [can do consid
 While no amount of testing can ever conclusively prove that there aren't mistakes in code, a few simple practices can reassure us that it's probably all right.
 This tutorial will introduce some of the tools R gives you for checking your code and show you how to integrate them into your workflow.
 
+> FIXME:
+>
+> Draw diagram of feedback loops in testing.
+>
+> Clarify the three major tools within testing described here (assertions in functions, expectations and unit tests, and testing data integrity).
+> This might help a reader apply these lessons to their own problem:
+> they want to write a function, so they'll use assertions, or they will write tests first for test driven development.
+> Clarify the tools up front, so the lessons are more applicable and easier to fit them together.
+
 ## Testing Basics
 
 Start here to learn what testing can and can't do, and how to think about building useful tests.
