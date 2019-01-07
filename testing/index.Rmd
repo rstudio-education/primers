@@ -39,3 +39,7 @@ It doesn't matter how careful you were when writing your code if someone then fe
 ## Mocking
 
 Some parts of your program will be more difficult to reach for testing than others.  This tutorial introduces a technique called mocking that lets you temporarily replace those bits with simplified or more predictable versions.
+
+## Acknowledgments
+
+Our thanks to Charles Gray, Alec Robitaille, and Jim Tyhurst for their feedback.
