@@ -30,15 +30,41 @@ assert_that(length(unique(ages)) == length(ages), msg = "all ages must be distin
 
 Good software is full of assertions: by some counts, 20% or more of the code in an application like a web browser is there to check that the other code is working correctly.
 
-FIXME: write an assertion to check that a vector is in sorted order.
+FIXME EXERCISE: write an assertion to check that a vector is in sorted order.
 
 ## Approximately Correct
 
-FIXME: explain `tolerance` argument to `expect_equal`
+The `expect_equal` function can take a third argument
+when used with floating-point numbers: `tolerance`.
+This tells the function how close values have to be to be considered equal.
+It's needed because floating-point numbers are only approximations of real numbers,
+so even simple expressions may not produce the mathematically-exact result.
+R tries to shield users from this,
+but if we look closely,
+we can see the issue:
 
-FIXME: how to decide threshold?
+```{r}
+sprintf('%.25f', 0.1 + 0.2)
+```
 
-FIXME: exercise
+Since the size of the difference between the true result
+and what's calculated using a finite number of bits
+will vary depending on the magnitudes of the numbers involved,
+`expect_equal`'s `tolerance` value is expressed as a **relative error**,
+i.e.,
+as a fraction of the actual result.
+By default,
+the value is roughly 1.5e-8
+(see the documentation for `all.equal` for details).
+There's usually no reason to change this,
+but its existence is the reason why correctness tests should use `expect_equal`
+rather than simply `==`.
+For more information,
+please see [The Floating Point Guide](https://floating-point-gui.de/errors/rounding/).
+For *lots* more information,
+see David Goldberg's "[What Every Computer Scientist Should Know About Floating-Point Arithmetic](https://doi.org/10.1145/103162.103163)".
+
+FIXME EXERCISE: exercise for floating-point thresholds in testing
 
 ## Writing Unit Tests
 
@@ -211,11 +237,11 @@ test_that("limits column has to be numeric", {
 
 The first argument to `expect_error` is the function call to check; the second is a regular expression that the error message must match.
 
-FIXME: write a tighter regular expression
+FIXME EXERCISE: write a tighter regular expression
 
-FIXME: add checks for null inputs
+FIXME EXERCISE: add checks for null inputs
 
-FIXME: show a simple-minded implementation of `expect_error` and ask what cases it *won't* catch.  This will depend on learners having done the primer on error handling (which in turn depends on me writing it).
+FIXME EXERCISE: show a simple-minded implementation of `expect_error` and ask what cases it *won't* catch.  This will depend on learners having done the primer on error handling (which in turn depends on me writing it).
 
 ## Randomness
 
