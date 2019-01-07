@@ -163,9 +163,9 @@ The first test checks that a **boundary condition** is handled correctly: we don
 
 The fourth case makes sure that `cap_cols` handles mixed cases, i.e., that it can cap some values in a column without capping others. It also checks that the function doesn't accidentally change the column containing the capping values. It's not supposed to, and there's no reason to believe that it would, but software has a way of turning the unbelievable into a frustrating Wednesday afternoon.
 
-FIXME: check that other columns in the table aren't accidentally capped.
+FIXME EXERCISE: check that other columns in the table aren't accidentally capped.
 
-FIXME: check that no new columns are added to the table
+FIXME EXERCISE: check that no new columns are added to the table
 
 ## Checking Error Conditions
 
@@ -245,7 +245,34 @@ FIXME EXERCISE: show a simple-minded implementation of `expect_error` and ask wh
 
 ## Randomness
 
-FIXME: explain how to `set.seed` and why.
+There are two rules you absolutely must follow when writing R programs:
+
+1.  [Never use `setwd`](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/).
+2.  Always seed the random number generator explicitly so that you can reproduce your results.
+
+The background to the second rule is that computer-generated random numbers aren't really random;
+they're produced by a completely deterministic algorithm
+whose outputs have all the properties of truly random numbers.
+The initial value of such a **pseudo-random number generator** (PRNG) is called the **seed**.
+If the PRNG is given the same seed,
+it will reproduce exactly the same sequence of values.
+
+This is important because data scientists need to be able to reproduce their work
+and to be able to test their software.
+Suppose, for example, that you are sampling a uniform distribution 100 times in one of your tests.
+If the test fails,
+you'll want to be able to re-run it to find out why,
+but if you can't regenerate exactly the same set of values,
+you might not be able to.
+
+Most programs set the PRNG seed once as the program starts up,
+but since `test_that` doesn't guarantee to run tests in the same order every time,
+a well-written test suite will re-set the PRNG at the start of each test.
+Doing this is usually not necessary,
+but few things are as frustrating as having a test that fails once in a hundred runs,
+so it's worth the extra line of code.
+We will talk more about this when we discussion
+[production testing](../production-testing/production-testing.Rmd).
 
 ## Organizing Tests
 
@@ -289,4 +316,4 @@ FIXME: explain how to set all of this up from inside the IDE.
 
 FIXME: explain that tests are run with the package software loaded, including whatever is specified in `DESCRIPTION`.
 
-FIXME: come up with a runnable exercise or MCQ for this section.
+FIXME EXERCISE: exercise for organizing tests.

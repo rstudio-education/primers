@@ -37,7 +37,7 @@ This approach has two problems:
 2.  Sooner or later, we're going to forget to set `IN.PRODUCTION` to `TRUE` when we start using the code for real,
     or forget to set it to `FALSE` when we're testing.
 
-FIXME: exercise to overwrite the real `getData` with a testing version.
+FIXME EXERCISE: exercise to overwrite the real `getData` with a testing version.
 
 ## Replace Me Once
 
@@ -133,7 +133,9 @@ This may look a little confusing, but we have seen all the steps before:
 
 1.  `makeReplacement` takes a character vector as its argument---these are the lines we're going to pretend to read from the file.
 2.  It creates a variable called `location`. Since this is created inside the function, a new variable is created each time `makeReplacement` is called.
-3.  It then creates and returns a function that uses that newly-created variable `location` to step through `lines`, just as we did before. The crucial thing is that no global variables are involved. (FIXME: diagram)
+3.  It then creates and returns a function that uses that newly-created variable `location` to step through `lines`, just as we did before. The crucial thing is that no global variables are involved.
+
+FIXME: diagram showing function replacement
 
 Let's try it out:
 

@@ -32,7 +32,7 @@ Let's try specifying behavior with tests instead:
 
 This is much more precise than the prose we started with, and as we are writing our function, we can repeatedly run these tests to see how close we are to finishing.
 
-FIXME: fill in the sections of code marked with `##` below so that this function passes all of the given tests.
+FIXME EXERCISE: fill in the sections of code marked with `##` below so that this function passes all of the given tests.
 
 ```{r tdd-monotone, exercise = TRUE}
 monotone_sum <- function(vec) {

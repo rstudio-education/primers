@@ -125,9 +125,9 @@ tribble(
 ) %>% annotated("checking that more than two rows per person don't work")
 ```
 
-FIXME: write test to ensure that scores are integers in the range 0..10.
+FIXME EXERCISE: write test to ensure that scores are integers in the range 0..10.
 
-FIXME: write test to ensure that the second score in each group is greater than the first.  (I don't know how to do this myself.)
+FIXME EXERCISE: write test to ensure that the second score in each group is greater than the first.  (I don't know how to do this myself.)
 
 ## Going Into Production
 
@@ -160,4 +160,10 @@ Like its cousins in other languages, futile.logger provides three other capabili
 
 You don't have to take advantage of any of these advanced features to start using futile.logger, but we recommend that you start using the `flog.whatever` family of functions right from the start. If nothing else, it will be a pleasant surprise for the sys admin who eventually has to put your code into production.
 
-FIXME: coding exercise to switch over to futile.logger.
+> If you are using pseudo-random numbers anywhere in your pipeline.
+> always be sure to log the seed used to initialize the PRNG.
+> It doesn't guarantee that you'll be able to reproduce the problem,
+> but not being able to re-generate the exact values that led to the crash
+> certainly reduces your chances of making it happen again.
+
+FIXME EXERCISE: coding exercise to switch over to futile.logger.

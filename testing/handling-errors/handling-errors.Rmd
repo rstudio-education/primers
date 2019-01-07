@@ -26,7 +26,7 @@ stop("This is an error.")
 
 There are only a few situations in which a warning is appropriate. If something has truly gone wrong, we should stop, and if it hasn't, we should not distract users; if we do, they will quickly learn to ignore *all* of our messages.
 
-FIXME: which of the following should the program stop for?
+FIXME EXERCISE: which of the following should the program stop for?
 
 ## Handling Conditions
 
@@ -73,7 +73,7 @@ cat("result is", result)
 
 This is a really bad idea, and you should never do it.
 
-FIXME: exercise.
+FIXME EXERCISE: exercise on handling conditions.
 
 ## Handling Conditions
 
@@ -103,7 +103,7 @@ tryCatch(
 )
 ```
 
-FIXME: error handling exercises.
+FIXME EXERCISE: error handling exercises.
 
 ## Cleaning Up
 
@@ -142,4 +142,4 @@ tryCatch(
 )
 ```
 
-FIXME: exercise on cleaning up.
+FIXME EXERCISE: exercise on cleaning up.
