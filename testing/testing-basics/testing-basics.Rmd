@@ -68,7 +68,7 @@ Here, the fixtures are 1, `NULL`, and `-Inf`, and the corresponding expected out
 1.  Execution halts at the first failed test, which means we get less information than we could about the state of the system we're testing.
 2.  Each test prints its output to the screen---there is no overall summary, and no easy way to tell which test produced which result. This isn't a problem when there are only three tests, but experience shows that if the output isn't comprehensible at a glance, developers will stop paying attention to it.
 
-A **test framework** is a library that provides us with functions that help us write tests, and includes a **test runner** that will find test functions, execute them, and report both individual results that require attention and a summary of overall results. The most popular test framework for R is [testthat](https://cran.r-project.org/web/packages/testthat/index.html), which we will explore in [the next lesson](FIXME:URL).
+A **test framework** is a library that provides us with functions that help us write tests, and includes a **test runner** that will find test functions, execute them, and report both individual results that require attention and a summary of overall results. The most popular test framework for R is [testthat](https://cran.r-project.org/web/packages/testthat/index.html), which we will explore in [the next lesson](../unit-tests/unit-tests.Rmd).
 
 ```{r classify-error, echo=FALSE}
 question('Suppose `numSign` is supposed to halt with an error message if it is given a non-numeric value, but instead gives a warning when passed a string like `"0.0"` that can be interpreted as a number. How should this be classified for testing purposes?',
