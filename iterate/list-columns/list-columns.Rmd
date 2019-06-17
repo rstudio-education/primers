@@ -200,7 +200,7 @@ as_tibble(df)
 
 ### Uses
 
-List columns are very useful because you can put _anything_ into a list, which means that you can put _anything_ into a list column, even things that you might not normally think to put in a data frame
+List columns are very useful because you can put _anything_ into a list, which means that you can put _anything_ into a list column, even things that you might not normally think to put in a data frame...
 
 ...like model objects, functions, or other data frames.
 

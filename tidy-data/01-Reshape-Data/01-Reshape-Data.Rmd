@@ -151,7 +151,7 @@ mean(table1$cases)
 The other uses an untidy table, `table2`:
 
 ```{r echo = TRUE}
-mean(table2$count[c(1,3,5,7,9,11)])
+mean(table2$count[c(1, 3, 5, 7, 9, 11)])
 ```
 
 Which line of code is easier to write? Which line could you write if you've only looked at the first row of the data?
@@ -173,11 +173,11 @@ mean(table1$population)
 Then with `table2`:
 
 ```{r ex5, exercise = TRUE}
-mean(table2$count[c(1,3,5,7,9,11)])
+mean(table2$count[c(1, 3, 5, 7, 9, 11)])
 ```
 
 ```{r ex5-solution}
-mean(table2$count[c(2,4,6,8,10,12)])
+mean(table2$count[c(2, 4, 6, 8, 10, 12)])
 ```
 
 Again `table1` is easier to work with; you only need to change the name of the variable that you wish to extract. Code like this is easier to generalize to new data sets (if they are tidy) and easier to automate with a function.
@@ -191,7 +191,7 @@ Suppose you would like to compute the ratios of `cases` to `population` for each
 Again, this is hard to do with untidy `table2`:
 
 ```{r echo = TRUE}
-table2$count[c(1,3,5,7,9,11)] / table2$count[c(2,4,6,8,10,12)]
+table2$count[c(1, 3, 5, 7, 9, 11)] / table2$count[c(2, 4, 6, 8, 10, 12)]
 ```
 
 But it is easy to do with tidy `table1`. Give it a try below:
@@ -291,7 +291,7 @@ Finally, use numbers to tell `gather()` which columns to use to build the new co
 
 [To be replaced with a video]
 
-`gather()` relies on the idea of key:value pairs. A key value pair is a pair that lists a value alongside the name of the variable that the value describes. If you wanted, you could list every value in a dataset as a key value pair, but this is not how R lists values.
+`gather()` relies on the idea of key:value pairs. A key value pair is a pair that lists a value alongside the name of the variable that the value describes. (We could store every value in a dataset as a key value pair, but this is not how R works.)
 
 In a tidy data set, you will find "keys"---that is variable names---in the column names of the data set. The values will appear in the cells of the columns. Here we know that the key for each value in the year column is year. This arrangement reduces duplication.
 
@@ -356,7 +356,7 @@ table4b %>% gather(key = "year", value = "population", -country)
 
 ### Converting output
 
-If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column contains character vectors. You can tell because R displays a \<chr\> beneath the column name.
+If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column contains character vectors. You can tell because R displays `<chr>` beneath the column name.
 
 ```{r ex9, exercise = TRUE}
 table4b %>% gather(key = "year", value = "population", -country)

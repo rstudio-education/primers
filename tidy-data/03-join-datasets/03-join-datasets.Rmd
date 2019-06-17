@@ -261,7 +261,7 @@ inner_join(band, instrument, by = "name")
 
 First, pass the function the names of two data sets to join.
 
-Then set the `by` argument to the name or names of the column or columns to join on. These names should be passed as a vector of character strings, i.e. characters surrounded by quotes. In the code above, we join on a single column so our vector of strings simplifies to a single string, but you could imagine doing something like`left_join(band, instrument, by = c("first", "last"))`.
+Then set the `by` argument to the name or names of the column or columns to join on. These names should be passed as a vector of character strings, i.e. characters surrounded by quotes. In the code above, we join on a single column so our vector of strings simplifies to a single string, but you could imagine doing something like `left_join(band, instrument, by = c("first", "last"))`.
 
 Each column name in `by` should appear in both data sets. The join function will match together rows that have identical combinations of values in the columns listed in `by`. If you do not specify a `by` argument, dplyr will join on the set of all column names that appear in both data sets.
 
@@ -344,7 +344,7 @@ question("Which variable name does airports use for the airport codes?",
 
 ### Different column names
 
-`airports` and `flights` share a common variable, airport codes, but save the variable under different column names `dest` and `faa`. This is a common occurence with data. We can recreate it by making a second instrument data set that replaces the first column anme with artist.
+`airports` and `flights` share a common variable, airport codes, but save the variable under different column names `dest` and `faa`. This is a common occurence with data. We can recreate it by making a second instrument data set that replaces the first column name with artist.
 
 ```{r echo = TRUE}
 instrument2
