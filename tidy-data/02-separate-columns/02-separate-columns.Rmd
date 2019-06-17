@@ -323,7 +323,7 @@ The remaining columns are named after codes that contain multiple variables.
 
 ### who codes
 
-Each column name after the fourth, contains a code comprised of three values from three variables: _type of TB_, _gender_, and _age_.
+Each column name after the fourth contains a code comprised of three values from three variables: _type of TB_, _gender_, and _age_.
 
 ```{r out.width = "90%"}
 knitr::include_graphics("www/images/codes.png")
