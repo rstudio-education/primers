@@ -339,7 +339,7 @@ round(3.141593, digits = 2)
 
 ### \t
 
-You can pass extra arguments for your function _to_ `map()` as if they were arguments _of_ `map()`. `map()` will forward the arguments to your function whenever it calls the function. You will almost always want to call these arguments by name, e.g.
+You can pass extra arguments for your function _to_ `map()` as if they were arguments _of_ `map()`. `map()` will forward the arguments to your function whenever it calls the function. You will almost always want to name these arguments, e.g.
 
 ```{r map-args}
 list1 %>% 
