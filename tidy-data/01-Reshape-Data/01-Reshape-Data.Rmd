@@ -356,7 +356,7 @@ table4b %>% gather(key = "year", value = "population", -country)
 
 ### Converting output
 
-If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column contains character vectors. You can tell because R displays a \<chr\> beneath the column name.
+If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column contains character vectors. You can tell because R displays `<chr>` beneath the column name.
 
 ```{r ex9, exercise = TRUE}
 table4b %>% gather(key = "year", value = "population", -country)
