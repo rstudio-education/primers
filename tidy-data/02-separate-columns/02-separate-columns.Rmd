@@ -113,7 +113,7 @@ hurricanes %>%
 
 ### Syntax
 
-Let's rewrite our above command without the pipe, to make the syntax of separate easier to see.
+Let's rewrite our above command without the pipe, to make the syntax of `separate()` easier to see.
 
 ```{r echo = TRUE, eval = FALSE}
 separate(hurricanes, col = date, into = c("year","month","day"), sep = "-")
