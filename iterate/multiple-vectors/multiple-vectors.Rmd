@@ -269,7 +269,7 @@ knitr::include_graphics("www/images/pmap.png")
 
 ### \t
 
-Name each vector in your list of vectors with the name of the argument that it should map to. `pmap()` will match names to arguments whenever you provide them. So this code, for example, will round each of the long numbers to a different number of digits.
+Name each vector in your list of vectors with the name of the argument that it should map to. `pmap()` will match names to arguments whenever you provide them. So this code, for example, will round each of the long numbers to a different number of digits, and it works because `round`'s arguments are called `x` and `digits`.
 
 ```{r}
 long_numbers <- list(pi, exp(1), sqrt(2))
@@ -419,7 +419,7 @@ strict_check("Good job! Remember that pmap() is a useful tool for doing rowwise 
 
 Generating small numbers of values is a simple way to demonstrate how to use `pmap()` with a data frame.
 
-Now, let's push it one step further. What if you wanted to use a different simulation function for wach row? For example, you could use:
+Now, let's push it one step further. What if you wanted to use a different simulation function for each row? For example, you could use:
 
 1. `rnorm()` to generate normal values from the first row
 1. `rlnorm()` to generate log normal values from the second row
@@ -559,7 +559,7 @@ To be a true purrr master, you should know that a couple more mapping functions 
 1. `map_at()` and `map_if()`, which only map a function to specific elements of a list
 1. `modify()`, `modify_at()`, `modify_if()`, and `modify_depth()`, which return a modified version of the original data.
 
-You can learn more about each at their help pages or [purrr.tidyverse.org](purrr.tidyverse.org).
+You can learn more about each at their help pages or [purrr.tidyverse.org](http://purrr.tidyverse.org).
 
 ### Congratulations
 

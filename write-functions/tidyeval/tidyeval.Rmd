@@ -1,0 +1,28 @@
+---
+title: "Tidyeval"
+tutorial:
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message = FALSE, warning=FALSE}
+library(learnr)
+library(grader)
+library(tidyverse)
+library(rlang)
+
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+# Tidyeval: A tidy way to do non-standard evaluation in R
+
+If you're reading this, then you've used R before (and if not, turn back now!). Think of the things that have appeared in your command line as you've used R. Everything in R can be broken down into one of two things:
+
+1. Names that are associated with values
+2. Values themselves 
+

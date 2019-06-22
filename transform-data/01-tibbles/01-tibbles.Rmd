@@ -142,19 +142,14 @@ You do not need to worry much about tibbles in these tutorials; in future tutori
 
 ### View()
 
-What if you'd like to inspect the remaining portions of a tibble? To see the entire tibble, use the `View()` command. R will launch a window that shows a scrollable display of the entire data set. Try this below, run `View(babynames)` to see the entire data set.
+What if you'd like to inspect the remaining portions of a tibble? To see the entire tibble, use the `View()` command. R will launch a window that shows a scrollable display of the entire data set. For example, the code below will launch a data viewer in the RStudio IDE.
 
-```{r babynames-4, exercise = TRUE, exercise.setup = "bnames"}
-
-```
-
-```{r babynames-4-solution}
+```{r echo = TRUE, eval = FALSE}
 View(babynames)
 ```
 
-```{r babynames-4-check}
-"Good job! If you got an error message, it is only because the viewer is a work in progress for tutorials."
-```
+`View()` works in conjunction with the software that you run R from: `View()` opens the data editor provided by that software. Unfortunately, this tutorial doesn't come with a data editor, so you won't be able to use `View()` today (unless you open the RStudio IDE, for example, and run the code there).
+
 
 ## tidyverse
 

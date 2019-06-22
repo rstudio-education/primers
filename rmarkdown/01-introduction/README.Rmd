@@ -1,0 +1,9 @@
+This project contains the materials for lesson 1 of the [R Markdown Primer](https://rmarkdown.rstudio.com/lesson-1.html). Each of the lessons in this primer begins with a README file like this one, which will pop up in your source pane when you open the lesson.
+
+This lesson is quite easy, all you have to do is read some text and watch a video. To begin the lesson, press the play button at the top right of the code chunk below. Then refer to the viewer pane.
+
+```{r}
+viewer <- getOption("viewer")
+viewer("https://rmarkdown.rstudio.com/lesson-1.html", 
+       height = "maximize")
+```

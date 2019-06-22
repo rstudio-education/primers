@@ -113,7 +113,7 @@ hurricanes %>%
 
 ### Syntax
 
-Let's rewrite our above command without the pipe, to make the syntax of separate easier to see.
+Let's rewrite our above command without the pipe, to make the syntax of `separate()` easier to see.
 
 ```{r echo = TRUE, eval = FALSE}
 separate(hurricanes, col = date, into = c("year","month","day"), sep = "-")
@@ -323,7 +323,7 @@ The remaining columns are named after codes that contain multiple variables.
 
 ### who codes
 
-Each column name after the fourth, contains a code comprised of three values from three variables: _type of TB_, _gender_, and _age_.
+Each column name after the fourth contains a code comprised of three values from three variables: _type of TB_, _gender_, and _age_.
 
 ```{r out.width = "90%"}
 knitr::include_graphics("www/images/codes.png")
