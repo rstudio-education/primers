@@ -1,0 +1,9 @@
+This project contains the materials for lesson 2 of the [R Markdown tutorial](https://rmarkdown.rstudio.com/lesson-2.html). To begin the lesson, press the play button at the top right of the code chunk below. Then refer to the viewer pane.
+
+```{r}
+viewer <- getOption("viewer")
+viewer("https://rmarkdown.rstudio.com/lesson-2.html", 
+       height = "maximize")
+rstudioapi::navigateToFile("1-example.Rmd")
+```
+

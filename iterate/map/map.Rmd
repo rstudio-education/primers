@@ -298,7 +298,7 @@ By the way, you will need to click Run Code above at least once before you can c
 
 ### What about the output?
 
-You give `map()` a vector and a function. `map()` gives you a list. The _nth_ element of the list will be the result of applying your function to the contents of the _nth_ element of your vector. 
+You give `map()` a vector and a function. `map()` always gives you a list. The _nth_ element of the list will be the result of applying your function to the contents of the _nth_ element of your vector. 
 
 This is convenient for two reasons:
 
@@ -339,7 +339,7 @@ round(3.141593, digits = 2)
 
 ### \t
 
-You can pass extra arguments for your function _to_ `map()` as if they were arguments _of_ `map()`. `map()` will forward the arguments to your function whenever it calls the function. You will almost always want to call these arguments by name, e.g.
+You can pass extra arguments for your function _to_ `map()` as if they were arguments _of_ `map()`. `map()` will forward the arguments to your function whenever it calls the function. You will almost always want to name these arguments, e.g.
 
 ```{r map-args}
 list1 %>% 
