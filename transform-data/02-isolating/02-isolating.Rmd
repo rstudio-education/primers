@@ -492,7 +492,7 @@ Together, `select()`, `filter()`, and `arrange()` let you quickly find informati
 
 The next tutorial will show you how to derive information that is implied by your data, but not displayed within your data set.
 
-In that tutorial, you will continue to use the `%>%` operator, which is an essential part of programming with the 
+In that tutorial, you will continue to use the `%>%` operator, which is an essential part of programming with the dplyr library.
 
 Pipes help make R expressive, like a spoken language. Spoken languages consist of simple words that you combine into sentences to create sophisticated thoughts.
 
