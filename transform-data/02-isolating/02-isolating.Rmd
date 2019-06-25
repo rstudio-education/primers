@@ -28,7 +28,7 @@ knitr::opts_chunk$set(echo = FALSE)
 In this case study, you will explore the popularity of your own name over time. Along the way, you will master some of the most useful functions for isolating variables, cases, and values within a data frame:
 
 * `select()` and `filter()`, which let you extract rows and columns from a data frame
-* `arrange()`, which lets yuo reorder the rows in your data
+* `arrange()`, which lets you reorder the rows in your data
 * `%>%`, which organizes your code into reader-friendly "pipes"
 
 This tutorial uses the [core tidyverse packages](http://tidyverse.org/), including ggplot2, tibble, and dplyr, as well as the `babynames` package. All of these packages have been pre-installed and pre-loaded for your convenience.
