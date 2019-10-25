@@ -424,7 +424,7 @@ question('How many types of data can you put into a single vector?',
 One of the most common mistakes in R is to call an object when you mean to call a character string and vice versa.
 
 ```{r types6, echo = FALSE}
-question('One of the most common mistakes in R is to call an object when you mean to call a character string and vice versa. Which of these are object names? What is the difference between object names and character strings?',
+question('Which of these are object names? What is the difference between object names and character strings?',
          answer("foo", correct = TRUE),
          answer('"num"'),
          answer("mu", correct = TRUE),
