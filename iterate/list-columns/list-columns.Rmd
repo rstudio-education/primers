@@ -501,7 +501,7 @@ nested_gapminder %>%
 ```
 
 ```{r models-lc-check}
-strict_check("You did great! As you can see, mutate() and the other tidyverse functions know how to work with list columns. If the input to mutate() creates a list, mutate() saves the result as a list column.")
+strict_check("You did great! Notice that data means two different things here. The first data refers to the column named data in `nested_gapminder`. The second data is an argument name in the lm function. As you can see, mutate() and the other tidyverse functions know how to work with list columns. If the input to mutate() creates a list, mutate() saves the result as a list column.")
 ```
 
 ### Coefficients
