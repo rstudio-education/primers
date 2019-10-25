@@ -132,7 +132,7 @@ Helper Function   | Use                                               | Example
 **ends_with()**   | Columns that ends with a string              | `select(babynames, ends_with("n"))`
 **matches()**     | Columns that matches a regex                 | `select(babynames, matches("n"))`
 **num_range()**   | Columns with a numerical suffix in the range | Not applicable with `babynames`
-**one_of()**      | Columns whose name appear in the given set     | `select(babynames, one_of(c("sex", "gender"))`
+**one_of()**      | Columns whose name appear in the given set     | `select(babynames, one_of(c("sex", "gender")))`
 **starts_with()** | Columns that starts with a string            | `select(babynames, starts_with("n"))`
 
 ### select() quiz
