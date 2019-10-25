@@ -35,7 +35,7 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 ## Introduction
 
-### \t
+###  
 
 You've learned how to map any expresssion over the elements of a _single_ vector.
 
@@ -43,10 +43,24 @@ Now you'll learn how to map an expression over the elements of _two or more_ vec
 
 ### A case study
 
-To see how useful this technique can be, let's use multi-vector mapping to compare two lists of models. At the end of the Map Shortcuts tutorial, you fit two models for every country in `gap_dfs`:
+To see how useful this technique can be, let's use multi-vector mapping to compare two lists of models. At the end of the Map Shortcuts tutorial, you fit two models for every country in `gap_dfs`. This created two lists:
 
-1. A model that predicted life expectancy by year, which I saved as `model1`.
-1. A model that predicted life expectancy by both year _and GDP per capita_, which I saved as `model2`.
+1. A list of models that predicted life expectancy by year, which I saved as `model1`.
+
+    ```{r eval = FALSE}
+    model1 <- gap_dfs %>%
+      map(~ lm(lifeExp ~ year, data = .x))
+    ```
+
+1. A list of models that predicted life expectancy by both year _and GDP per capita_, which I saved as `model2`.
+
+    ```{r eval = FALSE}
+    model2 <- gap_dfs %>%
+      map(~ lm(lifeExp ~ year + gdpPercap, data = .x))
+    ```
+
+
+###  
 
 But which model is better? In other words, does adding GDP per capita improve your predictions for life expectancy?
 
@@ -61,7 +75,7 @@ usa_mod1 <- model1 %>% pluck("United States")
 usa_mod2 <- model2 %>% pluck("United States")
 ```
 
-### \t
+###  
 
 ```{r}
 anova(usa_mod1, usa_mod2)
@@ -79,7 +93,7 @@ You can iterate through all of the countries to find out, but this is a new type
 
 ## map2()
 
-### \t
+###  
 
 Enter `map2()`.
 
@@ -91,7 +105,7 @@ At each step of the iteration, `map2()` will pass an element from the first vect
 knitr::include_graphics("www/images/map2.png")
 ```
 
-### \t
+###  
 
 * Use `map2()` to run an anova on each pair of models in `model1` and `model2`. Then click Submit Answer.
 
@@ -116,7 +130,7 @@ strict_check("Nice job! A quick scan of the results suggests that adding gdpPerc
 map2(model1, model2, anova, test = "Chisq")
 ```
 
-### \t
+###  
 
 Like `map()`, `map2()` returns its results as a list, but it also comes with variants that will return the result in other formats. As with `map()`, you should use the variant of `map2()` that will return your results in the format that you want:
 
@@ -236,7 +250,7 @@ You can use `anova()` to compare any number of models. For example, you could co
 1. A model that predicts  life expectancy by both year _and GDP per capita_, like those in `model2`.
 1. A model that predicts  life expectancy by year and GDP per capita _and population_, like those in `model3`. (I made `model3` for you while you weren't looking)
 
-### \t 
+###   
 
 Here's the comparison for the US
 
@@ -259,7 +273,7 @@ Yes, but not with `map3()` as you might think. `map3()` doesn't exist. Instead p
 
 ## pmap()
 
-### \t
+###  
 
 The syntax of `pmap()` is a little different from the syntax of `map()` and `map2()`. Instead of accepting vectors one at a time as arguments, `pmap()` expects a single argument that contains a _list of vectors_ and then a function to apply to the vectors within that list of vectors.
 
@@ -267,7 +281,7 @@ The syntax of `pmap()` is a little different from the syntax of `map()` and `map
 knitr::include_graphics("www/images/pmap.png")
 ```
 
-### \t
+###  
 
 Name each vector in your list of vectors with the name of the argument that it should map to. `pmap()` will match names to arguments whenever you provide them. So this code, for example, will round each of the long numbers to a different number of digits, and it works because `round`'s arguments are called `x` and `digits`.
 
@@ -309,7 +323,7 @@ strict_check("Excellent. You can use pmap() to map over three, four, or any numb
 
 Specifically, `pmap()` will pass extra arguments to your function, just as `map()` and `map2()` will.
 
-### \t
+###  
 
 `pmap()` also comes with derivative functions that return output in new formats:
 
@@ -324,7 +338,7 @@ Map function | Map2 function | pmap function | Output
 `map_lgl()`  | `map2_lgl()`  | `pmap_lgl()`  | logical vector
 `walk()`     | `walk2()`     | `pwalk()`     | returns the input invisibly (used to trigger side effects)
 
-### \t 
+###   
 
 `pmap()` also uses expressions that start with a `~`. However, `pmap()` expects you to name the elements within an expression `..1`, `..2`, `..3` and so on instead of `.x` and `.y`. Notice the double dots.
 
@@ -430,7 +444,7 @@ This would be a different type of iteration problem. Instead of iterating over _
 
 ## invoke_map()
 
-### \t
+###  
 
 purrr's `invoke_map()` function is designed to iterate over a vector of functions followed by a vector of arguments. It will run the first function with the first argument, the second function with the second argument, and so on.
 
@@ -438,7 +452,7 @@ purrr's `invoke_map()` function is designed to iterate over a vector of function
 knitr::include_graphics("www/images/invoke-map.png")
 ```
 
-### \t
+###  
 
 So for example, you could use `invoke_map()` to generate sets of _standard_ normal, log normal, and cauchy values. These are "standard" because in this example we do not change the default parameter values for each distribution, e.g. mean = 0, sd = 1.
 
@@ -484,7 +498,7 @@ question("Can you predict why?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 When you pass extra arguments to `invoke_map()`, `invoke_map()` will try to match them to each function by argument name, which is why the last piece of code does not run.
 
@@ -498,7 +512,7 @@ invoke_map(functions, n, mean = 100)
 * `rlnorm(n, meanlog = 0, sdlog = 1)`
 * `rcauchy(n, location = 0, scale = 1)`
 
-### \t 
+###   
 
 But recall that map functions, including `invoke_map()` will pass on _unnamed_ extra arguments by position.
 
