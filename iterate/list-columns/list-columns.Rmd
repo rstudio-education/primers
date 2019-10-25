@@ -41,11 +41,11 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 
 ## Motivation
 
-### \t
+###  
 
 Now that you know how to use the map family of functions, you can organize your data science work in a new way. A _superior_ way.
 
-### \t
+###  
 
 Consider an example.
 
@@ -55,7 +55,7 @@ You have a data set that describes multiple groups. You fit a model for each gro
 knitr::include_graphics("www/images/list-columns-1.png")
 ```
 
-### \t
+###  
 
 Soon you have many different things that are related to each other. How would you keep track of them?
 
@@ -63,7 +63,7 @@ Soon you have many different things that are related to each other. How would yo
 knitr::include_graphics("www/images/list-columns-2.png")
 ```
 
-### \t
+###  
 
 This is a lot like having a data set. A data set contains many separate values that are related to each other in specific ways.
 
@@ -71,7 +71,7 @@ This is a lot like having a data set. A data set contains many separate values t
 knitr::include_graphics("www/images/list-columns-4.png")
 ```
 
-### \t
+###  
 
 You keep track of the values by storing them in a table. Not only does the table keep the values together in one place, it encodes the relationships between the values; which means that you can use the table to do all of the cool things that you do with data sets, like filter, select, arrange, mutate, summarise, join, etc.
 
@@ -79,7 +79,7 @@ You keep track of the values by storing them in a table. Not only does the table
 knitr::include_graphics("www/images/list-columns-5.png")
 ```
 
-### \t 
+###   
 
 Why not do the same thing with all of your data analysis components? If you put them into a table, you could filter, select, mutate, summarise, and join them as well.
 
@@ -91,7 +91,7 @@ Well, you can. But you will need to use list columns to do it.
 
 ## List Columns
 
-### \t
+###  
 
 Before you ask, "What is a list column?", let's remind ourselves what a data frame is.
 
@@ -113,7 +113,7 @@ df <- list(
 df
 ```
 
-### \t
+###  
 
 Data frames also have the class `"data.frame"` and a `"row.names"` attribute. If we give these things to our list, R realizes that the list represents a table and each element is a column vector. And that's how R builds data frames.
 
@@ -135,7 +135,7 @@ Let's take this a step further. Tibbles are a type of data frame.
 knitr::include_graphics("www/images/list-columns-6.png")
 ```
 
-### \t
+###  
 
 To convert a data frame to a tibble, you assign it two extra classes (you would usually do this with `as_tibble()` from the tibble package).
 
@@ -172,7 +172,7 @@ df
 ```
 
 
-### \t
+###  
 
 But a column vector can also be a list because a list is a type of vector, a _recursive vector_. When a column vector contains a list, we call the column a _list column_.
 
@@ -218,7 +218,7 @@ The Case Study will demonstrate the value of list columns and give you practice 
 
 ## Case Study
 
-### \t
+###  
 
 In this primer, you've encountered several versions of the `gapminder` data set that comes in the gapminder package. 
 
@@ -250,7 +250,7 @@ As you saw in the last tutorial, you can discover useful information when you ap
 
 For example, when you regress `lifeExp` on `year`, the `year` coefficient will be an estimate of how fast life expectancy changed in a country.
 
-### \t 
+###   
 
 The r-squared of the model also reveals something: it shows how linear a country's change in life expectancy was. Some countries experienced a linear change in life expectancy, like Switzerland. Other countries experienced a non-linear change in life expectancy, like Cambodia.
 
@@ -281,7 +281,7 @@ In this case study, you will:
 knitr::include_graphics("www/images/list-columns-7.png")
 ```
 
-### \t
+###  
 
 More importantly, you will use list columns to organize the outputs into a single table. This will let you quickly explore the outputs when you are finished.
 
@@ -384,7 +384,7 @@ Can you fit a model to each tibble nested within `nested_gapminder` and then sto
 
 Let's approach this problem in three parts.
 
-### \t
+###  
 
 You have code that extracts one of the nested tibbles. Let's fit a model to the single tibble as a test case.
 
@@ -412,7 +412,7 @@ nested_gapminder %>%
 strict_check("Excellent! Life expectancy increased on average by 0.27 years per year in Afghanistan.")
 ```
 
-### \t
+###  
 
 Let's push this one step further. The code below extracts the `data` column of `nested_gapminder` as a list.
 
@@ -437,7 +437,7 @@ nested_gapminder %>%
 strict_check("Very good job. Notice that you get the result back as a new list. Let's look at one more step that you will need to save your models in your data frame.")
 ```
 
-### \t
+###  
 
 I'd like you to add your model output as a new column to your data frame. How do you add new columns to a data frame? Let's review.
 
@@ -469,7 +469,7 @@ nested_gapminder %>%
   mutate(models = map(data, ~lm(lifeExp ~ year, data = .x)))
 ```
 
-### \t
+###  
 
 * Add a new column to your data frame named `models`. `models` should be a list column that contains the result of fitting `~lm(lifeExp ~ year, data = .x)` to each tibble in `data`. 
 
@@ -514,14 +514,16 @@ nested_gapminder %>%
          coefficient = map_dbl(models, ~coef(.x) %>% pluck("year")))
 ```
 
-### \t
+###  
 
-I've saved your previous result as `gap_models`. 
+I've saved your previous result as `gap_models`. Let's add a new column to `gap_models` that contains the year coefficient for each model. To do this:
 
 * Use `mutate()` to add a new column named `coefficient` to `gap_models` 
 * Within `mutate()`, use a function that takes a list as input (`models`) and returns a double vector as output to place in `coefficient`. Don't forget to actually provide `models` as an argument when you call the function.
 * Use the map expression `~coef(.x) %>% pluck("year")` to populate `coefficient` with the year coefficients of each model. 
 * Then click Submit Answer.
+
+There is a lot going on here, so don't be afraid to click Show Hint if you get stuck.
 
 ```{r dbl, exercise = TRUE, exercise.eval = TRUE}
 gap_models
@@ -553,7 +555,7 @@ gap_coefs %>%
   mutate(r_squared = map_dbl(models, ~summary(.x) %>% pluck("r.squared")))
 ```
 
-### \t
+###  
 
 You can use the map expression `~summary(.x) %>% pluck("r.squared")` to acquire the R-squares. Do you remember the rest of the workflow?
 
@@ -614,7 +616,7 @@ Second, power. You are a data scientist. You know how to wrangle tables. By plac
 
 For example...
 
-### \t
+###  
 
 What if you want to find the models with the most rapid increase in life expectancy?
 
@@ -623,7 +625,7 @@ gap_final %>%
   arrange(desc(coefficient))
 ```
 
-### \t 
+###   
 
 How about the ten countries with the most non-linear change in life expectancy? Here they are, along with all of their data.
 
@@ -632,7 +634,7 @@ gap_final %>%
   top_n(10, wt = desc(r_squared))
 ```
 
-### \t 
+###   
 
 Interested in comparing the two Koreas? Here is everything you need. (North Korea is the democratic one).
 
