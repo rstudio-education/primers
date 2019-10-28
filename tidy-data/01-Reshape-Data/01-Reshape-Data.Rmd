@@ -374,7 +374,12 @@ You can ask R to convert each new column to an appropriate data type by adding `
 
 ### The flexibility of gather()
 
-`cases`, `table4a`, and `table4b` are all two by two tables, a simple form of wide data. But you will also encounter more complicated examples of wide data. For example, it is common for researchers to place one subject per row. In this case, you might see several columns of identifying information followed by a set of columns that list repeated measurements of the same variable. `cases2` emulates such a data set. 
+`cases`, `table4a`, and `table4b` are all rectangular tables: 
+
+* each row corresponds to the value of a variable, and
+* each column corresponds to the value of a variable
+
+Rectangular tables are a simple form of wide data. But you will also encounter more complicated examples of wide data. For example, it is common for researchers to place one subject per row. In this case, you might see several columns of identifying information followed by a set of columns that list repeated measurements of the same variable. `cases2` emulates such a data set. 
 
 ```{r echo = TRUE}
 cases2

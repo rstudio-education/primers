@@ -472,7 +472,7 @@ As a result, it is concerning that our data contains so many `NA`s for `n`.
 
 ### NA
 
-`NA` is R's symbol for missing information, and it is common to have multiple `NA`s when you reshape your data from a wide format to a long format. The two by two table structure imposed by wide data requires a place holder for every combination of variable values---even if no data was collected for that combination.
+`NA` is R's symbol for missing information, and it is common to have multiple `NA`s when you reshape your data from a wide format to a long format. The rectangular table structure imposed by wide data requires a place holder for every combination of variable values---even if no data was collected for that combination.
 
 In contrast, the long data format does not require a place holder for each combination of variable values. Since each combination is saved as its own row, you can simply not include rows that contain an NA.
 
