@@ -163,7 +163,7 @@ The tibble package is one of several packages that are known collectively as ["t
 
 ### The tidyverse package
 
-When you use tidyverse packages, you can make your life easier by using the **tidyverse** package. This package provides a shortcut for installing and loading the entire suite of packages in "the tidyverse", e.g. 
+When you use tidyverse packages, you can make your life easier by using the **tidyverse** package. The tidyverse package provides a shortcut for installing and loading the entire suite of packages in "the tidyverse", e.g. 
 
 ```{r eval = FALSE}
 install.packages("tidyverse")
