@@ -714,6 +714,10 @@ knitr::include_graphics("www/images/bind-rows-id.png")
 
 The easiest way to do this is to save the input data sets as a named list and call _`bind_rows` on the list_. Then add the argument `.id` to your `bind_rows()` call and set `.id` to a character string. `bind_rows()` will use the character string as the name of a new column that displays the name of the data set that each row comes from (as determined by the names in the list). 
 
+If you'd like to refresh your understanding of lists in R, revisit the [Programming Basics](https://rstudio.cloud/learn/primers/1.2) tutorial.
+
+###  
+
 Add a `.id` argument ot the code below to create the output displayed in the diagram.
 
 ```{r ex21, exercise = TRUE}
