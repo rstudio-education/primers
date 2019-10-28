@@ -449,7 +449,7 @@ babynames %>%
 
 ### Rankings by group
 
-In the previous exercise, we assigned rankings across the entire data set. For example, with the exception of ties, there was only one 1 in the entire data set, only one 2, and so on. To calculate a popularity score across years, you will need to do something different: you will need to assign rankings within groups of year and sex.
+In the previous exercise, we assigned rankings across the entire data set. For example, with the exception of ties, there was only one 1 _in the entire data set_, only one 2, and so on. To calculate a popularity score across years, you will need to do something different: you will need to assign rankings within groups of year and sex. Now there will be one 1 _in each group of year and sex_.
 
 To rank within groups, combine `mutate()` with `group_by()`. Like dplyr's other functions, `mutate()` will treat grouped data in a group-wise fashion.
 
