@@ -295,7 +295,7 @@ Finally, use numbers to tell `gather()` which columns to use to build the new co
 
 In a tidy data set, you will find "keys"---that is variable names---in the column names of the data set. The values will appear in the cells of the columns. Here we know that the key for each value in the year column is year. This arrangement reduces duplication.
 
-Sometimes you will also find key value pairs listed beside each other in two separate columns, as in `table2`. Here the type column lists the keys that are associated with the `count` column. This layout is sometimes called "narrow" data.
+Sometimes you will also find key value pairs listed beside each other in two separate columns, as in `table2`. Here the `type` column lists the keys that are associated with the `count` column. This layout is sometimes called "narrow" data.
 
 Tidyr functions rely on the key value vocabulary to describe what should go where. In `gather()` the key argument describes the new column that contains the values that previously appeared in the tidy key position, i.e. in the column names. The value argument describes the new column that contains the values that previously appeared in the value positions, e.g. in the column cells.
 
