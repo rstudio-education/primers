@@ -545,9 +545,15 @@ library(tidyverse)
 "Good job! R will keep the packages loaded until you close your R session. When you re-open R, you'll need to reload you packages."
 ```
 
+### Quotes
+
+Did you know, `library()` is a special function in R? You can pass `library()` a package name in quotes, like `library("tidyverse")`, or not in quotes, like `library(tidyverse)`---both will work! That's often not the case with R functions.
+
+In general, you should always use quotes unless you are writing the _name_ of something that is already loaded into R's memory, like a function, vector, or data frame.
+
 ### Install packages
 
-How would you install the dplyr package on your own computer?
+But what if the package that you want to load is not installed on your computer? How would you install the dplyr package on your own computer?
 
 ```{r packages3, exercise = TRUE}
 
@@ -558,7 +564,7 @@ install.packages("dplyr")
 ```
 
 ```{r packages3-check}
-"Good job! You only need to install a package once, unless you wish to update your local copying by reinstalling the package."
+"Good job! You only need to install a package once, unless you wish to update your local copying by reinstalling the package. Notice that `install.packages()` _always_ requires quotes around the package name."
 ```
 
 ### Congratulations!
