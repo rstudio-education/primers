@@ -255,6 +255,8 @@ Notice that the syntax of `unite()` is the inverse of `separate()`:
 
 Use `separate()` and `unite()` to rewrite the dates in hurricanes in the format below:
 
+* month/day/year, e.g., 1/27/2020
+
 ```{r ex8, exercise = TRUE}
 
 ```
