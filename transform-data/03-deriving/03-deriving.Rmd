@@ -407,7 +407,7 @@ babynames %>%
 
 ### Vectorized functions
 
-Like `summarise()`, `mutate()` works in combination with a specific type of function. `summarise()` expects summary functions, which take a vector of input and return a _single_ value. `mutate()` expects **vectorized functions**, which take a vector of input and return a _vector_ of values.
+Like `summarise()`, `mutate()` works in combination with a specific type of function. `summarise()` expects summary functions, which take vectors of input and return _single_ values. `mutate()` expects **vectorized functions**, which take vectors of input and return _vectors_ of values.
 
 In other words, summary functions like `min()` and `max()` won't work well with `mutate()`. You can see why if you take a moment to think about what `mutate()` does: `mutate()` adds a new column to the original data set. In R, every column in a dataset must be the same length, so `mutate()` must supply as many values for the new column as there are in the existing columns. 
 
