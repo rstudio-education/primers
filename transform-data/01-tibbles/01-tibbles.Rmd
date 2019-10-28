@@ -134,6 +134,10 @@ library(tibble)
 babynames
 ```
 
+```{r babynames-3-check}
+"Excellent! If you want to check whether or not an object is a tibble, you can use the `is_tibble()` function that comes in the tibble package. For example, this would return TRUE: `is_tibble(babynames)`."
+```
+
 ```{r echo = FALSE, message = FALSE}
 library(tibble)
 ```
