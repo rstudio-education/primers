@@ -372,6 +372,8 @@ And this creates a named vector. Here the first element is named "uno", the seco
 c(uno = 1, dos = 2, tres = 3)
 ```
 
+If you like, you can place quotes around the names when you make the vector, like `c("uno" = 1, "dos" = 2, "tres" = 3)`. You'll see me do that in the next section to make things look symmetric.
+
 Named vectors are a basic feature of R. Let's look at how we can use them to solve our join problem.
 
 ### Matching column names
