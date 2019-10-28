@@ -489,6 +489,8 @@ Don't let the difference trip you up. Instead think about what the quotes mean.
 * In R, any sequence of characters surrounded by quotes is a character string, which is a piece of data in and of itself. 
 * Likewise, any sequence of characters not surrounded by quotes is the name of an object, which is a symbol that contains or points to a piece of data. Whenever R evaluates an object name, it searches for the object to find the data that it contains. If the object does not exist somewhere, R will return an error.
 
+###  
+
 In our `gather()` code above, "year" and "population" refer to two columns that do not yet exist. If R tried to look for objects named _year_ and _population_ it wouldn't find them (at least not in the `table4b` dataset). When we use `gather()` we are passing R two values (character strings) to use as the name of future columns that will appear in the result.
 
 In our `spread()` code, key and value point to two columns that _do_ exist in the `pollution` dataset: size and amount. When we use `spread()`, we are telling R to find these objects (columns) in the dataset and to use their contents to create the result. Since they exist, we do not need to surround them in quotation marks.
@@ -666,10 +668,10 @@ $$x = year$$
 $$y = total$$
 $$color = sex$$
 
-To do this, we needed a data set that placed $$year$$, $$total$$, and $$sex$$ each in their own columns.
+To do this, we needed a data set that placed $year$, $total$, and $sex$ each in their own columns.
 
-In our second case we wanted to compute $$ratio$$, where 
+In our second case we wanted to compute $ratio$, where 
 
 $$\text{ratio} = \frac{\text{male}}{\text{female}}$$
-This formula has three variables: $$ratio male$$, $$total male$$, and $$total female$$. To create the first variable, we required a data set that isolated the second and third variables ($$total male$$ and $$total female$$) in their own columns. 
+This formula has three variables: $ratio\ \ male$, $total\ \ male$, and $total\ \ female$. To create the first variable, we required a data set that isolated the second and third variables ($total\ \ male$ and $total\ \ female$) in their own columns. 
 
