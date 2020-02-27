@@ -5,6 +5,9 @@ output:
     progressive: true
     allow_skip: true
 runtime: shiny_prerendered
+tutorial:
+  id: "com.rstudio.primers.02-vis-basics"
+  version: 1.0
 ---
 
 ```{r setup, include=FALSE}
@@ -16,50 +19,59 @@ checker <- function(label, user_code, check_code, envir_result, evaluate_result,
 tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 ```
 
+```{r, context="server-start", include=FALSE}
+# Capture metrics only if running an official primer hosted by RStudio
+library(curl)
+library(later)
+source("https://metrics.ap01.rstudioprimers.com/learnr/installMetrics", local=TRUE)
+```
+
 ## Welcome
 
-Data visualization is one of the most important tools for data science. It is also a great way to start learning R; when you visualize data, you get an immediate payoff that will keep you motivated as you push through the initial frustrations of learning a language.
+### 
 
-This tutorial will teach you how to begin visualizing data with ggplot2, which is one of the most popular packages in R for visualizing data. The tutorial focuses on three essential skills:
+Visualization is one of the most important tools for data science. 
 
-1. How to create graphs with a reusable ggplot2 **template**
+It is also a great way to start learning R; when you visualize data, you get an immediate payoff that will keep you motivated as you learn. Afterall, learning a new language can be hard!
+
+This tutorial will teach you how to visualize data with R's most popular visualization package, `ggplot2`.
+
+### 
+
+The tutorial focuses on three basic skills:
+
+1. How to create graphs with a reusable **template**
 1. How to add variables to a graph with **aesthetics**
-1. How to select the "type" of your graph with **geoms** 
+1. How to make different "types" of graphs with **geoms** 
 
-These skills will quickly add visualization to your data science toolkit. You can expand on them later with the [Visualize Data]() primer.
+In this tutorial, we will use the [core tidyverse packages](http://tidyverse.org/), including `ggplot2`. I've already loaded the packages for you, so let's begin! 
 
-### Acknowledgments
+***
 
 These examples are excerpted from _R for Data Science_ by Hadley Wickham and Garrett Grolemund, published by O’Reilly Media, Inc., 2016, ISBN: 9781491910399. You can purchase the book at [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
 
-This tutorial uses the [core tidyverse packages](http://tidyverse.org/), including ggplot2, which have been pre-loaded for your convenience.
 
 ## A code template
 
 > "The simple graph has brought more information to the data analyst’s mind 
 > than any other device. " --- John Tukey
 
-### Query
+### 
 
-Let's begin the tutorial with a question to explore.
+Let's begin with a question to explore.
 
 ```{r predict, echo = FALSE}
-question("What do you think: Do cars with big engines use more fuel than cars with small engines?", 
+question("What do you think: Do cars with bigger engines use more fuel than cars with smaller engines?", 
          type = "single",
          correct = "Great!",
          answer("Cars with bigger engines use _more_ fuel.", correct = TRUE, message = "In other words, there is a positive relationship between engine size and fuel efficiency. Now let's test your hypothesis against data."),
-         answer("Cars with bigger engines use _less_ fuel.", correct = TRUE, message = "In other words, there is a negative relationship between engine size and fuel efficiency. Now let's test your hypothesis against data.")
+         answer("Cars with bigger engines use _less_ fuel.", correct = TRUE, message = "In other words, there is a negative relationship between engine size and fuel efficiency. Now let's test your hypothesis with data.")
 )
 ```
 
 ### `mpg`
 
-You can test your answer with two things: the `mpg` dataset that comes in ggplot2 and a plot. `mpg` contains observations collected on 38 models of cars by the US Environmental Protection Agency. Among the variables in `mpg` are:
-
-1. `displ`, a car's engine size, in liters.
-1. `hwy`, a car's fuel efficiency on the highway, in miles per gallon (mpg). 
-
-    A car with a low fuel efficiency consumes more fuel than a car with a high fuel efficiency when they travel the same distance.
+You can test your hypothesis with the `mpg` dataset that comes in the `ggplot2` package. `mpg` contains observations collected on 38 models of cars by the US Environmental Protection Agency. 
 
 To see the `mpg` data frame, type `mpg` in the code block below and click "Submit Answer".
 
@@ -72,23 +84,32 @@ mpg
 ```
 
 ```{r mpg0-check}
-"Good job!  We'll use interactive code chunks like this throughout these tutorials. Whenever you encounter one, you can click Submit Answer to run (or re-run) the code in the chunk. If there is a Solution button, you can click it to see the answer. Now let's use this data to make our first graph."
+"Good job!  We'll use interactive code chunks like this throughout these tutorials. Whenever you encounter one, you can click Submit Answer to run (or re-run) the code in the chunk. If there is a Solution button, you can click it to see the answer."
 ```
+
+You can use the black triangle that appears at the top right of the table to scroll through all of the columns in `mpg`.
+
+### 
+
+Among the variables in `mpg` are:
+
+1. `displ`, a car's engine size, in liters.
+1. `hwy`, a car's fuel efficiency on the highway, in miles per gallon (mpg). A car with a low mpg consumes more fuel than a car with a high mpg when they travel the same distance.
+
+Now let's use this data to make our first graph.
 
 ### A plot
 
 The code below uses functions from the **ggplot2** package to plot the relationship between `displ` and `hwy`. 
 
-Let's look at the plot and then talk about the code itself. To see the plot, click "Submit Answer" to run the code below.
+To see the plot, click "Run Code."
 
 ```{r ggplot1, exercise = TRUE}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
-```{r ggplot1-check}
-"Excellent! Can you spot the relationship?"
-```
+Can you spot the relationship?
 
 ### And the answer is...
 
@@ -107,29 +128,36 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
+In R, a function is a name followed by a set of parentheses. Many functions require special information to do their jobs, and you write this information between the parentheses.
+
+### `ggplot`
+
 The first function, `ggplot()`, creates a coordinate system that you can add layers to. The first argument of `ggplot()` is the dataset to use in the graph. 
 
-By itself, `ggplot(data = mpg)` creates an empty graph, but it is not very interesting so I'm not going to show it here.
+By itself, `ggplot(data = mpg)` creates an empty graph, which looks like this. 
+
+```{r}
+ggplot(data = mpg)
+```
 
 ### geom_point()
 
-```{r eval = FALSE}
+`geom_point()` adds a layer of points to the empty plot created by `ggplot()`. This gives us a scatterplot. 
+
+```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
-
-`geom_point()` adds a layer of points to the empty plot created by `ggplot()`. As a result, we get a scatterplot. 
 
 ### mapping = aes()
 
-```{r eval = FALSE}
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy))
-```
+`geom_point()` takes a `mapping` argument that defines which variables in your dataset are mapped to which axes in your graph. The `mapping` argument is always paired with the function `aes()`, which you use to gather together all of the mappings that you want to create. 
 
-`geom_point()` takes a `mapping` argument, which defines which variables in your dataset are mapped to which axes in your graph. The `mapping` argument is always paired with the function `aes()`, which you use to gather together all of the mappings that you want to create. 
+### 
 
-Here, we want to map the `displ` variable to the x axis and the `hwy` variable to the y axis, so we add `x = displ` and `y = hwy` inside of `aes()` (and we separate them with a comma). Where will ggplot2 look for these mapped variables? In the data frame that we passed to the `data` argument, in this case, `mpg`.
+Here, we want to map the `displ` variable to the x axis and the `hwy` variable to the y axis, so we add `x = displ` and `y = hwy` inside of `aes()` (and we separate them with a comma). 
+
+Where will ggplot2 look for these mapped variables? In the data frame that we passed to the `data` argument, in this case, `mpg`.
 
 ### A graphing workflow
 
