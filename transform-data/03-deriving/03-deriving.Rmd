@@ -1,14 +1,14 @@
 ---
 title: "Derive Information with dplyr"
-tutorial:
-  id: "io.shinyapps.tutorials.03-deriving"
-  version: 0.01
 output: 
   learnr::tutorial:
     progressive: true
     allow_skip: true
     df_print: default
 runtime: shiny_prerendered
+tutorial:
+  id: "com.rstudio.primers.03-deriving"
+  version: 1.0
 ---
 
 ```{r setup, include=FALSE}
@@ -38,6 +38,13 @@ checker <- function(label, user_code, check_code, envir_result, evaluate_result,
 }
 tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, context="server-start", include=FALSE}
+# Capture metrics only if running an official primer hosted by RStudio
+library(curl)
+library(later)
+source("https://metrics.ap01.rstudioprimers.com/learnr/installMetrics", local=TRUE)
 ```
 
 ## Welcome
