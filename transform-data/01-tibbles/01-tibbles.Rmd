@@ -232,4 +232,4 @@ question('Which package is not loaded by `library("tidyverse")`',
 
 Tibbles and the tidyverse package are two tools that make life with R easier. Ironically, you may not come to appreciate their value right away: these tutorials pre-load packages for you, and they wrap data frames into an interactive table for display (at least the tutorials in the primers that follow will). However, you will want to utilize tibbles and the tidyverse package when you move out of the tutorials and begin doing your own work with R inside of the RStudio IDE.
 
-This tutorial also introduced the babynames dataset. In the next tutorial, you will use this data set to plot the populrity of _your_ name over time. Along the way, you will learn how to filter and subset data sets in R.
+This tutorial also introduced the babynames dataset. In the next tutorial, you will use this data set to plot the popularity of _your_ name over time. Along the way, you will learn how to filter and subset data sets in R.
