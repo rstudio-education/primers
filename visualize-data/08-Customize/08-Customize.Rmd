@@ -5,6 +5,9 @@ output:
     progressive: true
     allow_skip: true
 runtime: shiny_prerendered
+tutorial:
+  id: "com.rstudio.primers.08-customize"
+  version: 1.0
 ---
 
 ```{r setup, include=FALSE}
@@ -38,6 +41,13 @@ checker <- function(label, user_code, check_code, envir_result, evaluate_result,
 }
 tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%", message = FALSE)
+```
+
+```{r, context="server-start", include=FALSE}
+# Capture metrics only if running an official primer hosted by RStudio
+library(curl)
+library(later)
+source("https://metrics.ap01.rstudioprimers.com/learnr/installMetrics", local=TRUE)
 ```
 
 
