@@ -12,17 +12,13 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
-library(grader)
 library(lubridate)
 library(tidyverse)
 
-grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
-  strict_check <- function(x) x
-  check_code <- eval(parse(text = check_code))
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
   list(message = check_code, correct = TRUE, location = "append")
 }
-
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
@@ -57,7 +53,7 @@ if (x > 1) log(x)
 
 Try to describe what `if` is doing in your own words. Your best guess is okay!
 
-### \t
+###  
 
 ```{r if-quiz, echo = FALSE}
 question("Which describes `if`'s behavior? (Check all that apply).",
@@ -86,7 +82,7 @@ clean(1)
 clean(-99)
 ```
 
-### \t
+###  
 
 Here is a start. `clean()` takes an object and returns the object, but `clean()` is missing an important piece of code.
 
@@ -116,7 +112,7 @@ clean <- function(x) {
 ```
 
 ```{r clean-check}
-strict_check("clean() replaces x with NA if x is -99, otherwise clean() returns x as is.")
+"clean() replaces x with NA if x is -99, otherwise clean() returns x as is."
 ```
 
 ### else
@@ -141,7 +137,7 @@ clean <- function(x) {
 
 ```
 
-### \t
+###  
 
 ```{r else-quiz, echo = FALSE}
 question("Which describes `else`? (Check all that apply).",
@@ -214,7 +210,7 @@ clean <- function(x) {
 ```
 
 ```{r clean2-check}
-strict_check("What if you'd like to check for both -99 and . in the same function?")
+"What if you'd like to check for both -99 and . in the same function?"
 ```
 
 ### else if
@@ -229,7 +225,7 @@ clean <- function(x) {
 }
 ```
 
-### \t
+###  
 
 This does the same thing as 
 
@@ -251,7 +247,7 @@ clean <- function(x) {
 
 `else if` is more readable than nested if else statements, especially if you use many `else if`s.
 
-### \t
+###  
 
 You can use `else` to string together as many if statements as you like. R will treat the result as a single multi-part if else statement. 
 Be thoughtful with the order. R will always evaluate the clauses in order, executing the code in the _first clause whose condition is true_ and ignoring every clause after that. 
@@ -280,7 +276,7 @@ clean <- function(x) {
 ```
 
 ```{r clean3-check}
-strict_check("You can add as many else if's after if as you like. However, you cannot add an else if clause after an else because R will interpret the else as the end of a complete if else statement.")
+"You can add as many else if's after if as you like. However, you cannot add an else if clause after an else because R will interpret the else as the end of a complete if else statement."
 ```
 
 ### Quiz
@@ -328,7 +324,7 @@ You now know how to use `if` and `else` in your code. Let's look at another way 
 
 ## return() and stop()
 
-### \t
+###  
 
 You can tell R to stop executing a function early with 
 
@@ -402,7 +398,7 @@ clean <- function(x) {
 ```
 
 ```{r return-check}
-strict_check("This version is slightly easier to read than a linked if else tree because you can think about each if clause separately. You can often avoid long, nested if else trees by using return() thoughtfully.")
+"This version is slightly easier to read than a linked if else tree because you can think about each if clause separately. You can often avoid long, nested if else trees by using return() thoughtfully."
 ```
 
 ### NULL
@@ -431,7 +427,7 @@ clean <- function(x) {
 clean(NULL)
 ```
 
-### \t
+###  
 
 `clean()` cannot handle `NULL` because `if` returns an error when it evaluates `NULL == -99`. And, unfortunately, the error message isn't very clear. This is the perfect case for `stop()`.
 
@@ -491,7 +487,7 @@ clean <- function(x) {
 ```
 
 ```{r stop-check}
-strict_check("Now `clean()` can handle NULL values in an intelligent way. This pattern (if + stop) is so common that R provides a shortcut for it, `stopifnot()`.")
+"Now `clean()` can handle NULL values in an intelligent way. This pattern (if + stop) is so common that R provides a shortcut for it, `stopifnot()`."
 ```
 
 ### stopifnot()
@@ -520,7 +516,7 @@ Notice that the first argument of `stopifnot()` should always be a logical condi
 
 You can include additional logical conditions for `stopifnot()` to check after the first. Separate each with a comma.
 
-### \t
+###  
 
 Think you have it? 
 
@@ -551,7 +547,7 @@ clean <- function(x) {
 ```
 
 ```{r stopifnot-check}
-strict_check("stopifnot() is both very readable and very useful. Click Continue to see why.")
+"stopifnot() is both very readable and very useful. Click Continue to see why."
 ```
 
 ### Defensive programming with stopifnot()
@@ -572,7 +568,7 @@ If things go wrong, `stopifnot()` will help you see what you need to fix as soon
 1. Your code will run until it triggers a (perhaps unhelpful) error message
 1. Your code may not trigger an error message, but return an incorrect result that you will think is true. This would very bad.
 
-### \t
+###  
 
 Congratulations! You know two techniques of control flow, how to:
 
