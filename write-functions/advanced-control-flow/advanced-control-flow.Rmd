@@ -12,23 +12,19 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
-library(grader)
 library(lubridate)
 library(tidyverse)
 
-grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
-  strict_check <- function(x) x
-  check_code <- eval(parse(text = check_code))
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
   list(message = check_code, correct = TRUE, location = "append")
 }
-
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
 ## && and ||
 
-### \t 
+###   
 
 This tutorial extends the Control Flow tutorial, where you learned how to use `if`, `else`, `return()`, and `stop()`.
 
@@ -37,7 +33,7 @@ Here you will learn how to
 1. combine logical tests in an if statement 
 1. write if statements that work with vectors, which is a prerequisite if you want to write vectorized functions.
 
-### \t
+###  
 
 Here's what `clean()` looked like at the end of the Control Flow tutorial. Do you notice that all of the if statements have the same outcome? 
 
@@ -53,7 +49,7 @@ clean <- function(x) {
 
 Let's use your knowledge of logical tests to trim them down to a single if statement. 
 
-### \t 
+###   
 
 * Write a logical test that returns TRUE when x is -99 OR x is "." (Let's ignore the "NaN" case to keep things simple). Then click Submit Answer.
 
@@ -87,14 +83,14 @@ x <- -99
 x == -99 | x == "."
 ```
 
-### \t
+###  
 
 However, it is bad practice to use `&` and `|` to combine logical tests within an `if` condition. Why? Because:
 
 1. there is something better (as you'll see in a minute)
 1. `&` and `|` tend to generate warning messages when used with `if`
 
-### \t 
+###   
 
 As R operators, both `&` and `|` are vectorized which means that you can use them with vectors. This is very useful.
 
@@ -105,7 +101,7 @@ x == "."
 x == -99 | x == "."
 ```
 
-### \t
+###  
 
 However, `if` conditions are not vectorized. `if` expects the logical test contained within its parentheses to return a **single** `TRUE` or `FALSE`. If the condition returns a vector of `TRUE` or `FALSE`s, `if` will use the first value and show a warning message.
 
@@ -153,10 +149,10 @@ clean <- function(x) {
 ```
 
 ```{r or-check}
-strict_check("Now lets see what happens if you use clean() with a vector of values.")
+"Now lets see what happens if you use clean() with a vector of values."
 ```
 
-### \t
+###  
 
 ```{r eval = FALSE}
 clean <- function(x) {
@@ -191,7 +187,7 @@ x <- -99
 if (x == -99 || stop("if you evaluate this.")) "I didn't evaluate stop()."
 ```
  
-### \t
+###  
 
 How could you use this?
 
@@ -225,7 +221,7 @@ question("Now what will `clean(NULL)` return?",
 
 ## Vectorized if
 
-### \t
+###  
 
 Burried in the last section is an interesting question: what if you _do_ want `clean()` to work with vectors? i.e.
 
@@ -239,7 +235,7 @@ clean(c(-99, 0, 1))
 
 That would be a handy way to clean whole columns of data. How could you do it?
 
-### \t 
+###   
 
 Compare these two functions (one should seem familiar). What is different?
 
@@ -273,7 +269,7 @@ clean(-99)
 clean2(-99)
 ```
 
-### \t
+###  
 
 However, unlike `if` and `else`, `ifelse` is vectorized. As a result, you can pass `ifelse()` a vector of values and it will apply the implied if else statement separately to each element of the vector.
 
@@ -320,7 +316,7 @@ question("What type of data is NA?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 It is true:
 
@@ -371,12 +367,12 @@ clean2 <- function(x) {
 ```
 
 ```{r cleans-check}
-strict_check("Notice that this version of `clean2()` will work with real numbers, but not other types of data like characters. What if you want `clean2()` to work with all types of data? That's simple: stick with `ifelse()`.")
+"Notice that this version of `clean2()` will work with real numbers, but not other types of data like characters. What if you want `clean2()` to work with all types of data? That's simple: stick with `ifelse()`."
 ```
 
 ## Vectorized else if
 
-### \t
+###  
 
 What if you want to write a vectorized version of a multi-part if else tree? Like the tree in this function:
 
@@ -420,7 +416,7 @@ foo2 <- function(x) {
 }
 ```
 
-### \t
+###  
 
 And here are our foos in action to prove that `foo2()` is vectorized.
 
@@ -485,7 +481,7 @@ clean <- function(x) {
 ```
 
 ```{r when-check}
-strict_check('And if you noticed that a vector of real numbers would never contain ".", "", and "Nan" because they are strings, you are of course right. Thanks for playing along with the charade.')
+'And if you noticed that a vector of real numbers would never contain ".", "", and "Nan" because they are strings, you are of course right. Thanks for playing along with the charade.'
 ```
 
 ### Congratulations!
