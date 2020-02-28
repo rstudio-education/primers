@@ -13,7 +13,6 @@ runtime: shiny_prerendered
 library(learnr)
 library(tidyverse)
 library(repurrrsive)
-library(grader)
 
 gap_dfs <- gap_split %>% map(select, -1, -2)
 
@@ -27,7 +26,10 @@ model3 <- gap_dfs %>%
   map(~ lm(lifeExp ~ year + gdpPercap + pop, data = .x))
 
 
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
@@ -118,7 +120,7 @@ map2(model1, model2, anova)
 ```
 
 ```{r map2-check}
-strict_check("Nice job! A quick scan of the results suggests that adding gdpPercap only improved your predictions for the poorest countries.")
+"Nice job! A quick scan of the results suggests that adding gdpPercap only improved your predictions for the poorest countries."
 ```
 
 ### map2() and map()
@@ -196,7 +198,7 @@ model1 %>%
 ```
 
 ```{r map2-exp-check}
-strict_check("Great work! Click Continue to learn how to make these results even easier to work with.")
+"Great work! Click Continue to learn how to make these results even easier to work with."
 ```
 
 ### From named vector to data frame
@@ -239,7 +241,7 @@ model1 %>%
 ```
 
 ```{r enframe-check}
-strict_check("Bravo! There was a lot to the last two exercises and you handled them purrrfectly.")
+"Bravo! There was a lot to the last two exercises and you handled them purrrfectly."
 ```
 
 ### More models
@@ -314,7 +316,7 @@ pmap(list(model1, model2, model3), anova)
 ```
 
 ```{r pmap-check}
-strict_check("Excellent. You can use pmap() to map over three, four, or any number of vectors.")
+"Excellent. You can use pmap() to map over three, four, or any number of vectors."
 ```
 
 ### similarities between pmap(), map2() and map()
@@ -427,7 +429,7 @@ parameters %>% pmap(rnorm)
 ```
 
 ```{r pmap-gen-check}
-strict_check("Good job! Remember that pmap() is a useful tool for doing rowwise operations on data frames (and tibbles, since tibbles are data frames too).")
+"Good job! Remember that pmap() is a useful tool for doing rowwise operations on data frames (and tibbles, since tibbles are data frames too)."
 ```
 
 ### More simulation
@@ -473,7 +475,7 @@ invoke_map(functions, n) # functions %>% invoke_map(n)
 ```
 
 ```{r invoke-check}
-strict_check("Very interesting! But what if you would like to supply additional arguments to your functions?")
+"Very interesting! But what if you would like to supply additional arguments to your functions?"
 ```
 ### Arguments
 
@@ -532,7 +534,7 @@ invoke_map(functions, n, 100)
 ```
 
 ```{r unnamed-check}
-strict_check("Good job thinking outside of the box! Remember though that it is always best practice to include argument names (whenever it does not result in an error).")
+"Good job thinking outside of the box! Remember though that it is always best practice to include argument names (whenever it does not result in an error)."
 ```
 
 ### Multiple arguments
