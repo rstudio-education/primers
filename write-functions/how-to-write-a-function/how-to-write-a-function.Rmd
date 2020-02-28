@@ -11,27 +11,29 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
-library(grader)
 
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
 ## When to write a function
 
-### \t
+###  
 
 R comes with thousands of functions, and more are written everyday (these are published in R packages). If you want to do something in R, there is a good chance that a function already exists somewhere that does it.
 
 But what if you want to do something new in R, something that doesn't yet have a function? What should you do?
 
-### \t
+###  
 
 Write a function?
 
 No, silly. Write some code. But what if you want to use that code _over and over again_, as if it were a part of R? Then what should you do?
 
-### \t
+###  
 
 Write a function!
 
@@ -54,7 +56,7 @@ question("Why would you not want to rewrite the code 20 times? (Check all that a
 
 ## Workflow
 
-### \t
+###  
 
 How should you turn your code into functions? Always follow these four steps: 
 
@@ -77,7 +79,7 @@ To make your life easier, you want to write an R function that will take a vecto
 
 Ready to begin?
 
-### \t
+###  
 
 Remember our steps:
 
@@ -94,10 +96,10 @@ x <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)
 ```
 
 ```{r obj-check}
-strict_check("Now you can use x to develop and test your code")
+"Now you can use x to develop and test your code"
 ```
 
-### \t
+###  
 
 2. Write code that works with the real object(s)
 
@@ -122,10 +124,10 @@ x
 ```
 
 ```{r norm-check}
-strict_check("This is the crucial step in writing a function. It is important to get your code working in real life with a real object before you try to abstract the code into a reusable function.")
+"This is the crucial step in writing a function. It is important to get your code working in real life with a real object before you try to abstract the code into a reusable function."
 ```
 
-### \t
+###  
 
 3. Wrap the code in `function()`
 
@@ -143,7 +145,7 @@ foo <- function() {
 
 As you write your functions, recall that R will only return the result of the last line in the code body when you call the function (we'll learn about some exceptions to this rule in the Control Flow tutorial). 
 
-### \t
+###  
 
 Once you save a function, you can run it and inspect its contents.
 
@@ -173,10 +175,10 @@ grade <- function() {
 ```
 
 ```{r grade-check}
-strict_check("Now that you've saved grade as a function, you can call it whenever you like, but there is still one more thing to do...")
+"Now that you've saved grade as a function, you can call it whenever you like, but there is still one more thing to do..."
 ```
 
-### \t
+###  
 
 At the moment, your `grade()` function is reusable but not _generalizable_. Each time you call `grade()` it computes the final grade of the vector `x` that contains `c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)`.
 
@@ -208,7 +210,7 @@ grade <- function() {
 }
 ```
 
-### \t
+###  
 
 How do you tell R that an object is a formal argument? 
 
@@ -239,7 +241,7 @@ foo(a = 2)
 foo(a = 2, b = 2)
 ```
 
-### \t
+###  
 
 Interesting, huh? Now apply what you've learned to `grade()`.
 
@@ -258,10 +260,10 @@ grade <- function(x) {
 ```
 
 ```{r x-check}
-strict_check('If you use the "best practice" workflow, your argument names will always be the names of the real R objects that you create in Step 1. Nice and simple.')
+'If you use the "best practice" workflow, your argument names will always be the names of the real R objects that you create in Step 1. Nice and simple.'
 ```
 
-### \t 
+###   
 
 Good job! You can now have a finished `grade()` function that you can use to calculate the final grade of _any_ vector (I mean, student). Try it out.
 
@@ -282,7 +284,7 @@ grade(x = c(100, 90, 90, 90, 90, 90, 90, 90, 90, 80))
 ```
 
 ```{r function-check}
-strict_check("Let's recap the function writing workflow.")
+"Let's recap the function writing workflow."
 ```
 
 ### Quiz
@@ -309,7 +311,7 @@ Use the four step workflow whenever you need to write a function:
 
 ## Function look-alikes
 
-### \t
+###  
 
 As an R user, you may have already made things that resemble functions. 
 
@@ -328,7 +330,7 @@ vec <- c(1, 2, 3)
 map(vec, ~.x^2)
 ```
 
-### \t
+###  
 
 In other words, purrr's map expressions work like functions that have `.x` as a formal argument. To transform an expression to a function, remove the `~`, wrap the code in `function()` and list `.x` as a formal argument.
 
@@ -354,7 +356,7 @@ c(1, 2, 3, 4, 5) %>%
   sum()
 ```
 
-### \t 
+###   
 
 It is a good idea to turn a pipe into a function when you find yourself using it often. You don't need to rewrite the pipe to do this. Pipes come with a handy shortcut for turning them into functions.
 
@@ -446,7 +448,7 @@ x
 ```
 
 ```{r e3-check}
-strict_check("That student will be pleased!")
+"That student will be pleased!"
 ```
 
 ### Exercise 5
@@ -470,7 +472,7 @@ grade2 <- function(x) {
 ```
 
 ```{r e4-check}
-strict_check("Your skills are almost complete.")
+"Your skills are almost complete."
 ```
 
 ### Exercise 6
@@ -502,7 +504,7 @@ l2 <- function(x) {
 ```
 
 ```{r e5-check}
-strict_check()
+"Good job!"
 ```
 
 

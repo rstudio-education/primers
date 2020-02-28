@@ -11,17 +11,19 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
-library(grader)
 library(tidyverse)
 
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
 
 ## Functions
 
-### \t
+###  
 
 Functions are the verbs of R. When you do something in R, you do it by running a function. For example,
 
@@ -31,7 +33,7 @@ Functions are the verbs of R. When you do something in R, you do it by running a
 
 This last one is an alternative way to call the function `'+'(1, 2)`. In R, even things that do not look like functions are functions. 
 
-### \t
+###  
 
 But what is a function? 
 
@@ -41,7 +43,7 @@ This short tutorial will show you how R functions are packaged and how you can w
 
 ## Parts of a function
 
-### \t
+###  
 
 Every R function has three parts:
 
@@ -49,7 +51,7 @@ Every R function has three parts:
 1. A set of formal arguments
 1. An environment (where the function will look up the values of the objects within it)
 
-### \t
+###  
 
 You can inspect each part of a function with three helper functions:
 
@@ -72,10 +74,10 @@ body(xor)
 ```
 
 ```{r xor-body-check}
-strict_check("xor contains one line of code in its body (you can ignore the braces). This isn't always the case. A function can have as many lines of code as it needs in its body. If you don't believe me check out the body for lm. R will run the code in a function's code body each time you call the function; but as you can see, the code in a function's body may not be self-contained. What is x? What is y? Click Continue to find out.")
+"xor contains one line of code in its body (you can ignore the braces). This isn't always the case. A function can have as many lines of code as it needs in its body. If you don't believe me check out the body for lm. R will run the code in a function's code body each time you call the function; but as you can see, the code in a function's body may not be self-contained. What is x? What is y? Click Continue to find out."
 ```
 
-### \t
+###  
 
 `xor` contains one line of code in its body (you can ignore the braces). This isn't always the case. A function can have as many lines of code as it needs in its body. For example, `as.list.data.frame` has three lines (most R functions have much more).
 
@@ -85,7 +87,7 @@ body(as.list.data.frame)
 
 When a function contains more than one line of code in its body, R will run the entire body and return the result of the **last** line.
 
-### \t
+###  
 
 R will run the code in a function's code body each time you call the function; but as you can see with `xor`, the code in a function's body may not be self-contained. 
 
@@ -112,7 +114,7 @@ formals(xor)
 ```
 
 ```{r xor-formals-check}
-strict_check("A function can have zero, one, or many many formal arguments. Do not be distracted by the $'s that appear before the argument names. Those are an artifact of how R displays lists.")
+"A function can have zero, one, or many many formal arguments. Do not be distracted by the $'s that appear before the argument names. Those are an artifact of how R displays lists."
 ```
 
 ### environment()
@@ -130,7 +132,7 @@ environment(gather)
 ```
 
 ```{r gather-env-check}
-strict_check("The gather() function comes in the tidyr package. If a function's environment is namespace:base, that is a good sign that the function comes in base R, the part of R that loads before you load any optional packages.")
+"The gather() function comes in the tidyr package. If a function's environment is namespace:base, that is a good sign that the function comes in base R, the part of R that loads before you load any optional packages."
 ```
 
 ### names
@@ -181,7 +183,7 @@ That's enough minutiae! Now, how do you _run_ a function?
 
 ## Calling functions
 
-### \t
+###  
 
 To call an R function, type its name followed immediately by an open parenthesis and eventually by a closed parenthesis. The parentheses act as a "trigger" that causes R to run the code in the function's code body. Note the difference:
 
@@ -192,7 +194,7 @@ Sys.Date()
 
 If you ever try to run a function and nothing happens, double check to see if you included the closing parenthesis.
 
-### \t
+###  
 
 If a function requires you to provide values for formal arguments, provide the values between the parentheses. 
 
@@ -219,10 +221,10 @@ formals(rnorm)
 ```
 
 ```{r rnorm-check}
-strict_check("rnorm provides a default value of zero for the mean argument and a default argument of one for the sd argument. In other words, if you do not supply a mean and sd value when you call rnorm, rnorm will randomly generate results from a standard normal distribution. Default values can be very handy!")
+"rnorm provides a default value of zero for the mean argument and a default argument of one for the sd argument. In other words, if you do not supply a mean and sd value when you call rnorm, rnorm will randomly generate results from a standard normal distribution. Default values can be very handy!"
 ```
 
-### \t
+###  
 
 You can also spot a function's default values by examining the function itself. Do you see them?
 
@@ -230,7 +232,7 @@ You can also spot a function's default values by examining the function itself. 
 rnorm
 ```
 
-### \t
+###  
 
 There is one last thing you should know about functions: functions are like Las Vegas:
 
@@ -243,7 +245,7 @@ x <- 1
 y <- FALSE
 ```
 
-### \t
+###  
 
 Calling `xor` will not change those values, even though I'm defining new values for `x` and `y` in the function.
 
@@ -253,7 +255,7 @@ x
 y
 ```
 
-### \t 
+###   
 
 Moreover, `xor` won't remember which values I've used in the past. If I forget to define `x` and `y` the next time I call `xor`, `xor` will return an error. `xor` won't even be able to look up the values that I assigned to `x` and `y` outside of the function.
 
@@ -296,7 +298,7 @@ body(foo)
 ```
 
 ```{r foo-check}
-strict_check("")
+""
 ```
 
 ### Exercise 3
