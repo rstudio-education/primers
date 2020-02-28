@@ -1,12 +1,13 @@
 ---
 title: "Map Shortcuts"
-tutorial:
-  version: 0.01
 output: 
   learnr::tutorial:
     progressive: true
     allow_skip: false
 runtime: shiny_prerendered
+tutorial:
+  id: "com.rstudio.primers.map-shortcuts"
+  version: 1.0
 ---
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
@@ -32,6 +33,12 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
+```{r, context="server-start", include=FALSE}
+# Capture metrics only if running an official primer hosted by RStudio
+library(curl)
+library(later)
+source("https://metrics.ap01.rstudioprimers.com/learnr/installMetrics", local=TRUE)
+```
 
 ## Why More?
 

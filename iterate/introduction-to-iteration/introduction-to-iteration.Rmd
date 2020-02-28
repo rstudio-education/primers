@@ -5,6 +5,9 @@ output:
     progressive: true
     allow_skip: false
 runtime: shiny_prerendered
+tutorial:
+  id: "com.rstudio.primers.introduction-to-iteration"
+  version: 1.0
 ---
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
@@ -18,10 +21,16 @@ tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
+```{r, context="server-start", include=FALSE}
+# Capture metrics only if running an official primer hosted by RStudio
+library(curl)
+library(later)
+source("https://metrics.ap01.rstudioprimers.com/learnr/installMetrics", local=TRUE)
+```
 
 ## Iteration
 
-### \t
+###  
 
 Here is a number. You can do many things with it, like this:  
 
@@ -43,7 +52,7 @@ log(1)
 "Good job. Don't worry, things will soon get harder."
 ```
 
-### \t
+###  
 
 Here are many numbers. What if you want to do things with them? Go ahead: 
 
@@ -94,7 +103,7 @@ log(numbers)
 "Vectorization in R works, but there is something that you should know. Click Continue to find out what it is."
 ```
 
-### \t
+###  
 
 Not every function in R is vectorized, and those that are vectorized often only work with _non-recursive vectors_.
 
@@ -118,7 +127,7 @@ Examples of non-recursive vectors in R include:
 * factors
 * and so on
 
-### \t
+###  
 
 As you saw with `log()`, almost every function in R is vectorized to work with non-recursive vectors. Here, `numbers` is a non-recursive vector.
 
@@ -135,7 +144,7 @@ A _recursive vector_ is a vector whose individual elements can be anything, even
 
 Recursive vectors are so special that R gives them a special name, _lists_. You can think of lists as the glue that holds R together. R uses lists to build data frames, environments, model objects and more.
 
-### \t
+###  
 
 But are R functions vectorized to work with lists? 
 
@@ -151,7 +160,7 @@ log(list1)
 "Just click Submit Answer and see what happens."
 ```
 
-### \t
+###  
 
 Almost no function in R is vectorized to work with lists. And you can see why: lists can contain different types of objects. For example, the list below contains both a number and a character vector.
 
@@ -221,7 +230,7 @@ log(list1[[5]])
 
 ## purrr
 
-### \t 
+###   
 
 This primer will teach you how to solve iteration problems with the purrr package. In particular, you will learn how to use the map family of functions and their derivatives, like
 
@@ -259,7 +268,7 @@ for (i in seq_along(x)) {
 y
 ```
 
-### \t
+###  
 
 You don't need to know what the code above does to see some obvious benefits:
 
