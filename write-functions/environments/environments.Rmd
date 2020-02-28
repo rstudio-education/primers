@@ -12,10 +12,12 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
 library(pryr)
-library(grader)
 library(envtutorial)
 
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
@@ -40,7 +42,7 @@ foo <- function(z = 2) {
 foo(z = 4)
 ```
 
-### \t
+###  
 
 ```{r q1, echo = FALSE}
 question("What will the value of `z` be?",
@@ -85,7 +87,7 @@ globalenv()
 ```
 
 ```{r global-check}
-strict_check("Notice that R's display is not very informative: it shows you only the label of the environment.")
+"Notice that R's display is not very informative: it shows you only the label of the environment."
 ```
 
 ### `ls.str()`
@@ -100,20 +102,20 @@ j <- function() i()
 k <- function() j()
 ```
 
-```{r ls.str, exercise = TRUE}
+```{r ls_str, exercise = TRUE}
 globalenv()
 ```
 
-```{r ls.str-hint}
+```{r ls_str-hint}
 "Pass `globalenv()` to `ls.str()`."
 ```
 
-```{r ls.str-solution}
+```{r ls_str-solution}
 ls.str(globalenv())
 ```
 
-```{r ls.str-check}
-strict_check("I've saved three objects in the global environment named `i`, `j`, and `k`. Each is a function (we will use them later). You'll also see an object named `list_to_string` and an object named `x`. ls.str() provides a good depiction of an environment, because ls.str() shows the contents of the environment. However, ls.str()'s depiction of the global environment is missing one thing.")
+```{r ls_str-check}
+"I've saved three objects in the global environment named `i`, `j`, and `k`. Each is a function (we will use them later). You'll also see an object named `list_to_string` and an object named `x`. ls.str() provides a good depiction of an environment, because ls.str() shows the contents of the environment. However, ls.str()'s depiction of the global environment is missing one thing."
 ```
 
 ### Parent environments
@@ -133,7 +135,7 @@ parent.env(globalenv())
 ```
 
 ```{r parent-check}
-strict_check("(You can ignore the extra attributes that appear beneath the environment label). You can use `parent.env()` to find the parent of any environment in R, but notice that there is no way to find the children of an environment: each child knows who its parent is, but each parent does not know who its children are. Compare this to real life: you can know who you are pointing at, but you can't know who may be pointing at you.")
+"(You can ignore the extra attributes that appear beneath the environment label). You can use `parent.env()` to find the parent of any environment in R, but notice that there is no way to find the children of an environment: each child knows who its parent is, but each parent does not know who its children are. Compare this to real life: you can know who you are pointing at, but you can't know who may be pointing at you."
 ```
 
 ### parenvs()
@@ -165,7 +167,7 @@ parenvs(globalenv(), all = TRUE)
 ```
 
 ```{r search-check}
-strict_check("The global environment is at the top of this list. The second line contains the parent of the global environment. Next comes the parent of that parent, and so on until we reach the empty environment.")
+"The global environment is at the top of this list. The second line contains the parent of the global environment. Next comes the parent of that parent, and so on until we reach the empty environment."
 ```
 
 ### Summary
@@ -219,7 +221,7 @@ environment()
 ```
 
 ```{r active-check}
-strict_check("This is the environment that was active when R ran the exercise chunk. Notice that the label is a random string; that's true for most R environments. Also notice that if you rerun the chunk, R will use a new active environment. As a result, objects that you make on one run of the chunk will not be available on a second run.")
+"This is the environment that was active when R ran the exercise chunk. Notice that the label is a random string; that's true for most R environments. Also notice that if you rerun the chunk, R will use a new active environment. As a result, objects that you make on one run of the chunk will not be available on a second run."
 ```
 
 ### The global environment 
@@ -261,7 +263,7 @@ parenvs(e = environment(), all = TRUE)
 ```
 
 ```{r path-check}
-strict_check("The empty environment is at the bottom of the list. Above it are numerous package environments: one for each package that is currently loaded. At the top of the list is the active environment for the exercise chunk. This is a temporary environment that R created to run the chunk. Notice that the parent of this environment is the global environment.")
+"The empty environment is at the bottom of the list. Above it are numerous package environments: one for each package that is currently loaded. At the top of the list is the active environment for the exercise chunk. This is a temporary environment that R created to run the chunk. Notice that the parent of this environment is the global environment."
 ```
 
 ### Environments in tutorials
@@ -315,10 +317,10 @@ x
 ```
 
 ```{r x-check}
-strict_check("This is my password. (Shhh! Don't tell! It is very important.)")
+"This is my password. (Shhh! Don't tell! It is very important.)"
 ```
 
-### \t
+###  
 
 `x` is also stored in the active environment of the exercise chunk below (you can check if you like). 
 
@@ -337,7 +339,7 @@ x
 ```
 
 ```{r x2-check}
-strict_check("R returned the value oops for x. Remember that R saves the objects that you create to the active environment. If you use a name that already exists in the active environment, R will overwrite the object with that name. Here R overwrote x = password123 with x = oops. This is a true oops because you will not be able to get x = password123 back: it is gone.")
+"R returned the value oops for x. Remember that R saves the objects that you create to the active environment. If you use a name that already exists in the active environment, R will overwrite the object with that name. Here R overwrote x = password123 with x = oops. This is a true oops because you will not be able to get x = password123 back: it is gone."
 ```
 
 ### Masking
@@ -367,10 +369,10 @@ ls.str(globalenv())
 ```
 
 ```{r x3-check}
-strict_check("x = password123 is stored in the global environment, which will be the parent environment for each of the exercise chunks that follow.")
+"x = password123 is stored in the global environment, which will be the parent environment for each of the exercise chunks that follow."
 ```
 
-### \t
+###  
 
 Now what would happen if you run the code below?
 
@@ -387,10 +389,10 @@ x
 ```
 
 ```{r x4-check}
-strict_check("But uh oh: the same result. This time things are not as dire. R saved your version of x to the active environment, which means that it did not overwrite the version of x in the global environment. However, when R searches for x, R will find your version of x and return it, without searching further up the search path. You can stop this by removing your version of x (before you call x) with `rm(x)`.")
+"But uh oh: the same result. This time things are not as dire. R saved your version of x to the active environment, which means that it did not overwrite the version of x in the global environment. However, when R searches for x, R will find your version of x and return it, without searching further up the search path. You can stop this by removing your version of x (before you call x) with `rm(x)`."
 ```
 
-### \t
+###  
 
 This behavior is called masking. _Masking_ occurs whenever two objects with the same name exist in the search path. When masking happens, R will always use the object that appears first in the search path. 
 
@@ -428,7 +430,7 @@ You now know everything you need to know to understand R's scoping and execution
 
 ## Function Rules
 
-### \t
+###  
 
 When you call a function, R executes the code that is saved in the body of the function. To execute that code safely:
 
@@ -583,7 +585,7 @@ show_stack
 ```
 
 ```{r show-check}
-strict_check("The enclosing environment of show_stack() is the envtutorial package. If you create a function at the command line, its enclosing environment would be the global environment.")
+"The enclosing environment of show_stack() is the envtutorial package. If you create a function at the command line, its enclosing environment would be the global environment."
 ```
 
 ### Aside
