@@ -12,21 +12,17 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
-library(grader)
 
-grade_learnr <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
-  strict_check <- function(x) x
-  check_code <- eval(parse(text = check_code))
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
   list(message = check_code, correct = TRUE, location = "append")
 }
-
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
 ## repeat
 
-### \t
+###  
 
 Many Data Science tasks require you to do the same thing over and over again. This is boring work---but not for your computer!
 
@@ -72,7 +68,7 @@ cat("Hello\nHello\nHello\nHello\nHello\n...")
 
 `repeat` will execute all of the code between the braces. Then it will execute it again. And again. And again...
 
-### \t
+###  
 
 ```{r repeat-quiz, echo = FALSE}
 question("When will `repeat` stop executing the code?",
@@ -106,10 +102,10 @@ repeat {
 ```
 
 ```{r repeat-check}
-strict_check("R repeats the print statement five times and then exits the loop. Notice how we created an n variable to use with the loop. The loop reaches the end because we increment n by one each time we run the code. What would happen if you left out n <- n + 1? Don't try! The loop would print 1 for a very long time.")
+"R repeats the print statement five times and then exits the loop. Notice how we created an n variable to use with the loop. The loop reaches the end because we increment n by one each time we run the code. What would happen if you left out n <- n + 1? Don't try! The loop would print 1 for a very long time."
 ```
 
-### \t 
+###   
 
 Here is a good question: 
 
@@ -138,7 +134,7 @@ n
 ```
 
 ```{r n-check}
-strict_check("n = 5. Are you surprised? R's loops are not like functions, which safely execute code in a new environment. R's loops execute code in the environment that calls them, which means that loops will modify the objects in the environment. This is important to know. It can be very useful---but not if you forget that it happens.")
+"n = 5. Are you surprised? R's loops are not like functions, which safely execute code in a new environment. R's loops execute code in the environment that calls them, which means that loops will modify the objects in the environment. This is important to know. It can be very useful---but not if you forget that it happens."
 ```
 
 ### count
@@ -193,7 +189,7 @@ count_down <- function(x) {
 ```
 
 ```{r countdown-check}
-strict_check("You know, this sounds a lot like a rocket launch. Let's try to make the loop return the words 'Blast off!' when it ends. If we can do that, we could make loops return _anything_ when they end.")
+"You know, this sounds a lot like a rocket launch. Let's try to make the loop return the words 'Blast off!' when it ends. If we can do that, we could make loops return _anything_ when they end."
 ```
 
 ### return
@@ -231,10 +227,10 @@ count_down <- function(x) {
 ```
 
 ```{r blastoff-check}
-strict_check("Return is a useful way to return a message or value from a loop within a function. And for satisfaction's sake...")
+"Return is a useful way to return a message or value from a loop within a function. And for satisfaction's sake..."
 ```
 
-### \t
+###  
 
 ```{r echo = FALSE}
 count_down <- function(x) {
@@ -255,7 +251,7 @@ Congratulations!
 
 A loop executes a piece of code multiple times, perhaps allowing changes to accumulate as it goes.
 
-### \t
+###  
 
 You've learned the essence of loops, now it is time to learn the forms. In the next sections, you will learn how to refine `repeat` loops into two common types of loops: 
 1. `while` loops, and
@@ -263,13 +259,13 @@ You've learned the essence of loops, now it is time to learn the forms. In the n
 
 Each of these is a `repeat` loop adapted to a specific task.
 
-### \t
+###  
 
 Along the way, you will work through a simple project: you will write and then refine a function that checks whether a number is prime. (This is a common computer science right of passage).
 
 Let's begin the project now with a `repeat` loop. You'll need to know some things about prime numbers and `%%` to begin...
 
-### \t Prime numbers
+###   Prime numbers
 
 In mathematics, a _prime_ number is a number that can be divided evenly only by itself and the number one. In other words, if you try to divide a prime number by any number less than itself, you get a remainder (_to keep things simple, let's not worry about zero or negative numbers_). 
 
@@ -285,7 +281,7 @@ For example, five is a prime number because you get a remainder when you divide 
 
 Interestingly, it is hard to prove that a number is prime...
 
-### \t
+###  
 
 ...unless you are a computer. Then you can divide the number by every number less than itself and show that the result has a remainder.
 
@@ -337,10 +333,10 @@ is_prime <- function(x) {
 ```
 
 ```{r prime-repeat-check}
-strict_check("The function works because a non-prime number will trigger the second if statement and return FALSE before the loop progresses to n = x. A prime number will reach n = x and return TRUE.")
+"The function works because a non-prime number will trigger the second if statement and return FALSE before the loop progresses to n = x. A prime number will reach n = x and return TRUE."
 ```
 
-### \t
+###  
 
 * Use `is_prime` to check whether or not 89 is a prime number. Click Submit Answer to run your code.
 
@@ -365,12 +361,12 @@ is_prime(89)
 ```
 
 ```{r eighty-nine-check}
-strict_check("89 *is* prime. Now that you have a working prime function, let's modify it to use a more streamlined loop.")
+"89 *is* prime. Now that you have a working prime function, let's modify it to use a more streamlined loop."
 ```
 
 ## while
 
-### \t
+###  
 
 `while` loops run while a logical condition is true. 
 
@@ -390,7 +386,7 @@ is_prime <- function(x) {
 
 Let's replace `repeat` with `while`.
 
-### \t
+###  
 
 `while` takes a logical test, like `if`, and a chunk of code, like `repeat`. `while` will repeat the code until the logical test returns `FALSE` (unless something in the code ends the loop first). 
 
@@ -440,10 +436,10 @@ is_prime <- function(x) {
 ```
 
 ```{r prime-while-check}
-strict_check("`is_prime` will return TRUE if the loop comes to a natural end. That will only happen if `x` is a prime number.")
+"`is_prime` will return TRUE if the loop comes to a natural end. That will only happen if `x` is a prime number."
 ```
 
-### \t
+###  
 
 Congratulations! Your `while` loop works.
 
@@ -465,7 +461,7 @@ is_prime(7)
 
 In fact, it does the same thing as your `repeat` loop. So why use `while`? 
 
-### \t
+###  
 
 `while` loops can be easier to write than `repeat` loops; you do not need to insert your own `if` statement. 
 
@@ -475,7 +471,7 @@ Now let's look at `for`. `for` loops provide the same advantages for a different
 
 ## for
 
-### \t
+###  
 
 A for loop takes a defined set of values and repeats the loop once for each of the values. 
 
@@ -579,10 +575,10 @@ is_prime <- function(x) {
 ```
 
 ```{r for-1-check}
-strict_check("You don't want the loop to continue to the case where n = x because x %% x always returns zero, even if x is prime, which means our function would always return FALSE. That wouldn't be good.")
+"You don't want the loop to continue to the case where n = x because x %% x always returns zero, even if x is prime, which means our function would always return FALSE. That wouldn't be good."
 ```
 
-### \t
+###  
 
 Here's an odd question: what if you wanted to skip some value in a loop?
 
@@ -625,13 +621,13 @@ question("Will this loop run forever?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 Congratulations! You've learned how to use all of R's loop functions! To be a loop master, click on the button to learn when to use loops in R and when not to.
 
 ## When to use loops
 
-### \t
+###  
 
 I mentioned earlier that loops should not appear as frequently in your R code as they would in your C, C++, or python code. Why is this? Because R is an extremely vectorized language.
 
@@ -656,7 +652,7 @@ sqrt(x)
 
 And the best part about R's vectorization is that it is very fast!
 
-### \t
+###  
 
 R's arithmetic operators are also vectorized. If you add two vectors, R will add each pair of elements in the vectors and return the results as a new vector.
 
@@ -664,7 +660,7 @@ R's arithmetic operators are also vectorized. If you add two vectors, R will add
 c(1, 2, 3, 4, 5) + c(1, 2, 3, 4, 5)
 ```
 
-### \t
+###  
 
 And if you use R functions to build your functions, then your functions will inherit R's vectorization:
 
@@ -677,7 +673,7 @@ round_square <- function(vec) {
 round_square(x)
 ```
 
-### \t 
+###   
 
 Vectorization reduces the need to use loops. You can think of each vectorized function as implementing a loop for you.
 
