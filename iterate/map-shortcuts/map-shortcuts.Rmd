@@ -13,7 +13,6 @@ runtime: shiny_prerendered
 library(learnr)
 library(tidyverse)
 library(repurrrsive)
-library(grader)
 
 
 gap_dfs <- gap_split %>% map(select, -1, -2)
@@ -26,14 +25,17 @@ list1 <- list(
   logicals = c(TRUE, FALSE)
 )
 
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
 
 ## Why More?
 
-### \t
+###  
 
 The map functions come with two useful shortcuts:
 
@@ -57,10 +59,10 @@ us
 ```
 
 ```{r us-1-check}
-strict_check("Life expectancy statistics are saved in the second element of us, which is named lifeExp. The first number in lifeExp is the life expectancy in 1952, the last number is the life expectancy in 2007. Ideally, you'd encounter this type of data in a data frame, but it is possible to receive messy data like this.")
+ "Life expectancy statistics are saved in the second element of us, which is named lifeExp. The first number in lifeExp is the life expectancy in 1952, the last number is the life expectancy in 2007. Ideally, you'd encounter this type of data in a data frame, but it is possible to receive messy data like this."
 ```
 
-### \t
+###  
 
 Can you use the values of `lifeExp` to compute the rise in life expectancy in the US from 1952 to 2007?
 
@@ -99,7 +101,7 @@ list1 <- list(
 pluck(list1, "numbers") # list1 %>% pluck("numbers")
 ```
 
-### \t
+###  
 
 * Use `pluck()` to extract `lifeExp` from `us`. Then click Submit Answer. I've pre-loaded the purrr package for you.
 
@@ -120,7 +122,7 @@ us %>% pluck("lifeExp")
 ```
 
 ```{r pluck-check}
-strict_check('Nice. pluck() does the same thing as us$lifeExp and us[["lifeExp"]], but pluck() is easier to read (and easier to pass to map()).')
+ 'Nice. pluck() does the same thing as us$lifeExp and us[["lifeExp"]], but pluck() is easier to read (and easier to pass to map()).'
 ```
 
 ### Rise in lifeExp
@@ -148,7 +150,7 @@ last(lifeExp) - first(lifeExp)
 ```
 
 ```{r us-2-check}
-strict_check("Excellent. The life expectancy of US citizens increased by 9.8 years between 1952 and 2007.")
+ "Excellent. The life expectancy of US citizens increased by 9.8 years between 1952 and 2007."
 ```
 
 ### Recap
@@ -165,10 +167,10 @@ gap_list
 ```
 
 ```{r gap_list-check}
-strict_check("Each element of gap_list is a new list that is identical in structure to us.")
+ "Each element of gap_list is a new list that is identical in structure to us."
 ```
 
-### \t
+###  
 
 To apply your two step process to each country, you will need to use `map()` and each of its shortcuts.
 
@@ -176,7 +178,7 @@ Click Continue when you are ready to begin.
 
 ## Shortcuts
 
-### \t
+###  
 
 To map your work to every country, you will need to do two things for each value of `gap_list`:
 
@@ -205,7 +207,7 @@ gap_list %>% map(pluck, "lifeExp")
 ```
 
 ```{r gap_pluck-check}
-strict_check("Nice! As always, I recommend that you use R's pipe syntax whenever possible (%>%). Pipes make it easy to build upon your work, concentrating on one step at a time.")
+ "Nice! As always, I recommend that you use R's pipe syntax whenever possible (%>%). Pipes make it easy to build upon your work, concentrating on one step at a time."
 ```
 
 ### shortcuts
@@ -231,7 +233,7 @@ params <- list(
 map(params, "mu") # params %>% map("mu")
 ```
 
-### \t
+###  
 
 * Change the code below to use the "name" shortcut. Then click Submit Answer. Do you get the same result?
 
@@ -252,7 +254,7 @@ gap_list %>% map("lifeExp")
 ```
 
 ```{r quotes-check}
-strict_check("Excellent. I recommend this shortcut, but there is also a second, even shorter shortcut that extracts elements from sub-lists. Click Continue to find out what it is.")
+ "Excellent. I recommend this shortcut, but there is also a second, even shorter shortcut that extracts elements from sub-lists. Click Continue to find out what it is."
 ```
 
 ### Integers shortcut
@@ -268,7 +270,7 @@ params <- list(
 map(params, 1) # params %>% map(1)
 ```
 
-### \t
+###  
 
 * Extract `lifeExp` with the integer shortcut. Then click Submit Answer.
 
@@ -289,7 +291,7 @@ gap_list %>% map(2)
 ```
 
 ```{r integer-check}
-strict_check("Great job. In general, I suggest that you use the name shortcut. Then you won't need to remember the position of each element, nor will you need to worry that the elements may be out of order in one of the sub-lists.")
+ "Great job. In general, I suggest that you use the name shortcut. Then you won't need to remember the position of each element, nor will you need to worry that the elements may be out of order in one of the sub-lists."
 ```
 
 ### Data frames
@@ -302,7 +304,7 @@ For example, `gap_dfs` contains the same information as `gap_lists`, but it orga
 gap_dfs %>% pluck(1)
 ```
 
-### \t
+###  
 
 * Use the "name" shortcut to extract the `lifeExp` column of each data frame in `gap_dfs`. Then click Submit Answer. What happens?
 
@@ -315,7 +317,7 @@ gap_dfs %>% map("lifeExp")
 ```
 
 ```{r gap_dfs-1-check}
-strict_check('The "name" shortcut works with data frames and tibbles. So will the integer shortcut. The reason for this is simple: in R, data frames are a type of list, just like tibbles are a type of data frame. As a result, things that work with lists will also work with data frames and tibbles.')
+ 'The "name" shortcut works with data frames and tibbles. So will the integer shortcut. The reason for this is simple: in R, data frames are a type of list, just like tibbles are a type of data frame. As a result, things that work with lists will also work with data frames and tibbles.'
 ```
 
 ### One more thing
@@ -337,7 +339,7 @@ The "name" and integer shortcuts will work with all of these functions. So will 
 
 ## Expressions
 
-### \t
+###  
 
 Recall your goals. For each value of `gap_list`, you want to:
 
@@ -358,7 +360,7 @@ At the heart of `map()` is the pattern:
 
 For each element, do _____
 
-### \t
+###  
 
 When you fill in the blank with a function, or a character string, or an integer, `map()` knows just what to do.
 
@@ -382,7 +384,7 @@ For each `.x`, do `~last(.x) - first(.x)`
 
 This tells `map()` where to use the element within your expression. If an expression uses each element multiple times, you will need to insert multiple `.x`s into your expression.
 
-### \t
+###  
 
 How does this look with the `map()` function? You pass the expression to `map()` exactly as you would pass a function.
 
@@ -399,7 +401,7 @@ map(params, ~ rnorm(5, mean = pluck(.x, 1), sd = pluck(.x, 2)))
 # params %>% map(~rnorm(5, mean = pluck(.x, 1), sd = pluck(.x, 2)))
 ```
 
-### \t
+###  
 
 Now it is your turn. To finish your code: 
 
@@ -427,7 +429,7 @@ gap_list %>%
 ```
 
 ```{r exp-check}
-strict_check("Great job. You are on a roll! What if you'd like the result to come back as a double (numeric) vector?")
+ "Great job. You are on a roll! What if you'd like the result to come back as a double (numeric) vector?"
 ```
 
 ### Beyond map()
@@ -447,14 +449,14 @@ gap_list %>%
 ```
 
 ```{r dbl-exp-check}
-strict_check("Excellent. Just like the shortcuts you learned earlier, expressions work with all of the map functions.")
+ "Excellent. Just like the shortcuts you learned earlier, expressions work with all of the map functions."
 ```
 
 ### A small payoff
 
 It would be rewarding to learn which countries had the largest and smallest changes in life expectancy. You can find out with three new functions:
 
-### \t
+###  
 
 1. `enframe()` turns a named vector into a data frame with two columns: `name` and `value`. 
 
@@ -465,7 +467,7 @@ enframe(named_vec)
     
     `enframe()` comes in the tidyr package, which I've pre-loaded for you.
     
-### \t
+###  
 
 2. `top_n()` returns the n rows that have the highest value of a weighting variable. 
 
@@ -476,7 +478,7 @@ top_n(mtcars, n = 5, wt = mpg)
     (Don't be fooled: these are the rows with the five highest values of `mpg`. `top_n()` retrieves them but does not sort them by `mpg`).
 
 
-### \t
+###  
 
 3. You can combine `top_n()` with `desc()` to retrieve the lowest n values.
 
@@ -521,10 +523,10 @@ gap_list %>%
 ```
 
 ```{r greatest-check}
-strict_check("Excellent. Oman, Vietnam, Indonesia, Saudi Arabia, and Libya had the highest increases. Now which countries had the lowest increases?")
+ "Excellent. Oman, Vietnam, Indonesia, Saudi Arabia, and Libya had the highest increases. Now which countries had the lowest increases?"
 ```
 
-### \t
+###  
 
 * Add `desc()` to your code to retrieve the five countries with the least positive increase in life expectancy. Then click Submit Answer.
 
@@ -549,12 +551,12 @@ gap_list %>%
 ```
 
 ```{r least-check}
-strict_check("Two countries actually decreased their life expectancy: Zimbabwe and Swaziland. Now let's get back to map expressions.")
+ "Two countries actually decreased their life expectancy: Zimbabwe and Swaziland. Now let's get back to map expressions."
 ```
 
 ## Best practices
 
-### \t
+###  
 
 You can do almost anything with `map()` if you use the right expression. The best way to write an expression is to:
 
@@ -587,7 +589,7 @@ usa <- gap_dfs %>% pluck("United States")
 ```
 
 ```{r usa-check}
-strict_check("This single case will be your test case. You can run your code on it to spot any bugs as soon as they arise.")
+ "This single case will be your test case. You can run your code on it to spot any bugs as soon as they arise."
 ```
 
 ### Step 2 - Write code that works correctly for that element
@@ -613,7 +615,7 @@ lm(lifeExp ~ year, data = usa)
 ```
 
 ```{r lm-check}
-strict_check("Life expectancy increased on average by 0.18 years per year for the US. Great. This is the code to map over gap_dfs, but to use it, you will need to transform it into an expression.")
+ "Life expectancy increased on average by 0.18 years per year for the US. Great. This is the code to map over gap_dfs, but to use it, you will need to transform it into an expression."
 ```
 
 ### Step 3 - Transform the code into an expression to use with map()
@@ -650,7 +652,7 @@ gap_dfs %>%
 ```
 
 ```{r lm-map-check}
-strict_check("Excellent! Let's practice this workflow one last time, but this time with no guidance from me.")
+ "Excellent! Let's practice this workflow one last time, but this time with no guidance from me."
 ```
 
 ### A model that accounts for GDP
@@ -677,7 +679,7 @@ gap_dfs %>%
 ```
 
 ```{r lm-map2-check}
-strict_check("Great work. I recommend using this workflow every time you write a map expression.")
+ "Great work. I recommend using this workflow every time you write a map expression."
 ```
 
 ### The End
