@@ -11,15 +11,17 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE, message = FALSE, warning=FALSE}
 library(learnr)
-library(grader)
 
-tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
 knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 ```
 
 ## Matching Quiz
 
-### \t
+###  
 
 Assigning the right values to the right arguments can make or break your code. 
 
@@ -79,7 +81,7 @@ question("Now what will `foo()` return?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 ```{r default-args-2, echo = FALSE}
 question("Which of these could you run to see the names and default values of `foo`'s arguments?",
@@ -113,7 +115,7 @@ question("What will `foo(0)` return?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 ```{r}
 foo <- function(aaa = 1, abb = 2, abc = 3) {
@@ -166,7 +168,7 @@ question("What will `foo(aa = 0)` return?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 ```{r}
 foo <- function(aaa = 1, abb = 2, abc = 3) {
@@ -201,7 +203,7 @@ question("What will `foodoo(1, 2, 3)` return?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 ```{r}
 foodoo <- function(...) {
@@ -217,7 +219,7 @@ question("What will `foodoo(a = 1, b = 2, c = 3)` return?",
          allow_retry = TRUE)
 ```
 
-### \t
+###  
 
 Here is one last wrinkle. Suppose we rewrite `foodoo` slightly:
 
@@ -237,12 +239,12 @@ question("What will `foodoo(a = 1, b = 2, c = 3)` return?",
 
 ## Tips
 
-### \t 
+###   
 
 Congratulations! You've finished the quiz and know a lot about how R parses arguments. As a reward, here are two useful things that you can do with arguments in the RStudio IDE:
 
 
-### \t
+###  
 
 After you've written a function name followed by an opening parenthesis, look for a small yellow window to pop up that tells you the names, order, and default values of the function's arguments. This can be handy when you are not very familiar with the function.
 
@@ -250,7 +252,7 @@ After you've written a function name followed by an opening parenthesis, look fo
 knitr::include_graphics("images/popup.png")
 ```
 
-### \t
+###  
 
 After you've written a function name followed by an opening parenthesis, press tab to invoke RStudio's tab completion. RStudio will open a pop up menu that contains the names of the function's arguments. Use the up and down arrow keys to navigate to a name, and then press enter to insert the name into your code. This can save you a lot of time once you get a feel for it.
 
