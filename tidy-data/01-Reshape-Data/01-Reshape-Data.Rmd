@@ -276,7 +276,7 @@ You can use the `pivot_longer()` function in the **tidyr** package to convert wi
 ```{r echo = TRUE}
 cases %>% 
   pivot_longer(
-    cols = -Country, 
+    cols = c(`2011`, `2012`, `2013`), 
     names_to = "year", 
     values_to = "n"
     )
@@ -289,14 +289,19 @@ Let's take a closer look at the `pivot_longer()` syntax.
 Here's the same call written without the pipe operator, which makes the syntax easier to see.
 
 ```{r echo = TRUE, eval = FALSE}
-pivot_longer(cases, cols = c(`2011`, `2012`, `2013`), names_to = "year", values_to = "n")
+pivot_longer(
+  cases, 
+  cols = c(`2011`, `2012`, `2013`), 
+  names_to = "year", 
+  values_to = "n"
+  )
 ```
 
 To use `pivot_longer()`, pass it the name of a data set to reshape followed by which columns to pivot longer, the name of a new variable that will contain on the names of these columns as values, and the name of another new variables that will contain the values from these columns:
 
 * the `cols` argument contains the name of the columns to pivot into longer format.
-* the `names_to` argument is a string specifying the name of the column to create from the data stored in the column names of the dataset to be reshaped.
-* the `values_to` argument is a string specifying the name of the column to create from the data stored in cell values.
+* the `names_to` argument is a string specifying the name of the new column to create from the data stored in the column names of the dataset to be reshaped.
+* the `values_to` argument is a string specifying the name of the new column to create from the data stored in cell values.
 
 Any unspecified columns will remain in the dataset, their contents repeated as often as necessary to duplicate each relationship in the original untidy data set.
 
@@ -334,7 +339,7 @@ table4a %>% pivot_longer(cols = c(`1999`, `2000`), names_to = "year", values_to 
 
 ### Specifying columns
 
-So far we have specified explicitly which columns to pivot, but this isn't necessary. `pivot_longer()` also recognizes column names as well as all of the `select()` helpers that you learned about in [Isolating Data with dplyr](https://rstudio.cloud/learn/primers/2.2). So, for example, these expressions would all do the same thing: 
+So far, we have listed which columns to pivot by naming them one at a time and combining them using the `c()` function, but this isn't necessary. `pivot_longer()` also recognizes column names as well as all of the `select()` helpers that you learned about in [Isolating Data with dplyr](https://rstudio.cloud/learn/primers/2.2). So, for example, these expressions would all do the same thing: 
 
 ```{r echo = TRUE, eval = FALSE}
 table4a %>% pivot_longer(cols = c(`1999`, `2000`), names_to = "year", values_to = "cases")
@@ -372,6 +377,8 @@ table4b %>%
 ### Converting output
 
 If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column is a character vector. You can tell because R displays `<chr>` beneath the column name. `names_ptypes` and `values_ptypes` arguments take a list of column name-prototype (ptype) pairs defining the desired type of each newly created column.
+
+A little more on how to construct the list of ptype paris: each item within the `list()` consists of the variable name in the resulting dataset, unquoted, on the left and the variable type (e.g. `integer()`, `numeric()` etc.)  on the right.
 
 ```{r ex9, exercise = TRUE}
 table4b %>% 
@@ -411,7 +418,7 @@ Rectangular tables are a simple form of wide data. But you will also encounter m
 cases2
 ```
 
-To tidy this data, you would want to keep the first three columns as they are. Can you tidy this data with `pivot_longer()`? Yes, and you already know how. Think about the problem and then tidy `cases2` into a data set with five columns: `city`, `country`, `continent`, `year`, and `cases`.
+To tidy this data, you would want to keep the first three columns as they are. Can you tidy this data with `pivot_longer()`? Yes, and you already know how. Think about the problem and then tidy `cases2` into a data set with five columns: `city`, `country`, `continent`, `year` (as an integer), and `cases`.
 
 ```{r ex10, exercise = TRUE}
 
@@ -511,7 +518,7 @@ table2 %>%
 ```
 
 ```{r ex11-check}
-"Good job! You now posses two complementary tools for reshaping the layout of data. By iterating between pivot_longer() and pivot_wider() you can rearrange the values of any data set into many different configurations."
+"Good job! You now possess two complementary tools for reshaping the layout of data. By iterating between pivot_longer() and pivot_wider() you can rearrange the values of any data set into many different configurations."
 ```
 
 
