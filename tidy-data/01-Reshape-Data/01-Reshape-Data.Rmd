@@ -265,7 +265,7 @@ question("What are the variables in cases?",
 )
 ```
 
-### A tidy version of 
+### A tidy version of cases
 
 ![](https://vimeo.com/229581273)
 
