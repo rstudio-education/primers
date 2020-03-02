@@ -55,14 +55,14 @@ source("https://metrics.ap01.rstudioprimers.com/learnr/installMetrics", local=TR
 
 ## Welcome
 
-The tools that you learned in the previous Primers work best when your data is organized in a specific way. This format is known as **tidy data** and it appears throughout the tidyverse. You will spend a lot of time as a data scientist wrangling your data into a useable format, so it is important to learn how to do this fast. 
+The tools that you learned in the previous Primers work best when your data is organized in a specific way. This format is known as **tidy data** and it appears throughout the tidyverse. You will spend a lot of time as a data scientist wrangling your data into a usable format, so it is important to learn how to do this fast. 
 
 This tutorial will teach you how to recognize tidy data, as well as how to reshape untidy data into a tidy format. In it, you will learn the core data wrangling functions for the tidyverse:
 
-* `gather()` - which reshapes wide data into long data, and 
-* `spread()` - which reshapes long data into wide data
+* `pivot_longer()` - which reshapes wide data into long data, and 
+* `pivot_wider()` - which reshapes long data into wide data
 
-This tutorial uses the [core tidyverse packages](http://tidyverse.org/), including ggplot2, dplyr, and tidyr, as well as the `babynames` package. All of these packages have been pre-installed and pre-loaded for your convenience.
+This tutorial uses the [core tidyverse packages](http://tidyverse.org/), including **ggplot2**, **dplyr**, and **tidyr**, as well as the `babynames` package. All of these packages have been pre-installed and pre-loaded for your convenience.
 
 Click the Next Topic button to begin.
 
@@ -70,7 +70,7 @@ Click the Next Topic button to begin.
 
 ### Variables, values, and observations
 
-In [Exploratory Data Analysis](), we proposed three definitions that are useful for data science:
+In [Exploratory Data Analysis](https://rstudio.cloud/learn/primers/3.1), we proposed three definitions that are useful for data science:
 
 *   A __variable__ is a quantity, quality, or property that you can measure. 
 
@@ -108,7 +108,7 @@ table2
 ```
 
 ```{r q2, echo = FALSE}
-question("Does the data above contain the variables **country**, **year**, **cases**, and **population**?",
+question("Does the data above contain information on **country**, **year**, **cases**, and **population**?",
          answer("Yes", correct = TRUE, message = "If you look closely, you will see that this is the same data set as before, but organized in a new way."),
          answer("No", message = "Don't be mislead by the two new column names: a variable and a column name are not necessarily the same thing."),
          allow_retry = TRUE
@@ -241,7 +241,7 @@ A data set is tidy if:
 
 Now that you know what tidy data is, what can you do about untidy data?
 
-## Gathering columns
+## Wide to long
 
 ### Untidy data
 
@@ -269,46 +269,50 @@ question("What are the variables in cases?",
 
 ![](https://vimeo.com/229581273)
 
-### gather()
+### pivot_longer()
 
-You can use the `gather()` function in the **tidyr** package to convert wide data to long data. Notice that `gather()` returns a tidy copy of the dataset, but does not alter the original dataset. If you wish to use this copy later, you'll need to save it somewhere.
+You can use the `pivot_longer()` function in the **tidyr** package to convert wide data to long data. Notice that `pivot_longer()` returns a tidy copy of the dataset, but does not alter the original dataset. If you wish to use this copy later, you'll need to save it somewhere.
 
 ```{r echo = TRUE}
-cases %>% gather(key = "year", value = "n", 2, 3, 4)
+cases %>% 
+  pivot_longer(
+    cols = -Country, 
+    names_to = "year", 
+    values_to = "n"
+    )
 ```
 
-Let's take a closer look at the `gather()` syntax.
+Let's take a closer look at the `pivot_longer()` syntax.
 
-### gather() syntax
+### pivot_longer() syntax
 
 Here's the same call written without the pipe operator, which makes the syntax easier to see.
 
 ```{r echo = TRUE, eval = FALSE}
-gather(cases, key = "year", value = "n", 2, 3, 4)
+pivot_longer(cases, cols = c(`2011`, `2012`, `2013`), names_to = "year", values_to = "n")
 ```
 
-To use `gather()`, pass it the name of a data set to reshape followed by two new column names to use. Each name should be a character string surrounded by quotes: 
+To use `pivot_longer()`, pass it the name of a data set to reshape followed by which columns to pivot longer, the name of a new variable that will contain on the names of these columns as values, and the name of another new variables that will contain the values from these columns:
 
-* the key string will become the name of a new column that contains former column names. 
-* the value string will become the name of a new column that contains former cell values.
+* the `cols` argument contains the name of the columns to pivot into longer format.
+* the `names_to` argument is a string specifying the name of the column to create from the data stored in the column names of the dataset to be reshaped.
+* the `values_to` argument is a string specifying the name of the column to create from the data stored in cell values.
 
-Finally, use numbers to tell `gather()` which columns to use to build the new columns. Here gather will use the second, third, and fourth columns. `gather()` will remove these columns from the results, but their contents will appear in the new columns. Any unspecified columns will remain in the dataset, their contents repeated as often as necessary to duplicate each relationship in the original untidy data set.
+Any unspecified columns will remain in the dataset, their contents repeated as often as necessary to duplicate each relationship in the original untidy data set.
 
-### Key and Value columns
+### Names and values
 
 [To be replaced with a video]
 
-`gather()` relies on the idea of key:value pairs. A key value pair is a pair that lists a value alongside the name of the variable that the value describes. (We could store every value in a dataset as a key value pair, but this is not how R works.)
+In a tidy data set, you will find variable names in the column names of the data set. The values will appear in the cells of the columns. Here we organize the year information originally stored across multiple columns in the dataset into a single column called year. This arrangement reduces duplication.
 
-In a tidy data set, you will find "keys"---that is variable names---in the column names of the data set. The values will appear in the cells of the columns. Here we know that the key for each value in the year column is year. This arrangement reduces duplication.
+Sometimes you will also find pairs of names and values listed beside each other in two separate columns, as in `table2`. Here the `type` column lists the names that are associated with the `count` column. This layout is sometimes called "narrow" data.
 
-Sometimes you will also find key value pairs listed beside each other in two separate columns, as in `table2`. Here the `type` column lists the keys that are associated with the `count` column. This layout is sometimes called "narrow" data.
-
-Tidyr functions rely on the key value vocabulary to describe what should go where. In `gather()` the key argument describes the new column that contains the values that previously appeared in the tidy key position, i.e. in the column names. The value argument describes the new column that contains the values that previously appeared in the value positions, e.g. in the column cells.
+The pivot functions rely on this notion of names and values to describe what should go where. In `pivot_longer()` the `names_to` argument describes the new column that contains the values that previously appeared where a tidy data frame's variable names would go. The `values_to` argument describes the new column that contains the values that previously appeared in the value positions, e.g. in cells.
 
 ### Exercise 1 - Tidy table4a
 
-Now that you've seen `gather()` in action, try using it to tidy `table4a`:
+Now that you've seen pivot_longer()` in action, try using it to tidy `table4a`:
 
 ```{r echo = TRUE}
 table4a
@@ -317,11 +321,11 @@ table4a
 The result should contain three columns: `country`, `year`, and `cases`. Begin by modifying our code below.
 
 ```{r ex7, exercise = TRUE}
-cases %>% gather(key = "year", value = "n", 2, 3, 4)
+pivot_longer(cases, cols = c(`2011`, `2012`, `2013`), names_to = "year", values_to = "n")
 ```
 
 ```{r ex7-solution}
-table4a %>% gather(key = "year", value = "cases", 2, 3)
+table4a %>% pivot_longer(cols = c(`1999`, `2000`), names_to = "year", values_to = "cases")
 ```
 
 ```{r ex7-check}
@@ -330,20 +334,19 @@ table4a %>% gather(key = "year", value = "cases", 2, 3)
 
 ### Specifying columns
 
-So far we've used numbers to describe which columns to reshape with `gather()`, but this isn't necessary. `gather()` also recognizes column names as well as all of the `select()` helpers that you learned about in [Isolating Data with dplyr](). So for example, these expressions would all do the same thing:
+So far we have specified explicitly which columns to pivot, but this isn't necessary. `pivot_longer()` also recognizes column names as well as all of the `select()` helpers that you learned about in [Isolating Data with dplyr](https://rstudio.cloud/learn/primers/2.2). So, for example, these expressions would all do the same thing: 
 
 ```{r echo = TRUE, eval = FALSE}
-table4a %>% gather(key = "year", value = "cases", 2, 3)
-table4a %>% gather(key = "year", value = "cases", `1999`, `2000`)
-table4a %>% gather(key = "year", value = "cases", -country)
-table4a %>% gather(key = "year", value = "cases", one_of(c("1999", "2000")))
+table4a %>% pivot_longer(cols = c(`1999`, `2000`), names_to = "year", values_to = "cases")
+table4a %>% pivot_longer(cols = -country, names_to = "year", values_to = "cases")
+table4a %>% pivot_longer(cols = one_of(c("1999", "2000")), names_to = "year", values_to = "cases")
 ```
 
-Notice that 1999 and 2000 are numbers. When you directly call column names that are numbers, you need to surround the names with backticks (otherwise `gather()` would think you mean the 1999th and 2000th columns). Use `?select_helpers` to open a help page that lists the select helpers.
+Notice that 1999 and 2000 are numbers. When you directly call column names that are numbers, you need to surround the names with backticks (otherwise `pivot_longer()` would think you mean the 1999th and 2000th columns). Use `?select_helpers` to open a help page that lists the select helpers.
 
 ### Exercise 2 - Tidy table4b
 
-Use `gather()` and the `-` helper to tidy `table4b` into a dataset with three columns: `country`, `year`, and `population`.
+Use `pivot_longer()` and the `-` helper to tidy `table4b` into a dataset with three columns: `country`, `year`, and `population`.
 
 ```{r echo = TRUE}
 table4b
@@ -354,7 +357,12 @@ table4b
 ```
 
 ```{r ex8-solution}
-table4b %>% gather(key = "year", value = "population", -country)
+table4b %>% 
+  pivot_longer(
+    cols = -country, 
+    names_to = "year", 
+    values_to = "population"
+    )
 ```
 
 ```{r ex8-check}
@@ -363,23 +371,34 @@ table4b %>% gather(key = "year", value = "population", -country)
 
 ### Converting output
 
-If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column contains character vectors. You can tell because R displays `<chr>` beneath the column name.
+If you looked closely at your results in the previous exercises, you may have noticed something odd: the new year column is a character vector. You can tell because R displays `<chr>` beneath the column name. `names_ptypes` and `values_ptypes` arguments take a list of column name-prototype (ptype) pairs defining the desired type of each newly created column.
 
 ```{r ex9, exercise = TRUE}
-table4b %>% gather(key = "year", value = "population", -country)
+table4b %>% 
+  pivot_longer(
+    cols = -country, 
+    names_to = "year", 
+    values_to = "population"
+    )
 ```
 
 ```{r ex9-solution}
-table4b %>% gather(key = "year", value = "population", -country, convert = TRUE)
+table4b %>% 
+  pivot_longer(
+    cols = -country, 
+    names_to = "year", 
+    values_to = "population", 
+    names_ptypes = list(year = integer())
+    )
 ```
 
 ```{r ex9-check}
 "Good Job! Now <int> appears under the year column, which means that R has stored the years as integers instead of character strings. Integers are one of R's two numeric data types, along with doubles."
 ```
 
-You can ask R to convert each new column to an appropriate data type by adding `convert = TRUE` to the `gather()` call. R will inspect the contents of the columns to choose the most likely data type. Give it a try in the code above! 
+You can ask R to convert each new column to an appropriate data type by listing each variable-type pair in one of `names_ptypes` or `values_ptypes` arguments. If not specified, the type of the columns generated from `names_to` will be character, and the type of the variables generated from `values_to` will be the common type of the input columns used to generate them. Give it a try in the code above! 
 
-### The flexibility of gather()
+### The flexibility of pivot_longer()
 
 `cases`, `table4a`, and `table4b` are all rectangular tables: 
 
@@ -392,38 +411,44 @@ Rectangular tables are a simple form of wide data. But you will also encounter m
 cases2
 ```
 
-To tidy this data, you would want to keep the first three columns as they are. Can you tidy this data with `gather()`? Yes, an you already know how. Think about the problem and then tidy `cases2` into a data set with five columns: `city`, `country`, `continent`, `year`, and `cases`.
+To tidy this data, you would want to keep the first three columns as they are. Can you tidy this data with `pivot_longer()`? Yes, and you already know how. Think about the problem and then tidy `cases2` into a data set with five columns: `city`, `country`, `continent`, `year`, and `cases`.
 
 ```{r ex10, exercise = TRUE}
 
 ```
 
 ```{r ex10-solution}
-cases2 %>% gather(key = "year", value = "cases", 4, 5, 6)
+cases2 %>% 
+  pivot_longer(
+    cols = c(`2011`, `2012`, `2013`),
+    names_to = "year",
+    values_to = "cases",
+    names_ptypes = list(year = integer())
+  )
 ```
 
 ```{r ex10-check}
 "Great job! Now let's look at how to tidy another common type of untidy data."
 ```
 
-## Spreading columns
+## Long to wide
 
 ### Narrow data
 
-The `pollution` dataset below displays the amount of small and large particulate in the air of three cities. It illustrates another common type of untidy data. **Narrow data** uses a literal key column and a literal value column to store multiple variables. Can you tell here which is which?
+The `pollution` dataset below displays the amount of small and large particulate in the air of three cities. It illustrates another common type of untidy data. **Narrow data** has a column whose values could be variable names in a tidy data frame and another column whose values would be values under these new columns. Can you tell here which is which?
 
 ```{r echo = TRUE}
 pollution
 ```
 
-### Quiz 4 - Which is the key column?
+### Quiz 4 - Which is the column containing variable names?
 
 ```{r echo = TRUE}
 pollution
 ```
 
 ```{r q4}
-question("Which column in pollution contains key names (i.e. variable names)?",
+question("Which column in pollution contains variable names?",
          answer("city"),
          answer("size", correct = TRUE, message = "Two properties are being measured in this data: 1) the amount of small particulate in the air, and 2) the amount of large particulate"), 
          answer("amount"),
@@ -431,14 +456,14 @@ question("Which column in pollution contains key names (i.e. variable names)?",
 )
 ```
 
-### Quiz 5 - Which is the value column?
+### Quiz 5 - Which is the column containing values?
 
 ```{r echo = TRUE}
 pollution
 ```
 
 ```{r q5}
-question("Which column in pollution contains the values associated with the key names?",
+question("Which column in pollution contains the values associated with the variable names from the previous exercise?",
          answer("city"),
          answer("size"), 
          answer("amount", correct = TRUE, message = "What do these numbers represent? You can only tell when you match them with the variable names large (for large particulate) and small (for small particulate)."),
@@ -450,19 +475,23 @@ question("Which column in pollution contains the values associated with the key 
 
 ![](https://vimeo.com/229581273)
 
-### spread()
+### pivot_wider()
 
-You can "spread" the keys in a key column across their own set of columns with the `spread()` function in the **tidyr** package. To use `spread()` pass it the name of a data set to spread (provided here by the pipe `%>%`). Then tell spread which column to use as a key column and which column to use as a value column.
+You can reshape this dataset into a wider dataset with the `pivot_wider()` function in the **tidyr** package. To use `pivot_wider()` pass it the name of a data set to pivot (provided here by the pipe `%>%`). Then tell it which column contains names and which contains values.
 
 ```{r echo = TRUE}
-pollution %>% spread(key = size, value = amount)
+pollution %>%
+  pivot_wider(
+    names_from = size,
+    values_from = amount
+  )
 ```
 
-`spread()` will give each unique value in the _key_ column its own column. The name of the value will become the column name. `spread()` will then redistribute the values in the _value_ column across the new columns in a way that preserves every relationship in the original dataset. 
+`pivot_wider()` will give each unique value in the `names_from` column its own column. The values from this column will become column names. `pivot_wider() will then redistribute the values in the `values_from` column across the new columns in a way that preserves every relationship in the original dataset. 
 
 ### Exercise 3 - Tidy table2
 
-Use `spread()` to tidy `table2` into a dataset with four columns: `country`, `year`, `cases`, and `population`. In short, convert `table2` to look like `table1`.
+Use `pivot_wider()` to tidy `table2` into a dataset with four columns: `country`, `year`, `cases`, and `population`. In short, convert `table2` to look like `table1`.
 
 ```{r echo = TRUE}
 table2
@@ -474,21 +503,25 @@ table2
 ```
 
 ```{r ex11-solution}
-table2 %>% spread(key = type, value = count)
+table2 %>% 
+  pivot_wider(
+    names_from = type, 
+    values_from = count
+    )
 ```
 
 ```{r ex11-check}
-"Good job! You now posses two complementary tools for reshaping the layout of data. By iterating between gather() and spread() you can rearrange the values of any data set into many different configurations."
+"Good job! You now posses two complementary tools for reshaping the layout of data. By iterating between pivot_longer() and pivot_wider() you can rearrange the values of any data set into many different configurations."
 ```
 
 
 ### To quote or not to quote
 
-You may notice that both `gather()` and `spread()` take _key_ and _value_ arguments. And, in each case the arguments are set to column names. But in the `gather()` you must surround the names with quotes and in the `spread()` case you do not. Why is this?
+You may notice that both `pivot_longer()` and `pivot_wider()` arguments that start with _names_ and _values_. And, in each case the arguments are set to column names. But in `pivot_longer()` you must surround the names with quotes and in `pivot_wider()` case you do not. Why is this?
 
 ```{r echo = TRUE, eval = FALSE}
-table4b %>% gather(key = "year", value = "population", -country)
-pollution %>% spread(key = size, value = amount)
+table4b %>% pivot_longer(cols = -country, names_to = "year", values_to = "population")
+pollution %>% pivot_wider(names_from = size, values_from = amount)
 ```
 
 Don't let the difference trip you up. Instead think about what the quotes mean. 
@@ -498,22 +531,22 @@ Don't let the difference trip you up. Instead think about what the quotes mean.
 
 ###  
 
-In our `gather()` code above, "year" and "population" refer to two columns that do not yet exist. If R tried to look for objects named _year_ and _population_ it wouldn't find them (at least not in the `table4b` dataset). When we use `gather()` we are passing R two values (character strings) to use as the name of future columns that will appear in the result.
+In our `pivot_longer()` code above, "year" and "population" refer to two columns that do not yet exist. If R tried to look for objects named _year_ and _population_ it wouldn't find them (at least not in the `table4b` dataset). When we use `pivot_longer()` we are passing R two values (character strings) to use as the name of future columns that will appear in the result.
 
-In our `spread()` code, key and value point to two columns that _do_ exist in the `pollution` dataset: size and amount. When we use `spread()`, we are telling R to find these objects (columns) in the dataset and to use their contents to create the result. Since they exist, we do not need to surround them in quotation marks.
+In our `pivot_wider()` code, `names_from` and `values_from` point to two columns that _do_ exist in the `pollution` dataset: size and amount. When we use `pivot_wider()`, we are telling R to find these objects (columns) in the dataset and to use their contents to create the result. Since they exist, we do not need to surround them in quotation marks.
 
-In practice, whether or not you need to use quotation marks will depend on how the author of your function wrote the function (For example, `spread()` will still work if you do include quotation marks). However, you can use the intuition above as a guide for how to use functions in the tidyverse.
+In practice, whether or not you need to use quotation marks will depend on how the author of your function wrote the function (For example, `pivot_wider()` will still work if you do include quotation marks). However, you can use the intuition above as a guide for how to use functions in the tidyverse.
 
 ### Boys and girls in babynames
 
-Let's apply `spread()` to a real world inquiry. The plot below visualizes an aspect of the `babynames` data set from the **babynames** package. (See [Work with Data]() for an introduction to the babynames data set.)
+Let's apply `pivot_wider()` to a real world inquiry. The plot below visualizes an aspect of the `babynames` data set from the **babynames** package. (See [Work with Data](https://rstudio.cloud/learn/primers/2) for an introduction to the babynames data set.)
 
 ```{r out.width = "80%"}
 babynames %>%
   group_by(year, sex) %>% 
   summarise(n = sum(n)) %>% 
   ggplot() +
-    geom_line(aes(year, n, color = sex))
+  geom_line(aes(year, n, color = sex))
 ```
 
 The ratio of girls to boys in `babynames` is not constant across time. We can explore this phenomenon further by recreating the data in the plot.
@@ -525,7 +558,7 @@ babynames %>%
   group_by(year, sex) %>% 
   summarise(total = sum(n)) %>% 
   ggplot() +
-    geom_line(mapping = aes(year, total, color = sex))
+  geom_line(mapping = aes(year, total, color = sex))
 ```
 
 To make the data displayed in the plot above, I first grouped babynames by `year` and `sex`. Then I computed a summary for each group: `total`, which is equal to the sum of `n` for each group.
@@ -553,7 +586,7 @@ babynames %>%
   group_by(year, sex) %>% 
   summarise(total = sum(n)) %>% 
   ggplot() +
-    geom_line(aes(year, total, color = sex))
+  geom_line(aes(year, total, color = sex))
 ```
 
 Use the data below to make the plot above, which was built with ggplot2 functions.
@@ -569,7 +602,7 @@ babynames %>%
   group_by(year, sex) %>% 
   summarise(total = sum(n)) %>% 
   ggplot() +
-    geom_line(aes(year, n, color = sex))
+  geom_line(aes(year, n, color = sex))
 ```
 
 ```{r ex13-check}
@@ -598,7 +631,10 @@ It would be easier to calculate the ratio of boys to girls if we could reshape o
 babynames %>%
   group_by(year, sex) %>% 
   summarise(total = sum(n)) %>% 
-  spread(sex, total)
+  pivot_wider(
+    names_from = sex,
+    values_from = total
+  )
 ```
 
 Then we could compute the ratio by piping our data into a call like `mutate(ratio = M / F)`.
@@ -621,10 +657,13 @@ babynames %>%
 babynames %>%
   group_by(year, sex) %>% 
   summarise(total = sum(n)) %>%
-  spread(sex, total) %>%
+  pivot_wider(
+    names_from = sex,
+    values_from = total
+  ) %>%
   mutate(ratio = M / F) %>%
   ggplot(aes(year, ratio)) + 
-    geom_line()
+  geom_line()
 ```
 
 ```{r ex14-check}
@@ -639,9 +678,13 @@ Our results reveal a conspicuous oddity, that is easier to interpret if we turn 
 babynames %>%
   group_by(year, sex) %>% 
   summarise(total = sum(n)) %>%
-  spread(sex, total) %>%
+  pivot_wider(
+    names_from = sex,
+    values_from = total
+  ) %>%
   mutate(percent_male = M / (M + F) * 100, ratio = M / F) %>%
-  ggplot(aes(year, percent_male)) + geom_line()
+  ggplot(aes(year, percent_male)) + 
+  geom_line()
 ```
 
 The percent of recorded male births is unusually low between 1880 and 1936. What is happening? One insight is that the data comes from the United States Social Security office, which was only created in 1936. As a result, we can expect the data prior to 1936 to display a survivorship bias.
@@ -654,7 +697,7 @@ Your data will be easier to work with in R if you reshape it into a tidy layout 
 1. Each observation is in its own row
 1. Each value is in its own cell
 
-You can use `gather()` and `spread()`, or some iterative sequence of the two, to reshape your data into any possible configuration that:
+You can use `pivot_longer()` and `pivot_wider()`, or some iterative sequence of the two, to reshape your data into any possible configuration that:
 
 1. Retains all of the values in your original data set, and
 1. Retains all of the relationships between values in your original data set.
