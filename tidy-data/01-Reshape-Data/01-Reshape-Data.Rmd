@@ -494,7 +494,7 @@ pollution %>%
   )
 ```
 
-`pivot_wider()` will give each unique value in the `names_from` column its own column. The values from this column will become column names. `pivot_wider() will then redistribute the values in the `values_from` column across the new columns in a way that preserves every relationship in the original dataset. 
+`pivot_wider()` will give each unique value in the `names_from` column its own column. The unique values from this column will become the new column names. `pivot_wider() will then redistribute the values in the `values_from` column across the new columns in a way that preserves every relationship in the original dataset. 
 
 ### Exercise 3 - Tidy table2
 
