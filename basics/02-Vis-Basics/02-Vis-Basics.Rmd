@@ -31,10 +31,6 @@ tryCatch(
 )
 ```
 
-```{r, context="server"}
-session$allowReconnect(TRUE)
-```
-
 ## Welcome
 
 ### 
