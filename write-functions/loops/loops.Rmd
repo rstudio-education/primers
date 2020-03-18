@@ -26,7 +26,7 @@ knitr::opts_chunk$set(error = TRUE, out.width = "100%")
 library(curl)
 library(later)
 tryCatch(
-  source("https://metrics.ap01.rstudioprimers.com/learnr/installMetrics", local=TRUE), 
+  source("https://metrics.rstudioprimers.com/learnr/installMetrics", local=TRUE), 
   error = function(e){ 
     warning("An error occurred with the tracking code.")
     print(e)
