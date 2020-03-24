@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 174318
-bundleId: 2835558
+bundleId: 2918989
 url: https://tutorials.shinyapps.io/01-bar-charts/
-when: 1582838120.17558
+when: 1585069260.6998
 asMultiple: FALSE
 asStatic: FALSE

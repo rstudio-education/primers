@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 170533
-bundleId: 2864934
+bundleId: 2918800
 url: https://tutorials.shinyapps.io/02-Vis-Basics/
-when: 1583774712.52888
+when: 1585066703.66357
 asMultiple: FALSE
 asStatic: FALSE
