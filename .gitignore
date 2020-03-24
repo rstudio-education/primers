@@ -27,7 +27,7 @@ vignettes/*.pdf
 */.DS_Store
 */*/.DS_Store
 */*/*/.DS_Store
-*/*/rsconnect/
+# */*/rsconnect/
 */*/*.html
 */*/*_files/
 NEXT_STEP.Rmd
