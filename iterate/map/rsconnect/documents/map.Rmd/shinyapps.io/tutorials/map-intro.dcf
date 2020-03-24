@@ -1,0 +1,12 @@
+name: map-intro
+title: map-intro
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 296739
+bundleId: 2895475
+url: https://tutorials.shinyapps.io/map-intro/
+when: 1584562675.21875
+asMultiple: FALSE
+asStatic: FALSE

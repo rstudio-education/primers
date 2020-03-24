@@ -1,0 +1,12 @@
+name: 01-bar-charts
+title: 01-bar-charts
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 174318
+bundleId: 2835558
+url: https://tutorials.shinyapps.io/01-bar-charts/
+when: 1582838120.17558
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,12 @@
+name: multiple-vectors
+title: multiple-vectors
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 319216
+bundleId: 2895508
+url: https://tutorials.shinyapps.io/multiple-vectors/
+when: 1584563482.15345
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,12 @@
+name: 01-tibbles
+title: 01-tibbles
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 199704
+bundleId: 2835476
+url: https://tutorials.shinyapps.io/01-tibbles/
+when: 1582836235.71197
+asMultiple: FALSE
+asStatic: FALSE

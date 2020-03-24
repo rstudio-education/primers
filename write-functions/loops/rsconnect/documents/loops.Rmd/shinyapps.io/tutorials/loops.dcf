@@ -1,0 +1,12 @@
+name: loops
+title: loops
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 378721
+bundleId: 2895502
+url: https://tutorials.shinyapps.io/loops/
+when: 1584563365.34708
+asMultiple: FALSE
+asStatic: FALSE

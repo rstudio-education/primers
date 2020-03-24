@@ -1,0 +1,12 @@
+name: 06-line-graphs
+title: 06-line-graphs
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 193258
+bundleId: 2835609
+url: https://tutorials.shinyapps.io/06-line-graphs/
+when: 1582839346.7786
+asMultiple: FALSE
+asStatic: FALSE

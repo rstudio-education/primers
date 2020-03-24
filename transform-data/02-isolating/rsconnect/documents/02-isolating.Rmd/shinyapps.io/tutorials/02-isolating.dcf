@@ -1,0 +1,12 @@
+name: 02-isolating
+title: 02-isolating
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 199712
+bundleId: 2835520
+url: https://tutorials.shinyapps.io/02-isolating/
+when: 1582837433.30593
+asMultiple: FALSE
+asStatic: FALSE

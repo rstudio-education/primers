@@ -1,0 +1,12 @@
+name: map-shortcuts
+title: map-shortcuts
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 317173
+bundleId: 2895496
+url: https://tutorials.shinyapps.io/map-shortcuts/
+when: 1584563172.73276
+asMultiple: FALSE
+asStatic: FALSE

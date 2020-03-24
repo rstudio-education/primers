@@ -1,0 +1,12 @@
+name: advanced-control-flow
+title: advanced-control-flow
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 383984
+bundleId: 1489621
+url: https://tutorials.shinyapps.io/advanced-control-flow/
+when: 1532018487.01428
+asMultiple: FALSE
+asStatic: FALSE

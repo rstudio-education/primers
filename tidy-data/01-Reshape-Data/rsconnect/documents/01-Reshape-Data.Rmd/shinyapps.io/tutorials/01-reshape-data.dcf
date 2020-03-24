@@ -1,0 +1,12 @@
+name: 01-reshape-data
+title: 01-reshape-data
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 204031
+bundleId: 2837455
+url: https://tutorials.shinyapps.io/01-reshape-data/
+when: 1582902356.3588
+asMultiple: FALSE
+asStatic: FALSE

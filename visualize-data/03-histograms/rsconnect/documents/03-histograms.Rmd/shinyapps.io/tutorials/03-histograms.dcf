@@ -1,0 +1,12 @@
+name: 03-histograms
+title: 03-histograms
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 175311
+bundleId: 2835578
+url: https://tutorials.shinyapps.io/03-histograms/
+when: 1582838624.8816
+asMultiple: FALSE
+asStatic: FALSE

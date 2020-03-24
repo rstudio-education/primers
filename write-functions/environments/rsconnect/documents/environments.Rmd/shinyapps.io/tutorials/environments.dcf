@@ -1,0 +1,12 @@
+name: environments
+title: environments
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 491001
+bundleId: 2837811
+url: https://tutorials.shinyapps.io/environments/
+when: 1582910102.93422
+asMultiple: FALSE
+asStatic: FALSE

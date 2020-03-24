@@ -1,0 +1,12 @@
+name: control-flow
+title: control-flow
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 383980
+bundleId: 2837817
+url: https://tutorials.shinyapps.io/control-flow/
+when: 1582910407.0771
+asMultiple: FALSE
+asStatic: FALSE

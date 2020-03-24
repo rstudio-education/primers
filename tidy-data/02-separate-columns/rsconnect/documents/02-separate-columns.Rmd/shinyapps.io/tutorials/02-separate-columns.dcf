@@ -1,0 +1,12 @@
+name: 02-separate-columns
+title: 02-separate-columns
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 205123
+bundleId: 2918637
+url: https://tutorials.shinyapps.io/02-separate-columns/
+when: 1585064690.60954
+asMultiple: FALSE
+asStatic: FALSE

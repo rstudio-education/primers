@@ -1,0 +1,12 @@
+name: 03-deriving
+title: 03-deriving
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 199770
+bundleId: 2835543
+url: https://tutorials.shinyapps.io/03-deriving/
+when: 1582837757.71899
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,12 @@
+name: 08-Customize
+title: 08-Customize
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 195725
+bundleId: 2835636
+url: https://tutorials.shinyapps.io/08-Customize/
+when: 1582839996.89676
+asMultiple: FALSE
+asStatic: FALSE
