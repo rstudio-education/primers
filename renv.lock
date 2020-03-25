@@ -60,10 +60,10 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.0.3",
+      "Version": "1.0.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f3ca785924863b0e4c8cb23b6a5c75a1"
+      "Hash": "5ef9c463e30f8aea49c293e4b8d9d7be"
     },
     "adehabitatMA": {
       "Package": "adehabitatMA",
@@ -436,10 +436,10 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "1.2.4.2",
+      "Version": "1.2.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "fffa635f747cd07ffc56bc13a23701e4"
+      "Hash": "3878c30ce67cdb7f2d7f72554e37f476"
     },
     "isoband": {
       "Package": "isoband",
