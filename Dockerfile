@@ -1,0 +1,11 @@
+FROM rstudio/r-base:3.6-bionic
+
+RUN R -e "install.packages('renv', repos='https://demo.rstudiopm.com/all/__linux__/bionic/latest')";
+RUN apt-get update --fix-missing && apt-get install -yq libssl-dev libpng-dev libnetcdf-dev libxml2-dev && \
+  mkdir -p /rlibrary && \
+  chmod a+rx /rlibrary
+
+COPY renv.lock /
+
+ENV R_LIBS=/rlibrary
+RUN R -e 'renv::restore(library="/rlibrary")'
