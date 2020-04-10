@@ -364,6 +364,18 @@
       "Repository": "CRAN",
       "Hash": "af1f47b63d1aa2206c1fe4d3db1d9366"
     },
+    "gradethis": {
+      "Package": "gradethis",
+      "Version": "0.1.0.9002",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "gradethis",
+      "RemoteUsername": "rstudio-education",
+      "RemoteRef": "master",
+      "RemoteSha": "e7dec83796d6f293eec4d3580cfee0bf10639ab8",
+      "Hash": "3d590c6f2cd601bb0495361b142b4a96"
+    },
     "gridExtra": {
       "Package": "gridExtra",
       "Version": "2.3",
