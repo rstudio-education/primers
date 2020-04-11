@@ -8,6 +8,17 @@ runtime: shiny_prerendered
 tutorial:
   id: "com.rstudio.primers.02-vis-basics"
   version: 1.0
+params:
+  assumes:
+  - value
+  - variable
+  defines:
+  - package
+  - template
+  - aesthetics
+  - geom
+  - data space
+  - visual space
 ---
 
 ```{r setup, include=FALSE}
@@ -49,7 +60,15 @@ The tutorial focuses on three basic skills:
 1. How to add variables to a graph with **aesthetics**
 1. How to make different "types" of graphs with **geoms** 
 
-In this tutorial, we will use the [core tidyverse packages](http://tidyverse.org/), including `ggplot2`. I've already loaded the packages for you, so let's begin! 
+In this tutorial, we will use the [core tidyverse packages](http://tidyverse.org/), including `ggplot2`. I've already loaded the packages for you, so let's begin!
+
+```{r glossary, echo=FALSE}
+# If we decide to include assumed and defined terms, the four lines below would be put in a function.
+assumes <- paste(params$assumes, collapse = ", ")
+defines <- paste(params$defines, collapse = ", ")
+glossary <- paste(c('**Terms**', '', '- **Assumes:**', assumes, '- **Defines:**', defines, ''), collapse = "\n")
+knitr::asis_output(glossary)
+```
 
 ***
 
