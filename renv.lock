@@ -370,8 +370,8 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "gradethis",
       "RemoteUsername": "rstudio-education",
+      "RemoteRepo": "gradethis",
       "RemoteRef": "master",
       "RemoteSha": "e7dec83796d6f293eec4d3580cfee0bf10639ab8",
       "Hash": "3d590c6f2cd601bb0495361b142b4a96"
@@ -518,15 +518,16 @@
     },
     "learnr": {
       "Package": "learnr",
-      "Version": "0.10.1.9000",
+      "Version": "0.10.1.9001",
       "Source": "GitHub",
+      "Remotes": "rstudio/htmltools",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "learnr",
       "RemoteUsername": "rstudio",
       "RemoteRef": "master",
-      "RemoteSha": "e72c1f96af93306cb6854c661ced8cbdd05536b1",
-      "Hash": "2d9188d09546b1e23d64b2ba93d66049"
+      "RemoteSha": "5190453c932eabeff41463f1db1068bbc079a513",
+      "Hash": "d425547d26810e61ba9af590ccb73778"
     },
     "lifecycle": {
       "Package": "lifecycle",
