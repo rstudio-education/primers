@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 199770
-bundleId: 2918971
+bundleId: 3012115
 url: https://tutorials.shinyapps.io/03-deriving/
-when: 1585068861.73071
+when: 1586876831.23765
 asMultiple: FALSE
 asStatic: FALSE
