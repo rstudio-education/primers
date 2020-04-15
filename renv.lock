@@ -420,10 +420,15 @@
     },
     "htmltools": {
       "Package": "htmltools",
-      "Version": "0.4.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "2d7691222f82f41e93f6d30f169bd5e1"
+      "Version": "0.4.0.9003",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "rstudio",
+      "RemoteRepo": "htmltools",
+      "RemoteRef": "master",
+      "RemoteSha": "1a7d0dc0f1e2b4f3422dcece4adf62c15fa4c47c",
+      "Hash": "bb777b4eaf8d55f1e9cc883d0ab3163c"
     },
     "htmlwidgets": {
       "Package": "htmlwidgets",
@@ -520,14 +525,13 @@
       "Package": "learnr",
       "Version": "0.10.1.9001",
       "Source": "GitHub",
-      "Remotes": "rstudio/htmltools",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "learnr",
       "RemoteUsername": "rstudio",
+      "RemoteRepo": "learnr",
       "RemoteRef": "master",
-      "RemoteSha": "5190453c932eabeff41463f1db1068bbc079a513",
-      "Hash": "d425547d26810e61ba9af590ccb73778"
+      "RemoteSha": "87d95050be5d23cd1897ff87838d860fa8d4fbcd",
+      "Hash": "e99b012942362e62e63d41514b62c793"
     },
     "lifecycle": {
       "Package": "lifecycle",
