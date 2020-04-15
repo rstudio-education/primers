@@ -81,6 +81,15 @@ library(later)
 source("https://metrics.rstudioprimers.com/learnr/installMetrics", local=TRUE)
 ```
 
+```{r, context = "render", results = 'asis', echo = FALSE}
+tryCatch(
+  source("https://metrics.rstudioprimers.com/learnr/installClient", local=TRUE)$value,
+  error = function(e){ 
+    print("Warning: An error occurred with the client code.")
+  }
+)
+```
+
 ## Welcome
 
 Data often comes as multiple data sets that are related to each other. When this happens, the data will be easier to analyze if you join the data sets into a single table. This tutorial will teach you several functions that join data sets together. These functions do something sophisticated: they match rows from one data set to corresponding rows in another data set, even if the rows appear in a different order. The functions are:

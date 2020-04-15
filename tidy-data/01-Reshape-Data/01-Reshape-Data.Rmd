@@ -53,6 +53,15 @@ library(later)
 source("https://metrics.rstudioprimers.com/learnr/installMetrics", local=TRUE)
 ```
 
+```{r, context = "render", results = 'asis', echo = FALSE}
+tryCatch(
+  source("https://metrics.rstudioprimers.com/learnr/installClient", local=TRUE)$value,
+  error = function(e){ 
+    print("Warning: An error occurred with the client code.")
+  }
+)
+```
+
 ## Welcome
 
 The tools that you learned in the previous Primers work best when your data is organized in a specific way. This format is known as **tidy data** and it appears throughout the tidyverse. You will spend a lot of time as a data scientist wrangling your data into a useable format, so it is important to learn how to do this fast. 

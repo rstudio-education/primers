@@ -30,6 +30,15 @@ library(later)
 source("https://metrics.rstudioprimers.com/learnr/installMetrics", local=TRUE)
 ```
 
+```{r, context = "render", results = 'asis', echo = FALSE}
+tryCatch(
+  source("https://metrics.rstudioprimers.com/learnr/installClient", local=TRUE)$value,
+  error = function(e){ 
+    print("Warning: An error occurred with the client code.")
+  }
+)
+```
+
 ## && and ||
 
 ###   

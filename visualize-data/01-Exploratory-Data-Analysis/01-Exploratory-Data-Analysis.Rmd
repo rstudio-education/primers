@@ -28,6 +28,15 @@ library(later)
 source("https://metrics.rstudioprimers.com/learnr/installMetrics", local=TRUE)
 ```
 
+```{r, context = "render", results = 'asis', echo = FALSE}
+tryCatch(
+  source("https://metrics.rstudioprimers.com/learnr/installClient", local=TRUE)$value,
+  error = function(e){ 
+    print("Warning: An error occurred with the client code.")
+  }
+)
+```
+
 ## Welcome
 
 This tutorial will show you how to explore your data in a systematic way, a task that statisticians call **exploratory data analysis**, or **EDA** for short. In the tutorial you will:
