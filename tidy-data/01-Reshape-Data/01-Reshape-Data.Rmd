@@ -578,7 +578,7 @@ babynames %>%
   group_by(year, sex) %>% 
   summarise(total = sum(n)) %>% 
   ggplot() +
-    geom_line(aes(year, n, color = sex))
+    geom_line(aes(year, total, color = sex))
 ```
 
 ```{r ex13-check}
