@@ -427,8 +427,8 @@
       "RemoteUsername": "rstudio",
       "RemoteRepo": "htmltools",
       "RemoteRef": "master",
-      "RemoteSha": "1a7d0dc0f1e2b4f3422dcece4adf62c15fa4c47c",
-      "Hash": "bb777b4eaf8d55f1e9cc883d0ab3163c"
+      "RemoteSha": "984b39c134e111e1518c4e5812110aa531bf803b",
+      "Hash": "a93fa4d7af61fc0a9909ee5c90f11920"
     },
     "htmlwidgets": {
       "Package": "htmlwidgets",
@@ -529,9 +529,9 @@
       "RemoteHost": "api.github.com",
       "RemoteUsername": "rstudio",
       "RemoteRepo": "learnr",
-      "RemoteRef": "limit-exercises",
-      "RemoteSha": "c12e2cceedb446756841943c12579ccd9958f896",
-      "Hash": "1585370cb04f807822bc5367906e2bf4"
+      "RemoteRef": "master",
+      "RemoteSha": "ed3bcbe6dba6ba2639cec5d4cc2011a7dd67d723",
+      "Hash": "09c67d3f1044d50822ceb47219c8357d"
     },
     "lifecycle": {
       "Package": "lifecycle",
