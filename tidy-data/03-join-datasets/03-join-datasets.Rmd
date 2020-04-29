@@ -78,7 +78,12 @@ knitr::opts_chunk$set(echo = FALSE)
 # Capture metrics only if running an official primer hosted by RStudio
 library(curl)
 library(later)
-source("https://metrics.rstudioprimers.com/learnr/installMetrics", local=TRUE)
+tryCatch(
+  source("https://metrics.rstudioprimers.com/learnr/installMetrics", local=TRUE), 
+  error = function(e){ 
+    print("Warning: An error occurred with the tracking code.")
+  }
+)
 ```
 
 ```{r, context = "render", results = 'asis', echo = FALSE}

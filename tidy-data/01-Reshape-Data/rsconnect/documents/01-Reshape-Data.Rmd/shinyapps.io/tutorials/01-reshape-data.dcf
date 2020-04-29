@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 204031
-bundleId: 3051229
+bundleId: 3082253
 url: https://tutorials.shinyapps.io/01-reshape-data/
-when: 1587579567.08296
+when: 1588179155.96448
 asMultiple: FALSE
 asStatic: FALSE

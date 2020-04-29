@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 319216
-bundleId: 2895508
+bundleId: 3082357
 url: https://tutorials.shinyapps.io/multiple-vectors/
-when: 1584563482.15345
+when: 1588180345.12545
 asMultiple: FALSE
 asStatic: FALSE

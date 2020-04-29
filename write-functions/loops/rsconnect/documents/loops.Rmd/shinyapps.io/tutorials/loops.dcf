@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 378721
-bundleId: 2895502
+bundleId: 3082457
 url: https://tutorials.shinyapps.io/loops/
-when: 1584563365.34708
+when: 1588182077.68935
 asMultiple: FALSE
 asStatic: FALSE

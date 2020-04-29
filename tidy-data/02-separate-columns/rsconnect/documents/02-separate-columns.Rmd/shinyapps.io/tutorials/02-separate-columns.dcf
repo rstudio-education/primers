@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 205123
-bundleId: 2918637
+bundleId: 3082264
 url: https://tutorials.shinyapps.io/02-separate-columns/
-when: 1585064690.60954
+when: 1588179351.17486
 asMultiple: FALSE
 asStatic: FALSE
