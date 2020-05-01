@@ -523,15 +523,15 @@
     },
     "learnr": {
       "Package": "learnr",
-      "Version": "0.10.1.9001",
+      "Version": "0.10.1.9002",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "rstudio",
       "RemoteRepo": "learnr",
-      "RemoteRef": "master",
-      "RemoteSha": "ed3bcbe6dba6ba2639cec5d4cc2011a7dd67d723",
-      "Hash": "09c67d3f1044d50822ceb47219c8357d"
+      "RemoteRef": "init-promise",
+      "RemoteSha": "78b6849ef0a7372a0aa06c71548a463d5a7b935b",
+      "Hash": "95a416f43b3133e949543b0fe5969689"
     },
     "lifecycle": {
       "Package": "lifecycle",
