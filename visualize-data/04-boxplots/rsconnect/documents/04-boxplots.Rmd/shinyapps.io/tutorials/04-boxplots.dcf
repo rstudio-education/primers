@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 190858
-bundleId: 3082178
+bundleId: 3101949
 url: https://tutorials.shinyapps.io/04-boxplots/
-when: 1588178058.75575
+when: 1588608743.69522
 asMultiple: FALSE
 asStatic: FALSE

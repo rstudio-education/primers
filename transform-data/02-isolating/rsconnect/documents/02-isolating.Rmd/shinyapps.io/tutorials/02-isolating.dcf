@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 199712
-bundleId: 3101559
+bundleId: 3103175
 url: https://tutorials.shinyapps.io/02-isolating/
-when: 1588603939.06213
+when: 1588624807.98456
 asMultiple: FALSE
 asStatic: FALSE

@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 175311
-bundleId: 3082154
+bundleId: 3091588
 url: https://tutorials.shinyapps.io/03-histograms/
-when: 1588177849.94769
+when: 1588363637.15314
 asMultiple: FALSE
 asStatic: FALSE

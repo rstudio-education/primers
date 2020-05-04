@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 173510
-bundleId: 3082122
+bundleId: 3091561
 url: https://tutorials.shinyapps.io/01-Exploratory-Data-Analysis/
-when: 1588177421.57217
+when: 1588363194.26549
 asMultiple: FALSE
 asStatic: FALSE

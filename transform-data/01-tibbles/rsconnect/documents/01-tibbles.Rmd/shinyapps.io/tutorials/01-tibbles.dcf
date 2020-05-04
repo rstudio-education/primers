@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 199704
-bundleId: 3082054
+bundleId: 3103149
 url: https://tutorials.shinyapps.io/01-tibbles/
-when: 1588176529.17917
+when: 1588624406.81683
 asMultiple: FALSE
 asStatic: FALSE

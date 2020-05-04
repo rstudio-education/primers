@@ -529,9 +529,9 @@
       "RemoteHost": "api.github.com",
       "RemoteUsername": "rstudio",
       "RemoteRepo": "learnr",
-      "RemoteRef": "init-promise",
-      "RemoteSha": "78b6849ef0a7372a0aa06c71548a463d5a7b935b",
-      "Hash": "95a416f43b3133e949543b0fe5969689"
+      "RemoteRef": "master",
+      "RemoteSha": "18b75eee2a497d745a2ff4848dbc5a8780ca5442",
+      "Hash": "d817b217f06485a1bdec9abaaf8a629c"
     },
     "lifecycle": {
       "Package": "lifecycle",

@@ -5,8 +5,8 @@ account: tutorials
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 193258
-bundleId: 3082210
+bundleId: 3101988
 url: https://tutorials.shinyapps.io/06-line-graphs/
-when: 1588178483.62029
+when: 1588609154.12058
 asMultiple: FALSE
 asStatic: FALSE

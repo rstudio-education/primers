@@ -50,8 +50,6 @@ tryCatch(
     print("Warning: An error occurred with the tracking code.")
   }
 )
-# opt-out of external hosting due to heavy setup chunk
-options("tutorial.external.host" = NULL)
 ```
 
 ```{r, context = "render", results = 'asis', echo = FALSE}
