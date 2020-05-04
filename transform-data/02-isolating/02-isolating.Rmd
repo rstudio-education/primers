@@ -379,7 +379,7 @@ arrange(babynames, n, prop)
 
 If you would rather arrange rows in the opposite order, i.e. from _large_ values to _small_ values, surround a column name with `desc()`. `arrange()` will reorder the rows based on the largest values to the smallest.
 
-Add a `desc()` to the code below to display the most popular name for 2015 (the largest year in the dataset) instead of 1880 (the smallest year in the dataset).
+Add a `desc()` to the code below to display the most popular name for 2017 (the largest year in the dataset) instead of 1880 (the smallest year in the dataset).
 
 ```{r arrange-3, exercise = TRUE, exercise.eval = TRUE}
 arrange(babynames, year, desc(prop))
@@ -425,25 +425,25 @@ arrange(babynames, desc(n))
 
 Notice how each dplyr function takes a data frame as input and returns a data frame as output. This makes the functions easy to use in a step by step fashion. For example, you could:
 
-1. Filter babynames to just boys born in 2015
+1. Filter babynames to just boys born in 2017
 2. Select the `name` and `n` columns from the result
 3. Arrange those columns so that the most popular names appear near the top.
 
 ```{r echo = TRUE}
-boys_2015 <- filter(babynames, year == 2015, sex == "M")
-boys_2015 <- select(boys_2015, name, n)
-boys_2015 <- arrange(boys_2015, desc(n))
-boys_2015
+boys_2017 <- filter(babynames, year == 2017, sex == "M")
+boys_2017 <- select(boys_2017, name, n)
+boys_2017 <- arrange(boys_2017, desc(n))
+boys_2017
 ```
 
 ### Redundancy
 
-The result shows us the most popular boys names from 2015, which is the most recent year in the data set. But take a look at the code. Do you notice how we re-create `boys_2015` at each step so we will have something to pass to the next step? This is an inefficient way to write R code.
+The result shows us the most popular boys names from 2017, which is the most recent year in the data set. But take a look at the code. Do you notice how we re-create `boys_2017` at each step so we will have something to pass to the next step? This is an inefficient way to write R code.
 
-You could avoid creating `boys_2015` by nesting your functions inside of each other, but this creates code that is hard to read:
+You could avoid creating `boys_2017` by nesting your functions inside of each other, but this creates code that is hard to read:
 
 ```{r echo = TRUE, eval = FALSE}
-arrange(select(filter(babynames, year == 2015, sex == "M"), name, n), desc(n))
+arrange(select(filter(babynames, year == 2017, sex == "M"), name, n), desc(n))
 ```
 
 The dplyr package provides a third way to write sequences of functions: the pipe.
@@ -454,7 +454,7 @@ The pipe operator `%>%` performs an extremely simple task: it passes the result 
 
 ```{r echo = TRUE}
 babynames %>% 
-  filter(year == 2015, sex == "M") %>% 
+  filter(year == 2017, sex == "M") %>% 
   select(name, n) %>% 
   arrange(desc(n))
 ```
@@ -467,7 +467,7 @@ dplyr also makes it easy to write pipes. Each dplyr function returns a data fram
 
 I'll use pipes for the remainder of the tutorial, and I will expect you to as well. Let's practice a little by writing a new pipe in the chunk below. The pipe should:
 
-1. Filter babynames to just the *girls* that were born in 2015
+1. Filter babynames to just the *girls* that were born in 2017
 2. Select the `name` and `n` columns
 3. Arrange the results so that the most popular names are near the top.
 
@@ -479,7 +479,7 @@ Try to write your pipe without copying and pasting the code from above.
 
 ```{r pipe-1-solution}
 babynames %>% 
-  filter(year == 2015, sex == "F") %>% 
+  filter(year == 2017, sex == "F") %>% 
   select(name, n) %>% 
   arrange(desc(n))
 ```
