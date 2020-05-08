@@ -558,7 +558,7 @@ ggplot(data = mpg) +
 
 ### More about geoms
 
-ggplot2 provides over 30 geom functions that you can use to make plots, and extension packages provide even more (see <https://www.ggplot2-exts.org> for a sampling). You'll learn how to use these geoms to explore data in the [Visualize Data]() primer. 
+ggplot2 provides over 30 geom functions that you can use to make plots, and extension packages provide even more (see <https://exts.ggplot2.tidyverse.org/gallery/> for a sampling). You'll learn how to use these geoms to explore data in the [Visualize Data]() primer. 
 
 Until then, the best way to get a comprehensive overview of the available geoms is with the [ggplot2 cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf). To learn more about any single geom, look at its help page, e.g. `?geom_smooth`.
 
