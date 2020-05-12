@@ -1,0 +1,48 @@
+#!groovy
+
+//doUpload = (env.BRANCH_NAME == 'master')
+doUpload = true
+
+ansiColor('xterm') {
+  node('docker') {
+      stage('setup') {
+        if (env.BRANCH_NAME ==~ /.*\/.*/) {
+          error("Branch names must not contain slashes.")
+        }
+        checkout scm
+      }
+      
+      def image = docker.build('primers-library:latest', "-f Dockerfile.build .")
+
+      stage('Build Library') {
+        image.inside() {
+          sh "mkdir -p rlibrary/"
+          sh "mkdir -p renv-cache/"
+          sh "RENV_PATHS_ROOT=renv-cache/ R -e 'renv::restore(library=\"rlibrary/\", repos=c(CRAN=\"https://packagemanager.rstudio.com/cran/__linux__/bionic/latest\"))'"
+          sh "tar -zcvf bionic-r3-6-3.tar.gz rlibrary"
+          stash includes: 'bionic-r3-6-3.tar.gz', name: 'rlibrary'
+        }
+        print "Finished building"
+      }
+
+      stage('Upload') {
+        if (doUpload) {
+          image.inside() {
+            unstash 'rlibrary'
+            withCredentials([string(credentialsId: 'primers-role-name', variable: 'PRIMERS_ROLE_NAME')]) {
+              withCredentials([string(credentialsId: 'primers-role-account', variable: 'PRIMERS_ROLE_ACCOUNT')]) {
+                withAWS(role: PRIMERS_ROLE_NAME, roleAccount: PRIMERS_ROLE_ACCOUNT) {
+                  sh "aws s3 cp bionic-r3-6-3.tar.gz s3://primers-library/"
+                }
+              }
+            }
+          }
+        } else {
+          print "Skipping"
+        }
+      }
+      stage('Finish') {
+        print "Finished pipeline"
+      }
+  }
+}
