@@ -1,7 +1,6 @@
 #!groovy
 
-//doUpload = (env.BRANCH_NAME == 'master')
-doUpload = true
+doUpload = (env.BRANCH_NAME == 'master')
 
 ansiColor('xterm') {
   node('docker') {
