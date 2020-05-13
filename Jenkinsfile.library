@@ -16,6 +16,8 @@ ansiColor('xterm') {
 
       stage('Build Library') {
         image.inside() {
+          sh "rm -rf rlibrary"
+          sh "rm -rf renv-cache"
           sh "mkdir -p rlibrary/"
           sh "mkdir -p renv-cache/"
           sh "RENV_PATHS_ROOT=renv-cache/ R -e 'renv::restore(library=\"rlibrary/\", repos=c(CRAN=\"https://packagemanager.rstudio.com/cran/__linux__/bionic/latest\"))'"
