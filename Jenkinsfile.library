@@ -2,7 +2,6 @@
 
 //doUpload = (env.BRANCH_NAME == 'master')
 doUpload = true
-gitSHA = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 
 ansiColor('xterm') {
   node('docker') {
@@ -29,6 +28,7 @@ ansiColor('xterm') {
       stage('Upload') {
         if (doUpload) {
           image.inside() {
+            gitSHA = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             unstash 'rlibrary'
             withCredentials([string(credentialsId: 'primers-role-name', variable: 'PRIMERS_ROLE_NAME')]) {
               withCredentials([string(credentialsId: 'primers-role-account', variable: 'PRIMERS_ROLE_ACCOUNT')]) {
