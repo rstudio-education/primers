@@ -530,8 +530,8 @@
       "RemoteUsername": "rstudio",
       "RemoteRepo": "learnr",
       "RemoteRef": "master",
-      "RemoteSha": "16888205617f1493b2d7027a880641a017c2398d",
-      "Hash": "2be3bfa208c50068c8e94d7298c26ffe"
+      "RemoteSha": "cf5fe34eaee039986596e1578bac0d5ffdb01d06",
+      "Hash": "800d562c082bbb8914ee5ed88e3cec82"
     },
     "lifecycle": {
       "Package": "lifecycle",
