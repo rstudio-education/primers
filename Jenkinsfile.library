@@ -32,7 +32,7 @@ ansiColor('xterm') {
             withCredentials([string(credentialsId: 'primers-role-name', variable: 'PRIMERS_ROLE_NAME')]) {
               withCredentials([string(credentialsId: 'primers-role-account', variable: 'PRIMERS_ROLE_ACCOUNT')]) {
                 withAWS(role: PRIMERS_ROLE_NAME, roleAccount: PRIMERS_ROLE_ACCOUNT) {
-                  sh "aws s3 cp bionic-r3-6-3.tar.gz s3://primers-library/"
+                  sh "aws s3 cp bionic-r3-6-3.tar.gz s3://primers-library/r3.6.3/bionic/${GIT_COMMIT}.tar.gz"
                 }
               }
             }
