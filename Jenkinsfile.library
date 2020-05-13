@@ -15,10 +15,12 @@ ansiColor('xterm') {
 
       stage('Build Library') {
         image.inside() {
+          sh "rm -rf rlibrary"
+          sh "rm -rf renv-cache"
           sh "mkdir -p rlibrary/"
           sh "mkdir -p renv-cache/"
           sh "RENV_PATHS_ROOT=renv-cache/ R -e 'renv::restore(library=\"rlibrary/\", repos=c(CRAN=\"https://packagemanager.rstudio.com/cran/__linux__/bionic/latest\"))'"
-          sh "tar -zcvf bionic-r3-6-3.tar.gz rlibrary"
+          sh "tar -C rlibrary -zcvf bionic-r3-6-3.tar.gz ."
           stash includes: 'bionic-r3-6-3.tar.gz', name: 'rlibrary'
         }
         print "Finished building"
@@ -27,11 +29,12 @@ ansiColor('xterm') {
       stage('Upload') {
         if (doUpload) {
           image.inside() {
+            gitSHA = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             unstash 'rlibrary'
             withCredentials([string(credentialsId: 'primers-role-name', variable: 'PRIMERS_ROLE_NAME')]) {
               withCredentials([string(credentialsId: 'primers-role-account', variable: 'PRIMERS_ROLE_ACCOUNT')]) {
                 withAWS(role: PRIMERS_ROLE_NAME, roleAccount: PRIMERS_ROLE_ACCOUNT) {
-                  sh "aws s3 cp bionic-r3-6-3.tar.gz s3://primers-library/"
+                  sh "aws s3 cp bionic-r3-6-3.tar.gz s3://primers-library/r3.6.3/bionic/${gitSHA}.tar.gz"
                 }
               }
             }
