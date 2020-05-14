@@ -1,0 +1,580 @@
+---
+title: "Graphiques de dispersion"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(ggrepel)
+library(tidyverse)
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+
+## Bienvenue 
+
+Un **graphique de dispersion ** (ou nuage de points - appelé scatterplot en anglais) affiche la relation entre deux variables continues. Les graphiques de dispersion sont l'un des types de graphiques les plus courants ---en fait, vous avez déjà rencontré des graphiques de dispersion dans le module [Bases de la visualisation de données](). 
+
+Dans ce module, vous apprendrez comment :
+
+* Créer de nouveaux types de graphiques de dispersion avec `geom_text()` et `geom_jitter()`
+* Ajouter plusieurs **couches** graphiques
+* Améliorer les graphiques de dispersion avec `geom_smooth()`, `geom_rug()`, et `geom_repel()`
+* Changer le **système de coordonnées** d'un graphique
+
+Le module est adapté du livre _R for Data Science_ de Hadley Wickham et Garrett Grolemund, publié par O'Reilly Media, Inc. 2016, ISBN : 9781491910399. Vous pouvez acheter le livre sur [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
+
+Le module utilise les packages {ggplot2}, {ggrepel} et {dplyr}, qui ont été préchargés pour votre confort.
+
+## Graphiques de dispersion
+
+### Révision - geom_point()
+
+Dans le module [Bases de la visualisation de données](), vous avez appris à faire un graphique de dispersion avec `geom_point()`.
+
+Le code ci-dessous résume le jeu de données mpg et commence à tracer les résultats. Terminez le tracé avec `geom_point()`. Mettez `mean_cty` sur l'axe $x$ et `mean_hwy` sur l'axe $y$.
+
+```{r r1, exercise = TRUE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot()
+```
+
+```{r r1-solution}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point()
+```
+
+```{r r1-check}
+"Bon travail ! Il peut être difficile de se rappeler quand il faut utiliser %>% et quand il faut utiliser +. Utilisez %>% pour ajouter une étape complète à un flux de code (pipe). Utilisez + pour ajouter une ligne de plus à un appel {ggplot2}."
+```
+
+### geom_text()
+
+`geom_text()` et `geom_label()` créent des graphiques de dispersion qui utilisent des mots au lieu de points pour afficher les données. Chacun d'entre eux nécessite un paramètre esthétique supplémentaire : l'étiquette (label), que vous devez associer à une variable contenant du texte à afficher pour chaque observation.
+
+Convertissez le graphique ci-dessous de `geom_point()` à `geom_text()` et utilisez pour le paramètre `label` la variable `class`. Lorsque vous avez terminé, convertissez le code en `geom_label()` et relancez le graphique. Repérez-vous la différence ?
+
+```{r r2, exercise = TRUE, exercise.eval = TRUE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point()
+```
+
+```{r r2-solution}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy, label = class) +
+    geom_text()
+
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy, label = class) +
+    geom_label()
+```
+
+```{r r2-check}
+"Voilà ! geom_text() remplace chaque point par un morceau de texte fourni via le paramètre esthétique `label`. geom_label() remplace chaque point par une zone de texte. Remarquez que certains morceaux de texte se chevauchent, et que d'autres sortent de la page. Nous allons bientôt chercher un moyen de régler ce problème."
+```
+
+
+### geom_smooth()
+
+Dans le module [Bases de la visualisation de données](), vous avez rencontré `geom_smooth()`, qui fournit une version synthétisées d'un graphique de dispersion.
+
+`geom_smooth()` utilise un modèle pour ajuster une ligne lissée aux données, puis affiche les résultats. Par défaut, `geom_smooth()` ajuste une fonction de lissage 'loess' aux jeux de données de moins de 1 000 observations, et un modèle additif généralisé aux jeux de données de plus de 1 000 observations. 
+
+```{r echo = FALSE, out.width="50%", message = FALSE, warning = FALSE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point() +
+    ggtitle("geom_point)") +
+    ylim(16, 30)
+
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_smooth(se = FALSE) +
+    ggtitle("geom_smooth()") +
+    ylim(16, 30)
+```
+
+### method
+
+Vous pouvez utiliser le paramètre `method` de `geom_smooth()` pour ajuster et afficher des lignes de lissage provenant d'autres types de modèles de régression. Pour ce faire, passez à `method` le nom d'une fonction de modélisation à utiliser par `geom_smooth()`, comme `lm` (pour les modèles linéaires) ou `glm` (pour les modèles linéaires généralisés).
+
+Dans le code ci-dessous, utilisez `geom_smooth()` pour dessiner la ligne du modèle linéaire qui correspond aux données.
+
+```{r r3, exercise = TRUE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() 
+```
+
+```{r r3-solution}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_smooth(method = lm)
+```
+
+```{r r3-check}
+"Bon travail ! Voyons maintenant comment rendre geom_smooth() beaucoup plus utile."
+```
+
+## Couches graphiques (layers)
+
+### Ajouter une couche
+
+`geom_smooth()` devient beaucoup plus utile quand vous le combinez avec `geom_point()` pour créer un graphique de dispersion qui contient les deux éléments :
+
+* les données brutes
+* une ligne de tendance
+
+Dans {ggplot2}, vous pouvez ajouter plusieurs geoms à un graphique en ajoutant plusieurs fonctions géométriques `geom_`à l'appel du graphique. Par exemple, le code ci-dessous crée un tracé qui contient à la fois des points et une ligne de lissage. Imaginez à quoi ressembleront les résultats dans votre tête, puis lancez le code pour voir si vous avez raison.
+
+```{r r4, exercise = TRUE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point() +
+    geom_smooth(method = lm) 
+```
+
+```{r r4-check}
+"Bon travail ! Vous pouvez ajouter autant de fonctions géométriques que vous le souhaitez à un graphique. Cependant, en pratique, un graphique deviendra difficile à interpréter si il contient plus de deux ou trois fonctions géométriques"
+```
+
+### geom_label_repel()
+
+Vous souvenez-vous de la façon dont les étiquettes que nous avons fabriquées au début se chevauchaient et s'écartaient de notre graphique ? La fonction géométrique `geom_label_repel()` du package {ggrepel} atténue ces problèmes en utilisant un algorithme pour disposer les étiquettes dans un graphique. Il fonctionne mieux en conjonction avec une couche de points qui affiche l'emplacement réel de chaque observation.
+
+Utilisez `geom_label_repel()` pour ajouter une nouvelle couche au graphique ci-dessous. `geom_label_repel()` requiert les même paramètres esthétique que `geom_label()` : x, y, et label (ici fixé à `class`).
+
+```{r r5, exercise = TRUE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point() +
+    geom_smooth(method = lm)
+```
+
+```{r r5-solution}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point() +
+    geom_smooth(method = lm) +
+    geom_label_repel(aes(label = class))
+```
+
+```{r r5-check}
+"Bien ! Le package {ggrepel} fournit la fonction geom_text_repel(), qui est analogue à geom_text()."
+```
+
+### Duplication de code
+
+Une autre manière de créer le graphique précédent aurait été d’utiliser le code suivant : 
+
+```{r eval = FALSE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    geom_point(mapping = aes(x = mean_cty, y = mean_hwy)) +
+    geom_smooth(mapping = aes(x = mean_cty, y = mean_hwy), method = lm) +
+    geom_label_repel(mapping = aes(x = mean_cty, y = mean_hwy, label = class))
+```
+
+Si vous étudiez ce code, vous constaterez un certain nombre de duplications. Il utilise les mêmes paramètres esthétiques à trois endroits différents.
+
+Vous devez essayer d'éviter les doublons chaque fois que vous le pouvez dans le code, car le code en double invite aux fautes de frappe, est difficile à mettre à jour et prend plus de temps que nécessaire à écrire. C'est pourquoi nous préférons utiliser le code suivant :  
+
+```{r eval = FALSE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point() +
+    geom_smooth(method = lm) +
+    geom_label_repel(aes(label = class))
+```
+
+### Paramètres esthétiques de ggplot()
+
+Vous pouvez fixer les paramètres esthétiques à deux endroits dans n'importe quel appel {ggplot2}. Vous pouvez définir les paramètres esthétiques à l'intérieur d'une fonction geom. Ou vous pouvez les placer à l'extérieur des fonctions geom, juste après l'appel à la fonction `ggplot()`. C'est cette dernière solution qui permet d'éviter les doublons de code, et donc celle que nous préconisons. Au-delà de limiter les duplications de code, cette solution permet également d'identifier très rapidement quels sont les paramètres esthétiques utilisés pour construire le graphique.
+
+```{r out.width = "80%", message = FALSE, warning = FALSE, message = FALSE, warning = FALSE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+### Paramètres esthétiques globaux vs. locaux
+
+{ggplot2} traitera tous les paramètres esthétiques définis dans la fonction `aes()` utilisée à l'extérieur des fonction `geom_` comme des paramètres _globaux_. Chaque couche du graphique héritera et utilisera ces paramètres. 
+
+{ggplot2} traitera tous les paramètres esthétiques définis dans une fonction `geom_()` comme des paramètres _locaux_. Seule la couche locale utilisera ces paramètres. Les paramètres locaux remplaceront les paramètres globaux si les deux s'opposent, ou les compléteront s'ils ne s'opposent pas.
+
+Ce système crée un moyen efficace d'écrire des appels de graphiques :
+
+```{r out.width = "80%", message = FALSE, warning = FALSE, warning = FALSE, message = FALSE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point() +
+  geom_smooth(aes(color = class), se = FALSE)
+```
+
+### Exercice 2
+
+Réduisez les doublons dans le code ci-dessous en déplaçant autant de paramètres esthétiques locaux que possible dans les paramètres globaux. Relancez le nouveau code pour vous assurer qu'il crée le même graphique.
+
+```{r r6, exercise = TRUE, exercise.eval = TRUE}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    geom_point(mapping = aes(x = mean_cty, y = mean_hwy)) +
+    geom_smooth(mapping = aes(x = mean_cty, y = mean_hwy), method = lm) +
+    geom_label_repel(mapping = aes(x = mean_cty, y = mean_hwy, label = class))
+```
+
+```{r r6-solution}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+    aes(x = mean_cty, y = mean_hwy) +
+    geom_point() +
+    geom_smooth(method = lm) +
+    geom_label_repel(aes(label = class))
+```
+
+```{r r6-check}
+"Bon travail ! N'oubliez pas que tout paramètre esthétique ne doit pas nécessairement être global. Ici, seul geom_label_repel utilise le paramètre esthétique `label`. Ce paramètre doit donc rester local pour éviter les effets secondaires involontaires, les avertissements ou les erreurs."
+```
+
+### Exercice 3 - Global vs. local
+
+Recréez le graphique ci-dessous de la manière la plus efficace possible.
+
+```{r echo = FALSE, out.width = "80%", message = FALSE, warning = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  geom_smooth()
+```
+
+```{r r7, exercise = TRUE}
+
+```
+
+```{r r7-solution}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point(aes(color = class)) +
+  geom_smooth()
+```
+
+```{r r7-check}
+"Bien joué !"
+```
+
+### data global vs. local
+
+Le paramètre `data` suit également un système global/local. Si vous définissez l'argument `data` d'une fonction geom, la fonction geom utilisera les données que vous fournissez au lieu des données contenues dans `ggplot()`. C'est un moyen pratique de mettre en évidence des groupes de points.
+
+Utilisez les arguments `data` pour recréer le tracé ci-dessous. Nous avons commencé le code pour vous.
+
+```{r echo = FALSE, out.width = "80%", message = FALSE, warning = FALSE}
+mpg2 <- filter(mpg, class == "2seater")
+
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point() +
+  geom_point(data = mpg2, color = "red", size = 2)
+```
+
+```{r r8, exercise = TRUE, }
+mpg2 <- filter(mpg, class == "2seater")
+```
+
+```{r r8-solution}
+mpg2 <- filter(mpg, class == "2seater")
+
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point() +
+  geom_point(data = mpg2, color = "red", size = 2)
+```
+
+```{r r8-check}
+"Excellent travail"
+```
+
+### Exercice 4 - data global vs. local
+
+Utilisez les paramètres `data` pour re-créer le graphique ci-dessous.
+
+```{r echo = FALSE, out.width = "80%", message = FALSE, warning = FALSE}
+mpg3 <- filter(mpg, hwy > 40)
+
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point() +
+  geom_label_repel(data = mpg3, aes(label = class))
+```
+
+```{r r9, exercise = TRUE}
+
+```
+
+```{r r9-solution}
+mpg3 <- filter(mpg, hwy > 40)
+
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point() +
+  geom_label_repel(data = mpg3, aes(label = class))
+```
+
+```{r r9-check}
+"Bien joué !"
+```
+
+### Sauvegarder des graphiques
+
+Lorsque vous explorez des données, il vous arrive souvent de faire un graphique et de réfléchir à un moyen de l'améliorer. Au lieu de repartir de zéro ou de copier-coller votre code, vous pouvez stocker votre graphique {ggplot2} dans un objet R. Plus tard, vous pourrez afficher le graphique ou y ajouter des éléments.
+
+```{r out.width = "80%", message = FALSE, warning = FALSE}
+p <- ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point()
+
+p +
+  geom_smooth()
+
+p +
+  geom_smooth(method = lm, color = "purple")
+```
+
+Si vous souhaitez conserver une nouvelle version du graphique, il vous faudra écraser la version précédente. Comme ceci :
+
+```{r out.width = "80%", message = FALSE, warning = FALSE}
+p <- p +
+  geom_smooth(method = lm, color = "purple")
+```
+
+Notez que {ggplot2} n'affiche pas le graphique lorsque vous le stockez. Il attend que vous appeliez l'objet stocké.
+
+```{r out.width = "80%", message = FALSE, warning = FALSE}
+p
+```
+
+### geom_rug()
+
+`geom_rug()` ajoute un autre type de résumé à un graphique. Il utilise les affichages des distributions marginales unidimensionnelles de chaque variable du graphique de dispersion. Celles-ci apparaissent sous forme de traits le long des axes $x$ et $y$.
+
+Dans la partie ci-dessous, utilisez le jeu de données `faithful` pour créer un graphique de dispersion qui comporte la variable `waiting` sur l'axe $x$ et la variable `eruptions` sur l'axe $y$. Utilisez la fonction `geom_rug()` pour ajouter au graphique de dispersion les données sur l'axe des $x$ et des $y$ sous forme de petits traits. Comme `geom_point()`, `geom_rug()` nécessite les paramètres esthétiques x et y.
+
+```{r r10, exercise = TRUE}
+
+```
+
+```{r r10-solution}
+ggplot(data = faithful) +
+  aes(x = waiting, y = eruptions) +
+  geom_point() +
+  geom_rug()
+```
+
+```{r r10-check}
+'Bon travail ! Passez à geom_rug() le paramètre `sides = "l"` pour limiter le tracé des traits à $y$ ou `sides = "b"` pour limiter le tracé à $x$.'
+```
+
+
+### geom_jitter()
+
+`geom_jitter()` trace un graphique de dispersion et ajoute ensuite une petite quantité de bruit aléatoire à chaque point du tracé. C'est un raccourci pour ajouter un ajustement de position "bruité" à un graphique de dispersion (c'est-à-dire, `geom_point(position = "jitter")`).
+
+Pourquoi utiliser `geom_jitter()` ? Le bruit fournit un moyen d'inspecter des motifs qui se produisent dans des données fortement maillées ou se chevauchant. Pour voir ce que nous voulons dire, remplacez `geom_point()` par `geom_jitter()` dans le graphique ci-dessous.
+
+```{r r11, exercise = TRUE, exercise.eval = TRUE}
+ggplot(data = mpg) +
+  aes(x = class, y = hwy) +
+  geom_point()
+```
+
+```{r r11-solution}
+ggplot(data = mpg) +
+  aes(x = class, y = hwy) +
+  geom_jitter()
+```
+
+```{r r11-check}
+"Bon travail ! Vous pouvez aussi ajouter du bruit dans une seule direction. Pour désactiver le bruit dans la direction x, définissez width = 0 dans geom_jitter(). Pour désactiver le bruit dans la direction y, définissez height = 0." 
+```
+
+
+### jitter et boîtes à moustaches
+
+`geom_jitter()` fournit un moyen pratique de superposer des données brutes sur des boîtes à moustaches, qui affichent des informations synthétiques.
+
+Utilisez le bloc de code ci-dessous pour créer une boîte à moustaches à partir du graphique précédent. Faites en sorte que les valeurs aberrantes (outliers) aient un alpha fixé à 0, ce qui les rendra complètement transparentes. Ajoutez ensuite une couche de points qui sont bruités dans la direction $y$, mais pas dans la direction $x$.
+
+```{r r12, exercise = TRUE}
+
+```
+
+```{r r12-solution}
+ggplot(data = mpg) +
+  aes(x = class, y = hwy) +
+  geom_boxplot(outlier.alpha = 0) +
+  geom_jitter(width = 0)
+```
+
+```{r r12-check}
+"Bon travail ! Si vous le souhaitez, vous pouvez rendre les boîtes à moustaches plus visibles en réglant le paramètre alpha de geom_jitter() sur un nombre faible, par exemple geom_jitter(aes(x = classe, y = hwy), width = 0, alpha = 0.5)."
+```
+
+
+## Systemes de coordonnees
+
+### coord_flip()
+
+Une manière de personnaliser un graphique de dispersion est de le tracer dans un nouveau système de coordonnées. {ggplot2} propose plusieurs fonctions d'aide qui modifient le système de coordonnées d'un graphique. Vous avez déjà vu l'une d'entre elles en action dans le module [Boîtes à moustaches]() : `coord_flip()`. Cette fonction inverse les axes $x$ et $y$ d'un graphique.
+
+```{r out.width = "80%", message = FALSE, warning = FALSE}
+ggplot(data = mpg) +
+  aes(x = class, y = hwy) +
+  geom_boxplot(outlier.alpha = 0) +
+  geom_jitter(width = 0) +
+  coord_flip()
+```
+
+### Les fonctions coord
+
+Au total, {ggplot2} est doté de sept fonctions de coordonnées :
+
+* `coord_cartesian()` - (par défaut) coordonnées cartésiennes
+* `coord_fixed()` - coordonnées cartésiennes qui maintiennent un rapport d'aspect fixe lorsque la fenêtre du graphique est redimensionnée
+* `coord_flip()` - coordonnées cartésiennes avec les axes x et y inversés
+* `coord_map()` et `coord_quickmap()` - projections cartographiques pour le tracé de cartes
+* `coord_polar()` - coordonnées polaires
+* `coord_trans()` - coordonnées cartésiennes transformées
+
+Par défaut, {ggplot2} dessine un graphique en utilisant des coordonnées cartésiennes, sauf si vous ajoutez une des fonctions ci-dessus au code.
+
+### coord_polar()
+
+Vous utilisez chaque fonction coord comme vous utilisez `coord_flip()`, en l'ajoutant à un appel {ggplot2}.
+
+Ainsi, par exemple, vous pouvez ajouter `coord_polar()` pour construire un graphique qui utilise des coordonnées polaires.
+
+```{r out.width = "80%", message = FALSE, warning = FALSE}
+p2 <- ggplot(data = diamonds) +
+  aes(x = cut, fill = cut) + 
+  geom_bar(width = 1) 
+
+p2 +
+  coord_polar()
+```
+
+### Systèmes de coordonnées et graphiques de dispersion
+
+Comment un système de coordonnées peut-il améliorer un nuage de points ? 
+
+Considérez le graphique ci-dessous. Il montre une relation étroite entre la taille en carats d'un diamant et son prix. 
+
+```{r echo = FALSE, out.width = "80%", message = FALSE, warning = FALSE}
+ggplot(data = diamonds) +
+  aes(x = carat, y = price) +
+  geom_point() 
+```
+
+Cependant, la relation n'apparaît pas linéaire. Elle semble avoir la forme $y = x^{n}$, une relation commune que l'on trouve dans la nature. Vous pouvez estimer les $n$ en reportant les données dans un _graphique log-log_.
+
+### Graphiques log-log
+
+Les graphiques log-log représentent le logarithme de $x$ par rapport au logarithme de $y$, ce qui a un effet visuel précieux. Si vous enregistrez les deux côtés d'une relation comme
+
+$$y = x^{n}$$
+
+Vous obtenez une relation linéaire avec une pente $n$ :
+
+$$log(y) = log(x^{n})$$
+$$log(y) = n \cdot log(x)$$
+En d'autres termes, le log-log distord des relations non-linéaires en lignes droites. En outre, ils affichent $n$ comme pente de la ligne droite, ce qui est raisonnablement facile à estimer.
+
+Essayez ceci en utilisant le jeu de données `diamonds` pour tracer `log(carat)` contre `log(prix)`.
+
+```{r r13, exercise = TRUE}
+
+```
+```{r r13-solution}
+ggplot(data = diamonds) +
+  aes(x = log(carat), y = log(price)) +
+  geom_point() 
+```
+
+```{r r13-check}
+"Bon travail ! Voyons maintenant comment vous pouvez faire la même transformation, et d'autres aussi avec une fonction de coordination."
+```
+
+### coord_trans()
+
+`coord_trans()` fournit une seconde façon de faire la même transformation, ou des transformations similaires.
+
+Pour utiliser `coord_trans()` donnez-lui un argument $x$ et/ou $y$. Donnez à chacun le nom d'une fonction R entouré de guillemets. `coord_trans()` utilisera la fonction pour transformer l'axe spécifié avant de tracer les données brutes. 
+
+```{r r14, exercise = TRUE}
+ggplot(data = diamonds) +
+  aes(x = carat, y = price) +
+  geom_point() +
+  coord_trans(x = "log", y = "log")
+```
+
+
+### Récapitulatif
+
+Les graphiques de dispersion sont l'un des types de graphiques les plus utiles pour la Data science. Vous aurez de nombreuses occasions d'utiliser `geom_point()`, `geom_smooth()`, et `geom_label_repel()` dans votre travail quotidien.
+
+Cependant, ce module a introduit deux concepts importants qui ne s'appliquent pas seulement aux nuages de points :
+
+* Vous pouvez ajouter de **multiples couches** à n'importe quel graphique que vous construisez avec {ggplot2}
+* Vous pouvez ajouter un **système de coordonnées** différent à tout graphique que vous construisez avec {ggplot2}

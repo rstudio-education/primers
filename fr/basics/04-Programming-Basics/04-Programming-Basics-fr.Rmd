@@ -1,0 +1,578 @@
+---
+title: "Bases de la programmation"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+```
+
+## Bienvenue 
+
+### Bienvenue dans R
+
+R est plus facile à utiliser lorsque vous avez bien compris comment fonctionne le langage R. L'objectif de ce module est de vous donnez les clefs de lecture et de compréhension pour interpréter et prévoir les résultats produits par l'exécution de lignes de code R. Vous découvrirez ainsi :
+
+* les **fonctions** et leurs **arguments**
+* les **objets** R
+* les **types de données** de base utilisés par R
+* les structures de données de base de R, notamment les **vecteurs** et les **listes** 
+* le fonctionnement des **packages** R
+
+## Fonctions 
+
+### Fonctions
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Uw7wxyn7Tt0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Lancer une fonction
+
+Pouvez-vous utiliser la fonction `sqrt()` dans le bloc ci-dessous pour calculer la racine carrée de 961 ?
+
+```{r functions-1, exercise = TRUE}
+
+```
+
+```{r functions-1-solution}
+sqrt(961)
+```
+
+### Code
+
+Utilisez le bloc ci-dessous pour examiner le code source de la fonction `sqrt()`.
+
+```{r functions-2, exercise = TRUE}
+
+```
+
+```{r functions-2-solution}
+sqrt
+```
+
+```{r functions-2-check}
+"Bon travail! La fonction sqrt déclenche immédiatement un algorithme optimisé pour les performances, donc il n'y a pas beaucoup de code source R à voir."
+```
+
+### lm
+
+Comparez le code de la fonction `sqrt()` au code d'une autre fonction R, `lm()`. Examinez le corps de la fonction `lm()` dans le bloc ci-dessous.
+
+
+```{r functions-3, exercise = TRUE}
+
+```
+
+```{r functions-3-solution}
+lm
+```
+
+### Pages d'aide
+ 
+Hou la la ! La fonction `lm()` exécute beaucoup de code quand on l'utilise. Mais que fait-elle exactement ? Et surtout intelligiblement...Pour le découvrir, ouvrez la page d'aide pour `lm()` dans le bloc ci-dessous.
+
+```{r functions-4, exercise = TRUE}
+
+```
+
+```{r functions-4-solution}
+?lm
+```
+
+```{r functions-4-check}
+"Bon travail ! `lm()` est la fonction R qui permet d'ajuster un modèle de régression linéaire. Pas étonnant qu'elle exécute autant de code."
+```
+
+### Commentaires dans le code
+
+Selon vous, que va retourner le morceau de code ci-dessous ? Exécutez-le et voyez par vous-même. Le résultat devrait être... rien ! R n'exécutera rien sur une ligne précédée du symbole `#`. C'est utile pour écrire des commentaires dans le code : placez-les après un `#`. Maintenant, supprimez le `#` et réexécutez le code. Cette fois-ci, vous devriez voir apparaître le résultat de la commande.
+
+```{r functions-5, exercise = TRUE}
+# sqrt(961)
+```
+
+```{r functions-5-solution}
+sqrt(961)
+```
+
+
+## Arguments
+
+### Arguments
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cDNUEkrSLYk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### args()
+
+`rnorm()` est une fonction qui génère des variables aléatoires issues d'une loi normale. Exécutez une fonction qui liste les arguments de cette fonction.
+
+```{r arguments-1, exercise = TRUE}
+
+```
+
+```{r arguments-1-solution}
+args(rnorm)
+```
+
+```{r arguments-1-check}
+" Bon travail ! `n` spécifie le nombre de variables aléatoires normales à générer. `mean` et `sd` permettent de décrire les paramètres de la loi à utilliser pour générer les valeurs." 
+```
+
+### Arguments optionnels
+
+```{r arguments-2, echo = FALSE}
+question("Selon vous, quels arguments de la fonction rnorm sont optionnels ?",
+         answer("n"),
+         answer("mean", correct = TRUE),
+         answer("sd", correct = TRUE),
+         allow_retry = TRUE,
+         correct = "`n` n'est pas un argument optionnel : il est obligatoire. Comment le savoir ? Car cet argument n'a pas de valeur par défaut renseignée dans la fonction.")
+```
+
+### rnorm() 1
+
+Utilisez `rnorm()` pour générer 100 valeurs aléatoires qui suivent une loi normale de moyenne 100 et d'écart-type 15.
+
+```{r arguments-3, exercise = TRUE}
+
+```
+
+```{r arguments-3-solution}
+rnorm(100, mean = 100, sd = 50)
+```
+
+### rnorm() 2
+
+Pouvez-vous repérer l'erreur dans le code ci-dessous ? Corrigez le code, puis réexécutez-le.
+
+```{r arguments-4, exercise = TRUE,error=TRUE}
+rnorm(100, mu = 100, sd = 50)
+```
+
+```{r arguments-4-solution}
+# rnorm(100, mean = 100, sd = 50)
+```
+
+## Objets
+
+### Objets
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_8dVvvPFhGg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### Noms des objets
+
+Vous pouvez choisir pratiquement n'importe quel nom qui vous fait plaisir pour désigner un objet R. Une règle bride notre créativité cependant : le nom ne doit pas commencer par un nombre ou par un caractère spécial comme `+`, `-`, `*`, `/`, `^`, `!`, `@`, ou `&`. 
+
+```{r objects-1, echo = FALSE}
+question("Lesquels de ces noms seraient des noms d'objets valides ?",
+  answer("today", correct = TRUE),
+  answer("1st"),
+  answer("+1"),
+  answer("vars", correct = TRUE),
+  answer("\\^_^"),
+  answer("foo", correct = TRUE),
+  allow_retry = TRUE,
+  correct = "N'oubliez pas que dans tous les cas,les noms les plus utiles sont ceux qui vous pemettront de vous souvenir de ce qu'il y a dans l'objet. Oubliez-donc définitivement les 'toto' et autres 'pouet' pour nommer vos objets."
+)
+```
+
+### Utilisation des objets
+
+Dans le bloc de code ci-dessous, enregistrez les résultats de `rnorm(100, mean = 100, sd = 15)` dans un objet nommé `data`. Ensuite, sur une nouvelle ligne, appelez la fonction `hist()` sur l'objet `data` pour tracer un histogramme des valeurs aléatoires.
+
+```{r objects-2, exercise = TRUE}
+
+```
+
+```{r objects-2-solution}
+data <- rnorm(100, mean = 100, sd = 15)
+hist(data)
+```
+
+### Et que se passerait-il si... ?
+
+Selon vous, que se passerait-il si vous affectiez `data` à un nouvel objet nommé `copy` ? Exécutez le code ci-dessous, puis examinez à la fois `data` et `copy`.
+
+```{r objects-3, exercise = TRUE}
+data <- rnorm(100, mean = 100, sd = 15)
+copy <- data
+```
+
+```{r objects-3-solution}
+data <- rnorm(100, mean = 100, sd = 15)
+copy <- data
+data
+copy
+```
+
+```{r objects-3-check}
+"Bon travail ! R enregistre une copie du contenu de data dans l'objet nommé copy."
+```
+
+### Jeux de données
+
+Les objets permettent de stocker des ensembles de données dans R. En fait, R est même livré avec de nombreux jeux de données pré-chargés. L'un d'entre eux, s'appelle `iris` : examinez son contenu. Et aussi, comment selon vous pourriez-vous procéder pour en savoir plus sur l'objet `iris` ?
+
+```{r objects-4, exercise = TRUE}
+
+```
+
+```{r objects-4-solution}
+iris
+```
+
+```{r objects-4-check}
+"Et oui ! Vous pouvez en savoir plus à propos du jeu de données iris en affichant sa page d'aide : `?iris`."
+```
+
+### rm()
+
+Malheur ! Et si vous écrasiez accidentellement un objet ? Pas de panique ! Si cet objet est naturellement fourni dans R ou l'un de ses packages, vous pouvez restaurer la version d'origine de l'objet en supprimant votre version avec `rm()`. Exécutez `rm()` sur `iris` ci-dessous pour restaurer la version initiale du jeu de données `iris`.
+
+```{r objects-5, exercise = TRUE}
+iris <- 1
+iris
+```
+
+```{r objects-5-solution}
+iris <- 1
+iris
+rm(iris)
+iris
+```
+
+```{r objects-5-check}
+"Bon travail ! Par contre... la mauvaise nouvelle c'est que cette solution ne marche que pour des objets naturellement fourni dans R ou ses packages. Elle ne pourra donc pas vous aider si vous écrasez un objet que vous avez vous-même créé. Donc : prudence..."
+```
+
+## Vecteurs
+
+### Vecteurs
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_dIN2GtqFSs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### Création d'un vecteur
+
+Dans le bloc ci-dessous, créez un vecteur contenant les entiers de un à dix.
+
+```{r vectors-1, exercise = TRUE}
+
+```
+
+```{r vectors-1-solution}
+c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+### :
+
+Si votre vecteur contient une séquence d'entiers adjacents, vous pouvez le créer avec le raccourci `:`. Bien pratique, puisque cela vous évitera de renseigner les entiers un à un. Exécutez `1:10` dans le bloc ci-dessous. Qu'obtenez-vous ? Alors, selon vous, qu'est-ce que `1:20` est sensé retourner ?
+
+```{r vectors-2, exercise = TRUE}
+
+```
+
+```{r vectors-2-solution}
+1:10
+```
+
+### []
+
+Vous pouvez selectionner n'importe quel élément d'un vecteur en plaçant une paire de crochets à la suite du vecteur. À l'intérieur des crochets, placez le numéro de l'élément que vous souhaitez extraire. Par exemple, `vec[3]` va retourner le troisième élément du vecteur nommé `vec`.
+
+Utilisez le bloc ci-dessous pour extraire le quatrième élément de `vec`.
+
+```{r vectors-3, exercise = TRUE}
+vec <- c(1, 2, 4, 8, 16)
+```
+
+```{r vectors-3-solution}
+vec <- c(1, 2, 4, 8, 16)
+vec[4]
+```
+
+### Plus de []
+
+Vous pouvez également utiliser les crochets `[]` pour selectionner plusieurs éléments d'un vecteur. Placez le vecteur `c(1, 2, 5)` entre les crochets ci-dessous. Qu'est-ce que R retourne ?
+
+```{r vectors-4, exercise = TRUE}
+vec <- c(1, 2, 4, 8, 16)
+vec[]
+```
+
+```{r vectors-4-solution}
+vec <- c(1, 2, 4, 8, 16)
+vec[c(1, 2, 5)]
+```
+
+### Noms des éléments
+
+Si les éléments de votre vecteur ont des noms, vous pouvez les extraire... par leur nom ! Pour cela, placez un nom (ou un vecteur de noms) entre parenthèses derrière un vecteur. Entourez chaque nom de guillemets `"`, par ex. `vec2[c("alpha", "beta")]`.
+
+Extrayez l'élément nommé gamma du vecteur ci-dessous.
+
+```{r vectors-5, exercise = TRUE}
+vec2 <- c(alpha = 1, beta = 2, gamma = 3)
+```
+
+```{r vectors-5-solution}
+vec2 <- c(alpha = 1, beta = 2, gamma = 3)
+vec2["gamma"]
+```
+
+### Opérations vectorisées
+
+A votre avis, qu'est-ce que le code ci-dessous va retourner ? Regardez par vous-même.
+
+```{r vectors-6, exercise = TRUE}
+c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) + c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+```{r vectors-6-check}
+"Bon travail ! Comme de nombreuses fonctions R, les opérateurs mathématiques de R sont vectorisés. Autrement dit, ils sont conçus pour fonctionner termes à termes, un élément après l'autre. L'élement 1 du vecteur 1 + l'élément 1 du vecteur 2 donnera l'élément 1 du vecteur résultat, l'élément 2 du vecteur 1 + l'élément 2 du vecteur 2 donnera l'élément 2 du vecteur résultat, et ainsi de suite. Pratique et rapide !"
+```
+
+### Recyclage des vecteurs
+
+Prédisez ce que le code ci-dessous renverra. Regardez ensuite le résultat.
+
+```{r vectors-7, exercise = TRUE}
+1 + c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+```{r vectors-7-check}
+"Et voilà ! Chaque fois que vous essayez de travailler avec des vecteurs de longueurs variables (rappelez-vous que `1` est un vecteur de longueur un), R répétera le vecteur le plus court au besoin pour calculer le résultat."
+```
+
+## Types
+
+### Types
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/S6FZ1hPphz8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### Types atomiques
+
+```{r types1, echo = FALSE}
+question("Laquelle de ces propositions ne désigne pas un type de données atomique ?",
+         answer("numeric/double"),
+         answer("integer"),
+         answer("character"),
+         answer("logical"),
+         answer("complex"),
+         answer("raw"),
+         answer("simple", correct = TRUE),
+         allow_retry = TRUE,
+         random_answer_order = TRUE)
+```
+
+### De quel type s'agit-il ?
+
+```{r types2, echo = FALSE}
+question('Quel type de données est `"1L"`',
+         answer("numeric/double"),
+         answer("integer", message = "Presque. Mais non. `1L` serait un entier, mais regardez de plus près."),
+         answer("character", correct = TRUE),
+         answer("logical"),
+         allow_retry = TRUE)
+```
+
+### Entier (integer en anglais)
+
+Créez un vecteur d'entiers de un à cinq. Selon vous, pourquoi est-il parfois utile d'utiliser des types integers au lieu de numbers/doubles ?
+
+```{r types3, exercise = TRUE}
+
+```
+
+```{r types3-solution}
+c(1L, 2L, 3L, 4L, 5L)
+```
+
+### Arithmétique en virgule flottante
+
+Les ordinateurs doivent utiliser une quantité limitée de mémoire pour stocker des nombres décimaux (ce qui peut parfois nécessiter une précision infinie). Par conséquent, certaines décimales ne peuvent être enregistrées que sous forme d'approximations plus ou moins précises. De temps en temps, vous remarquerez des effets secondaires de cette imprécision, comme ci-dessous.
+
+Calculez la racine carrée de deux, mettez la réponse au carré (par exemple, multipliez la racine carrée de deux par la racine carrée de deux), puis soustrayez deux du résultat. Quelle réponse attendez-vous ? Quelle réponse obtenez-vous ?
+
+```{r types4, exercise = TRUE}
+
+```
+
+```{r types4-solution}
+sqrt(2) * sqrt(2) - 2
+sqrt(2)^2 - 2
+```
+
+### Vecteur (vector)
+
+```{r types5, echo = FALSE}
+question('Combien de types de données pouvez-vous mettre dans un seul vecteur ?',
+         answer("1", correct = TRUE),
+         answer("6"),
+         answer("Autant qu'on veut"),
+         allow_retry = TRUE)
+```
+
+### Chaîne de caractères (character) ou objet ?
+
+L'une des erreurs couramment commise dans R est d'appeler un objet alors que vous aviez en tête une chaîne de caractères et inversement.
+
+```{r types6, echo = FALSE}
+question("Quelles propositions désignent des noms d'objets ? Quelle est la différence entre les noms d'objets et les chaînes de caractères ?",
+         answer("foo", correct = TRUE),
+         answer('"num"'),
+         answer("mu", correct = TRUE),
+         answer('"sigma"'),
+         answer('"data"'),
+         answer("a", correct = TRUE),
+         allow_retry = TRUE,
+         correct = "Les chaînes de caractères sont entourées de guillemets, pas les noms d'objets.")
+```
+
+## Listes
+
+### Listes
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/sXfR8_c80Cw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### Listes vs. vecteurs
+
+```{r lists1, echo = FALSE}
+question('Quelle(s) structure(s) de données pourriez-vous utiliser pour stocker ces données dans le même objet ? `1001`, `TRUE`, `"stories"`.',
+         answer("un vecteur"),
+         answer("une list", correct = TRUE),
+         answer("ni l'un ni l'autre"),
+         allow_retry = TRUE)
+```
+
+### Fabriquer une liste
+
+Faites une liste qui contient les éléments `1001`, `TRUE` et `"stories"`. Donnez un nom explicite à chaque élément.
+
+```{r lists2, exercise = TRUE}
+
+```
+
+```{r lists2-solution}
+list(un_nombre = 1001, logique = TRUE, une_chaine_de_caracteres = "stories")
+```
+
+### Extraire un élément
+
+Selectionnez le chiffre 1001 de la liste ci-dessous.
+
+```{r lists3, exercise = TRUE}
+des_trucs <- list(un_nombre = 1001, un_booleen = TRUE, une_chaine_de_caracteres = "stories")
+```
+
+```{r lists3-solution}
+things <- list(un_nombre = 1001, n_booleen = TRUE, une_chaine_de_caracteres = "stories")
+things$un_nombre
+```
+
+### data.frame
+
+Il est possible de créer un jeu de données (ou data frame en anglais) avec la fonction `data.frame()`, qui fonctionne de manière tout à fait similaire à `c()` et `list()`. Assemblez les vecteurs ci-dessous dans un jeu de données avec les noms de colonnes `numbers`, `logicals`, `strings`.
+
+```{r lists4, exercise = TRUE}
+nums <- c(1, 2, 3, 4)
+logs <- c(TRUE, TRUE, FALSE, TRUE)
+strs <- c("pomme", "banane", "carotte", "canard")
+```
+
+```{r lists4-solution}
+nombre <- c(1, 2, 3, 4)
+logs <- c(TRUE, TRUE, FALSE, TRUE)
+caract <- c("pomme", "banane", "carotte", "canard")
+data.frame(nb = nombre, logiques = logs, caracteres = caract)
+```
+
+```{r lists4-check}
+"Bon travail ! Lorsqu'un data frame est créé il faut respecter la règle suivante : chaque vecteur correspondant à une colonne doit avoir la même longueur que lenombre de lignes attendus dans le jeu de données ."
+```
+
+### Extraire une colonne
+
+Étant donné qu'un data.frame est un type de liste (avec des éléments nommés), comment pourriez-vous extraire la colonne `strings` du data frame `df` ci-dessous ? Essayez !
+
+```{r lists5, exercise = TRUE}
+nums <- c(1, 2, 3, 4)
+logs <- c(TRUE, TRUE, FALSE, TRUE)
+strs <- c("pomme", "banane", "carotte", "canard")
+df <- data.frame(numbers = nums, logicals = logs, strings = strs)
+```
+
+```{r lists5-solution}
+df$strings
+```
+
+## Packages
+
+### Packages
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/y6LQkMvMQfs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### L'erreur classique
+
+```{r packages1, echo = FALSE}
+question("Que suggère ce message d'erreur plutôt commun ? `object _____ does not exist` (`object _____ introuvable`)",
+         answer("Vous avez mal orthographié le nom de votre objet"),
+         answer("Vous avez oublié de charger le package dans lequel ____ est situé"),
+         answer("L'un ou l'autre", correct = TRUE),
+         allow_retry = TRUE)
+```
+
+### Charger un package
+
+Dans le bloc de code ci-dessous, chargez le package `{tidyverse}`. `{tidyverse}` est un metapackage, il charge toute une floppée de packages en même temps. Ainsi, chaque fois que vous chargez `{tidyverse}`, `{tidyverse}` charge également `{ggplot2}`, `{dplyr}`, `{tibble}`, `{tidyr}`, `{readr}` et `{purrr}`.
+
+```{r packages2, exercise = TRUE}
+
+```
+
+```{r packages2-solution}
+library(tidyverse)
+```
+
+```{r packages2-check}
+"Et voilà ! R gardera les packages chargés jusqu'à ce que vous fermiez votre session R. Lorsque vous rouvrez R, vous devrez recharger vos packages."
+```
+
+### Guillemets
+
+Saviez-vous que `library()` est une fonction spéciale dans R ? Vous pouvez passer dans `library()` un nom de package entre guillemets, comme `library("tidyverse")`, ou sans guillemets, comme `library(tidyverse)`. Les deux fonctionneront ! Ce n'est souvent pas le cas avec les fonctions R.
+
+En général, vous devez toujours utiliser des guillemets, sauf si vous écrivez le _nom_ de quelque chose qui est déjà chargé dans la mémoire de R, comme une fonction, un vecteur ou un data.frame.
+
+### Installer des packages
+
+Mais que faire si le package que vous souhaitez charger n'est pas installé sur votre ordinateur ? Comment installer le package `{dplyr}` sur votre propre ordinateur ?
+
+```{r packages3, exercise = TRUE}
+
+```
+
+```{r packages3-solution}
+install.packages("dplyr")
+```
+
+```{r packages3-check}
+"Bon travail ! La bonne nouvelle, c'est que vous n'avez besoin d'installer un package qu'une seule fois, sauf si vous souhaitez mettre à jour votre copie locale en réinstallant complètement le package. Notez que `install.packages()` nécessite _toujours_ des guillemets autour du nom du package."
+```
+
+### Félicitations !
+
+Toutes nos félicitations. Vous connaissez maintenant le fonctionnement des principes de base de R. Bien que vous ne puissiez vous considérer comme un Data Scientist, ce bref aperçu de R vous aidera pour l'analyse des données. Chaque fois que R fera quelque chose d'inattendu, vous pourrez désormais appliquer vos connaissances sur le fonctionnement de R pour comprendre ce qui n'a pas fonctionné !
