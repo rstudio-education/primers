@@ -1,0 +1,596 @@
+---
+title: "Bases de la visualisation de données"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+```
+
+## Bienvenue
+
+La visualisation des données est l'un des outils les plus importants pour la Data Science. C'est aussi un très bon moyen pour commencer à apprendre R : l'aspect concret de la visualisation de données peut garder motivé lorsqu'on traverse des périodes de découragement à l'apprentissage d'un nouveau langage.
+
+Dans ce module, vous allez apprendre à visualiser des données avec {ggplot2}, qui est probablement le package de visualisation de données le plus populaire en R. Ce module vous permettra d'acquérir trois compétences essentielles :
+
+1. Créer des graphiques avec un **modèle** (ou **template**) {ggplot2} réutilisable
+
+1. Ajouter des variables à un graphique avec **aesthetics**
+
+1. Sélectionner le "type" de votre graphique avec **geoms** 
+
+Ces trois compétences vont rapidement vous permettre d'ajouter la visualisation à votre boîte à outils de Data Scientist. Par la suite, vous pourrez en savoir plus et augmenter encore vos compétences avec le module [Visualiser des données]().
+
+### Remerciements
+
+Ces exemples sont issus du livre _R for Data Science_ d'Hadley Wickham et Garrett Grolemund, publié par O’Reilly Media, Inc., 2016, ISBN: 9781491910399. Vous pouvez vous procurer le livre ici : [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
+
+Ce module utilise le [packages qui composent le coeur du tidyverse](http://tidyverse.org/), notamment {ggplot2}. Ce package a déjà été installé au préalable.
+
+## Un modèle de code
+
+> "The simple graph has brought more information to the data analyst’s mind 
+> than any other device." - " Le graphique apporte plus d'informations à
+> l'esprit du Data Analyst que tout autre outil." --- John Tukey
+
+### Problématique
+
+Commençons ce module avec une question à explorer.
+
+```{r predict, echo = FALSE}
+question("Qu'en pensez-vous : Les voitures avec de gros moteurs utilisent-elles plus de carburant que les voitures avec de petits moteurs ?", 
+         type = "single",
+         correct = "Super !",
+         answer("Les voitures avec un plus gros moteur utilisent _plus_ de carburant.", correct = TRUE, message = "Autrement dit, il existe une relation positive entre la taille du moteur et le rendement énergétique. Maintenant testons cette hypothèse avec des données."),
+         answer("Les voitures avec un plus gros moteur utilisent _moins_ de carburant.", correct = TRUE, message = "Autrement dit, il existe une relation négative entre la taille du moteur et le rendement énergétique. Maintenant testons cette hypothèse avec des données.")
+)
+```
+
+### `mpg`
+
+Vous pouvez tester votre hypothèse avec le jeu de données `mpg` qui s'installe en même temps que {ggplot2}. `mpg` contient des observations de 38 modèles de voitures par l'Agence de protection environnementale des Etats-Unis. Voici quelques-unes des variables de `mpg` :
+
+1. `displ`, la taille du moteur de la voiture, en litres.
+1. `hwy`, le rendement énergétique sur l'autoroute, en miles par gallon (1 mpg = 0.425144 km/L)
+
+    Lorsqu'elles effectuent la même distance, une voiture avec un faible rendement énergétique consomme plus de carburant qu'une voiture avec un important rendement énergétique.
+
+Pour visualiser le jeu de données `mpg`, tapez `mpg` dans le bloc de code ci-dessous et cliquez sur "Exécuter".
+
+```{r mpg0, exercise = TRUE}
+
+```
+
+```{r mpg0-solution}
+mpg
+```
+
+```{r mpg0-check}
+"Bien joué ! Nous allons utiliser des blocs de codes interactifs comme celui-ci tout au long des modules. A chaque fois que vous en rencontrez un, vous pourrez cliquer sur 'Exécuter' pour lancer (ou re-lancer) le code dans le bloc, puis sur 'Valider la réponse' pour voir le commentaire associé à votre exécution. S'il y a un bouton 'Solution', vous pourrez cliquer dessus pour voir la solution. A présent, nous allons utiliser ces données pour réaliser notre premier graphique."
+```
+
+### Exemple de graphique
+
+Le code ci-dessous utilise des fonctions du package **{ggplot2}** pour tracer la relation entre `displ` et `hwy`.
+
+Regardons d'abord le graphique et examinons ensuite le code en lui-même. Pour voir le graphique, cliquez sur "Executer" (cela permet de lancer le code ci-dessous).
+
+```{r ggplot1, exercise = TRUE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+```{r ggplot1-check}
+"Excellent ! Quelle relation observez-vous ?"
+```
+
+### Et la réponse est...
+
+Le graphique montre une relation négative entre la taille du moteur (`displ`) et le rendement énergétique (`hwy`). Les points ayant une valeur importante de `displ` ont une faible valeur de `hwy`, et vice versa.
+
+Autrement dit, les voitures avec de gros moteurs utilisent _plus_ de carburant. Si c'était votre hypothèse, elle était correcte !
+
+Regardons à présent le graphique que nous avons réalisé.
+
+### `ggplot()`
+
+Ci-dessous se trouve le code utilisé pour construire le graphique. Notez qu'il contient trois fonctions : `ggplot()`, `aes()`, et `geom_point()`.
+
+```{r eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+La première fonction, `ggplot()`, crée un système de coordonnées auquel vous pouvez ajouter des couches. Le premier argument de `ggplot()` est le jeu de données utilisé dans le graphique.
+
+En soi, `ggplot(data = mpg)` crée un graphique vide, ce qui n'est pas très intéressant (donc on ne vous le montre pas !).
+
+### `aes()`
+
+```{r eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+`aes` est utilisé pour regrouper toutes les représentations visuelles que vous voulez créer. C'est dans la fonction `aes` que l'on définit les variables du jeu de données à représenter sur les différents axes du graphique.
+
+Ici, nous voulons représenter la variable `displ` sur l'axe des abscisses (x) et la variable `hwy` sur l'axe des ordonnées (y). C'est pourquoi on ajoute `x = displ` et `y = hwy` dans `aes()` (séparés par une virgule). Où {ggplot2} va-t-il chercher ces variables à représenter ? Dans le jeu de données que l'on a indiqué dans l'argument `data`, dans ce cas, `mpg`.
+
+
+### `geom_point()`
+
+```{r eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+`geom_point()` ajoute une couche de points au graphique vide crée par `ggplot() + aes()`. En conséquence, cela permet d'obtenir un nuage de points.
+
+
+### Processus de création d'un graphique
+
+Notre code suit le processus classique pour créer un graphique avec {ggplot2}. Pour faire un graphique, il faut :
+
+1. Commencer par `ggplot()`
+
+2. Sélectionner les variables avec la fonction `aes()`
+
+3. Ajouter des éléments au graphique avec la fonction `geom_` 
+
+### Un modèle de graphique
+
+Vous pouvez transformer votre code en modèle réutilisable pour créer des graphiques. Pour faire votre graphique, remplacez les sections entre chevrons dans le code avec un jeu de données, une collection de représentations, ou une fonction `geom_`.
+
+Essayez ! Remplacez les sections entre chevrons avec les données `mpg`, `class` pour l'axe x, `hwy` pour l'axe y, et `geom_boxplot` pour faire un graphique légèrement différent. Assurez-vous d'effacer les symboles `#` de commentaire avant de lancer le code.
+
+```{r template, exercise = TRUE, eval = FALSE}
+# ggplot(data = <DATA>) + 
+#   aes(x = <X>, y = <Y>)
+#  <GEOM_FUNCTION>()
+```
+
+```{r template-solution}
+ggplot(data = mpg) + 
+  aes(x = class, y = hwy) +
+  geom_boxplot()
+```
+
+```{r template-check}
+"Bon travail ! Ce graphique utilise des boîtes à moustaches pour comparer le rendement énergétique de différents types de voitures. Dans {ggplot2}, il existe de nombreuses fonctions geom qui ajoutent chacune un type de couches différent au graphique. Vous en  apprendrez plus sur les boîtes à moustaches et d'autres geom dans le module suivant."
+```
+
+### Problèmes fréquents
+
+Lorsque vous allez commencer à lancer du code, vous allez surement rencontrer des problèmes. Mais ne vous inquiétez pas ---cela arrive à tout le monde, même les plus expérimentés. Les programmeurs qui codent depuis des années écrivent tous les jours du code qui ne fonctionne pas du premier coup.
+
+Commencez par comparer minutieusement le code que vous lancez et le code des exemples. R est extrêmement pointilleux, et une faute de frappe peut faire toute la différence... Assurez-vous que chaque parenthèse ouvrante `(` est associée à une parenthèse femante `)`, ou que chaque  guillemet `"` est associé à un autre `"`. Faites également attention à la distinction majuscule/minuscule : R est sensible à la casse.
+
+### Emplacement du +
+
+Un problème commun lors de la création d'un graphique avec {ggplot2} est la position du `+` au mauvais endroit : il doit être situé à la fin de la ligne. En effet, R exécute le code ligne par ligne : le `+` en fin de ligne indique que la ligne qui suit **doit** être prise en compte avant la création du graphique.
+
+### Aide
+
+Si vous êtes bloqué, essayez l'aide de R. Vous pouvez trouver de l'aide sur n'importe quelle fonction en lançant un point d'interrogation devant la fonction (par exemple `?geom_point`). Notez que la partie la plus souvent utilisée est tout en bas de la page : les codes d'exemples. Regardez si un exemple ressemble à ce que vous cherchez à faire.
+
+Si cela ne vous aide pas, lisez minutieusement le message d'erreur qui apparaît lorsque vous lancez votre code qui ne fonctionne pas. Vous pouvez coller ce message d'erreur dans google, car il est fort probable que vous ne soyez pas le premier à avoir eu cette erreur.
+
+### Exercice 1
+
+Lancez `ggplot(data = mpg)`. Qu'observez-vous ?
+
+```{r blank, exercise = TRUE}
+
+```
+
+```{r blank-check}
+"Bien ! Un ggplot qui n'a pas de couches est vide. Pour finir le graphique, ajoutez un aes et une fonction geom."
+```
+     
+### Exercice 2 
+
+Faites un nuage de points de `cty` vs `hwy`.
+
+```{r scatterplot, exercise = TRUE}
+
+```
+
+```{r scatterplot-check}
+"Super !"
+```
+
+```{r scatterplot-hint}
+"Les nuages de points utilisent le geom point."
+```
+
+### Exercice 3  
+
+Que se passe-t-il si vous faites un nuage de points avec `class` vs `drv`. Essayez pour voir. Ce graphique vous semble-t-il utile ?
+    
+```{r scatterplot2, exercise = TRUE}
+
+```
+
+```{r scatterplot2-check}
+"C'est ça ! `class` et `drv` sont des variables catégorielles. De ce fait, les points apparaissent à certaines valeurs et se superposent potentiellement. Dans ce graphique, vous n'avez aucune indication du nombre de points qui sont au même endroit. Expérimentez avec geom_count() pour trouver une meilleure solution pour représenter ces variables."
+```
+
+## Parametres esthetiques de projection
+
+> "The greatest value of a picture is when it forces us to notice what we
+> never expected to see." - "Une image devient pertinente lorsqu'elle nous 
+> oblige à remarquer ce que nous ne nous attendions pas à voir." --- John Tukey
+
+### Regardons d'un peu plus près
+
+Dans le graphique ci-dessous, un groupe de points (en rouge) semble s'écarter de la tendance linéaire qui lie la taille du moteur et la consommation d'essence. Ces voitures ont une consommation d'essence plus élevée qu'attendu. Comment pouvez-vous expliquer ces observations ?
+
+```{r, echo = FALSE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point() + 
+  geom_point(data = dplyr::filter(mpg, displ > 5, hwy > 20), colour = "red", size = 2.2)
+```
+
+### Hypothèse
+
+Émettons l'hypothèse que ces voitures sont hybrides. Un moyen de tester cette hypothèse est de regarder la valeur de `class` pour chaque voiture. La variable `class` du jeu de données `mpg` classifie les voitures en groupes comme : compact, midsize, ou SUV. Si les points rouges représentent les voitures hybrides, ils devraient être classifiés en compact ou, éventuellement, subcompact (notez que ces données ont été collectées avant que les voitures hybrides ne deviennent populaires). Pour vérifier cette hypothèse, nous avons besoin d'ajouter la variable `class` au graphique.
+
+### Autres paramètres d'aes
+
+Vous pouvez ajouter une troisième variable, comme `class` à un nuage de point en deux dimensions en la représentant dans un nouveau __aesthetic__ (paramètre esthétique de projection) dans la fonction `aes`. Les arguments d'`aes` sont des propriétés visuelles des objets dans un graphique. Ces propriétés visuelles incluent entre autres la taille, la forme, et la couleur des points.
+
+Vous pouvez afficher un point de différentes façons en changeant ses propriétés dans la fonction `aes`. On utilisera le mot 'niveau' pour décrire les valeurs des paramètres de la fonction `aes` (le mot 'valeur' sera réservé aux valeurs de données). Ici, on change le niveau de taille, forme, et couleur de points pour faire un point petit, triangulaire, et bleu : 
+
+```{r, echo = FALSE, asp = 1/4, out.width = "100%"}
+ggplot() +
+  geom_point(aes(1, 1), size = 20) +
+  geom_point(aes(2, 1), size = 10) + 
+  geom_point(aes(3, 1), size = 20, shape = 17) + 
+  geom_point(aes(4, 1), size = 20, colour = "blue") + 
+  scale_x_continuous(NULL, limits = c(0.5, 4.5), labels = NULL) + 
+  scale_y_continuous(NULL, limits = c(0.9, 1.1), labels = NULL) + 
+  theme(aspect.ratio = 1/3)
+```
+
+### Stratégie
+
+On peut ajouter l'information de la variable `class` au graphique en appliquant les niveaux d'un paramètre d'`aes` (comme la couleur) aux modalités de la variable `class`. Par exemple, on peut colorer les points en vert s'ils appartiennent à la classe 'compact', bleu s'ils appartiennent à la classe 'midsize', et ainsi de suite.
+
+A vous de jouer ! Enlevez les `#` et remplacez les parties manquantes dans le code ci-dessous par `color = class`. Que se passe-t-il? (notez que vous pouvez utiliser `colour` ou `color`.)
+
+```{r aesthetics, exercise = TRUE, exercise.eval = FALSE}
+# ggplot(data = mpg) +
+#  aes(x = displ, y = hwy, ____________) +
+#  geom_point()
+```
+
+<div id="aesthetics-hint">
+**Indice:** Assurez-vous de supprimer tous les '_' et '#' du code
+</div>
+
+```{r aesthetics-solution}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy, color = class) +
+  geom_point()
+```
+
+```{r aesthetics-check}
+"Très bien ! Vous pouvez à présent voir à quelle classe appartient chaque point grâce à sa couleur."
+```
+
+### Et la réponse est...
+
+Les couleurs révèlent qu'une grande partie des points qui semblent éloignés des autres sont des voitures à deux places (2seater). Ces voitures ne sont pas hybrides, ce sont en fait des voitures de sport ! Les voitures de sport ont de gros moteurs comme les camionnettes, mais de petites carrosseries comme les petites voitures (ce qui réduit leur consommation). Rétrospectivement, il était en fait peu probable que ces voitures aient été des voitures hybrides puisque elles ont de gros moteurs.
+
+Ce n'est pas la seule chose que nous avons appris, vous avez aussi appris à ajouter de nouveaux paramètres esthétiques à vos graphiques. Revoyons le processus en entier.
+
+### Représenter les aes
+
+Pour représenter une troisième variable par une forme ou une couleur, il faut indiquer le nom de la variable concernée dans le paramètre de la fonction `aes`. {ggplot2} va automatiquement assigner un niveau du paramètre esthétique (ici, une couleur) à chaque modalité de la variable. {ggplot2} va aussi ajouter une légende qui explique quel niveau correspond à quelle modalité.
+
+Ainsi, en plus de définir la localisation de chaque points (x et y), la fonction `aes` permet de définir de nombreuses propriétés visuelles de ces points.
+
+### Autres paramètres esthétiques de projection
+
+Dans l'exemple précédent, nous avons représenté la variable `class` par des couleurs, mais nous aurions pu utiliser la taille (size) pour la représenter.
+
+Changez le code ci-dessous pour représenter `class` par des points de différentes tailles (`size`). Que se passe-t-il?
+
+```{r size, exercise = TRUE, exercise.eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy, color = class) +
+  geom_point()
+```
+
+<div id="size-hint">
+**Indice:** Si `color` change la couleur, quel paramètre change la taille ?
+</div>
+
+```{r size-solution}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy, size = class) +
+  geom_point()
+```
+
+```{r size-check}
+"Super !  Maintenant, la taille d'un point représente sa classe. Avez-vous remarqué le message d'alerte (warning message) ? {ggplot2} nous dit de faire attention car utiliser la taille des points pour représenter une variable catégorielle (et donc sans relation d'ordre entre ses éléments) n'est pas une bonne idée. En effet, la taille des points est généralement utilisée pour indiquer une notion de grandeur, d'intensité. Ce qui n'est pas le cas ici."
+```
+
+### Transparence (alpha)
+
+Vous pouvez aussi représenter `class` grâce à l'argument `alpha` qui contrôle la transparence des points. Essayez en dessous.
+
+```{r alpha, exercise = TRUE, exercise.eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+<div id="alpha-hint">
+**Indice:** Si `color` change la couleur, quel paramètre permet de changer alpha ?
+</div>
+
+```{r alpha-solution}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy, alpha = class) +
+  geom_point()
+```
+
+```{r alpha-check}
+"Bien ! Si vous regardez de plus près, vous pouvez voir quelque chose de subtil : de nombreuses coordonnées (x, y) contiennent plusieurs points qui sont superposés les uns sur les autres. Alpha est additif : plusieurs points transparents vont apparaître opaques."
+```
+
+### Forme (shape)
+
+Essayons une dernière façon de visualiser les données grâce à un paramètre d'`aes`. Cette fois-ci, utilisez `shape` pour représenter la variable `class`. Regardez ensuite la classe SUV, que se passe-t-il?
+
+```{r shape, exercise = TRUE, exercise.eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) + 
+  geom_point()
+```
+
+<div id="shape-hint">
+**Indice:** Si `color` change la couleur, quel paramètre change la forme (shape en anglais) ?
+</div>
+
+```{r shape-solution}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy, shape = class) +
+  geom_point()
+```
+
+```{r shape-check}
+"Bien ! Que s'est-il passé pour les SUV ? {ggplot2} n'utilise que six formes dans un graphique. Par défaut, s'il y a plus de six groupes, le septième et les suivants ne seront pas représentés. Par conséquent : attention à n'utiliser `shape` que si vous avez moins de sept groupes."
+```
+
+### Exercice 1
+
+Dans le code ci-dessous, représentez `cty`, qui est une variable continue, avec `color`, `size`, et `shape`. Comment se comportent ces différentes représentations pour une variable continue comme `cty` par rapport à une variable catégorielle comme ` class` ?
+
+```{r cty, exercise = TRUE, exercise.eval = FALSE}
+# Représentez cty avec color
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+
+# Représentez cty avec size
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+
+# Représentez cty avec shape
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+```{r cty-check}
+"Génial ! {ggplot2} traite les variables catégorielles et les variables continues différemment. En particulier, {ggplot2} représente une variable continue grâce à la couleur par un gradient de bleu, et il ne représentera pas de variables continues par shape."
+```
+    
+### Exercice 2
+
+Représentez `class` avec `color`, `size`, et `shape` dans un même graphique. Est-ce que cela fonctionne ?
+
+```{r multiple, exercise = TRUE, exercise.eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+```{r multiple-check}
+"Super ! {ggplot2} peut représenter la même variable de plusieurs façons."
+```
+    
+<div id="multiple-hint">
+**Indice:** Assurez-vous de créer chaque représentation visuelle séparément, par exemple `color = class`, `size = class`, etc.
+</div>    
+    
+### Exercice 3
+
+Que se passe-t-il si vous représentez autre chose qu'uniquement le nom de la variable, comme `colour = displ < 5` ? Essayez.
+    
+```{r nonvar, exercise = TRUE, exercise.eval = FALSE}
+ggplot(data = mpg) + 
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+```{r nonvar-check}
+"Bien ! {ggplot2} va utiliser le résultat de l'expression pour représenter la variable. Ici, la couleur de chaque point varie si la valeur de `displ` est plus petite ou plus grande que cinq."
+```
+
+### Paramétrage esthétique général
+
+Comment faire si l'on veut changer la couleur de tous les points, par exemple en bleu comme ci-dessous ?
+
+```{r echo = FALSE, out.width="80%"}
+ggplot(mpg) +
+  aes(displ, hwy) +
+  geom_point(color = "blue")
+```
+
+Vous pouvez faire cela en renseignant la couleur en argument de la fonction `geom()`, comme ceci :
+
+```{r setting, exercise = TRUE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point(color = "blue")
+```
+
+### Paramètre global vs. Représentation d'une variable
+
+Le paramétrage global dans `geom_` fonctionne pour tous les paramètres esthétiques de `aes`. Si vous voulez spécifier manuellement un paramètre esthétique pour **l'ensemble du graphique**, renseignez les éléments dans `geom_()`.
+
+```{r setting2, exercise = TRUE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point(color = "blue", shape = 3, alpha = 0.5)
+```
+
+Si par contre vous voulez modifier la représentation d'une **variable** qui est dans votre jeu de données, indiquez les éléments dans `aes()`.
+
+```{r setting3, exercise = TRUE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy, color = class, shape = fl, alpha = displ) +
+  geom_point()
+```
+
+### Exercice 4
+
+D'après vous, quel est le problème dans le code ci-dessous ? Corrigez le code pour produire quelque chose de sensé.
+
+```{r e4, exercise = TRUE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy, color = "blue") +
+  geom_point()
+```
+
+```{r e4-solution}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point(color = "blue")
+```
+
+```{r e4-check}
+"Bravo ! Renseigner des arguments au mauvais endroit est l'une des erreurs les plus courantes lors de la création d'un graphique. Une petite astuce pour s'en sortir : réfléchir à ce que l'on souhaite voir apparaître dans la légende du graphique. Si vous avez besoin d'une légende pour expliquer ce que sont les différentes couleurs (ou autre), il est bien probable que vous deviez inclure les informations de couleur dans aes(). {ggplot2} crée une légende pour toute spécification visuelle mise dans la fonction aes(). Si le paramètre esthétique ne donne pas d'information est n'est qu'esthétique, mettez-le dans geom_()."
+```
+
+### Reprenons
+
+Vous associez le nom du paramètre de la fonction `aes` avec la variable que vous voulez représenter.
+
+Une fois cette association faite, {ggplot2} s'occupe du reste. Il sélectionne une échelle adaptée et il construit la légende qui explique les différents niveaux du paramètre. Pour les représentations de x et y, ggplot2 ne crée pas de légende mais il crée un axe avec des marques (par exemple des graduations) et un titre. L'axe agit comme une légende : il explique la correspondance entre la localisation et les valeurs de la variable.
+
+Vous avez expérimenté les représentations les plus courantes pour les points : `x`, `y`, `color`, `size`, `alpha` et `shape`. Chaque `geom` utilise son propre ensemble de paramètres de représentation (vous ne vous attendez pas à ce qu'une ligne ait une forme par exemple). Pour savoir quelles représentations utiliser pour un certain geom, regardez sa page d'aide, par exemple `?geom_line`.
+
+Ceci soulève une nouvelle question que nous n'avons fait qu’effleurer : qu'est-ce qu'un geom ?
+
+## Objets geometriques
+
+### Geoms
+
+En quoi ces deux graphiques sont similaires ?
+
+```{r echo = FALSE, out.width = "50%", fig.align="default", message = FALSE}
+ggplot(data = mpg) + 
+  aes(x = class, y = hwy) +
+  geom_boxplot()
+
+ggplot(data = mpg) + 
+  aes(x = class, y = hwy) +
+  geom_violin()
+```
+
+Les deux graphiques représentent la même variable x, la même variable y, et décrivent le même jeu de données. Mais, les deux graphiques ne sont pas identiques. Chaque graphique utilise un objet visuel différent pour représenter les données. Dans la syntaxe de {ggplot2}, on dit qu'ils utilisent différents __geoms__.
+
+Un __geom__ est un objet géométrique utilisé pour représenter les observations. Par exemple, les nuages de points utilisent le geom_point, les boîtes à moustaches utilisent le geom_boxplot, et les graphiques avec des lignes utilisent le geom_lines.
+
+Comme vu précédemment, vous pouvez utiliser différents geom pour représenter les mêmes données. Le graphique de gauche utilise le geom boxplot et le graphique de droite le geom violin.
+
+### Fonctions geom
+
+Pour changer l'objet géométrique utilisé par votre graphique, changez la fonction geom. Par exemple, reprenez le code qui produit le graphique de droite (du dessus), et changez `geom_boxplot` par `geom_violin`. Qu'obtenez-vous ?
+
+```{r geom, exercise = TRUE}
+ggplot(data = mpg) + 
+  aes(x = class, y = hwy) +
+  geom_boxplot()
+```
+
+```{r geom-solution}
+# right
+ggplot(data = mpg) + 
+  aes(x = class, y = hwy) +
+  geom_violin()
+```
+
+```{r geom-check}
+"Super ! Vous obtenez le graphique présenté à droite plus haut."
+```
+
+### Plus de geoms !
+
+{ggplot2} contient plus de 30 fonctions _geom_ que vous pouvez utiliser, et d'autres packages en procurent encore d'avantage (regarder <https://www.ggplot2-exts.org> pour une liste non exhaustive). Vous apprendrez comment utiliser ces geoms pour l'exploration de données dans le primer [Visualiser des données]().
+
+Jusque là, le meilleur moyen d'obtenir une vue d'ensemble compréhensible sur les geoms, c'est d'utiliser la [cheatsheet {ggplot2}](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf), cette petite page remplie d'astuces trèsutiles. Et pour en savoir plus sur un geom en particulier, regardez sa page d'aide (par ex : `?geom_violin`.)
+
+### Exercice 1
+
+Quel geom utiliseriez-vous pour représenter un nuage de points ? Une boîte à moustaches ?
+
+### Bilan
+
+Ce que vous avez appris ici : manipuler `aes`, `geom`, et plus généralement les concepts de couches de données et de couches de représentations. C'est ce qu'on appelle **la Grammaire des Graphiques** (Grammar of Graphics en anglais).
+
+La Grammaire des Graphiques fournit un cadre systématique pour créer n'importe quel graphique, et elle a été utilisée pour créer le package {ggplot2}. En fait, les deux premières lettres de {ggplot2} sont pour "Grammar of Graphics".
+
+### Grammaire des Graphiques
+
+Le meilleur moyen pour comprendre la Grammaire des Graphiques est de la voir expliquée en actions :
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/GoZlwhM8jyk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+## Package {ggplot2}
+
+### Qu'est-ce qu'un package ?
+
+Tout au long de ce module, nous avons référé à {ggplot2} comme étant un package. Qu'est-ce que cela veut dire ?
+
+Le langage R est divisé en __packages__. Ce sont de petites collections d'ensembles de données et de fonctions qui se concentrent toutes sur une seule tâche. Les fonctions que nous avons utilisées dans ce module viennent d'un de ces packages, le package {ggplot2} dédié à la visualisation des données. 
+
+### Ce que vous devez savoir sur les packages
+
+Lorsque vous installez R, une petite collection de packages de base s'installe aussi ( __base R__). Les autres packages ---il en existe plus de 17 000 !--- sont optionnels. Vous n'aurez besoin de n'installer que ceux dont vous aurez besoin.
+
+{ggplot2} est l'un de ces packages optionnels, de même que les autres packages que nous utiliserons dans ces modules. La facette la plus populaire et la plus moderne de R est généralement issue de ces packages optionnels.
+
+Vous n'aurez pas besoin d'installer de packages dans ces modules de cours. Tous les packages dont vous aurez besoin sont déjà pré-installés.
+
+Cependant, un jour, vous voudrez peut-être (et sûrement !) utiliser R en dehors de ces modules. Vous voudrez alors savoir de quels packages vous aurez besoin pour utiliser les fonctions que nous voyons ensemble ici. Tout au long de ces modules, nous tâcherons de clairement lier les fonctions aux packages dont elles sont issues. Vous devrez ainsi installer ces packages lorsque ce plongeon dans le grand bain de l'autonomie dans R viendra.
+
+Si vous voulez en savoir d'avantage sur l’installation des packages R (ou R ou l'IDE -- environnement de développement intégré-- RStudio), la vidéo [Installation](http://tutorials.shinyapps.io/00-setup)) vous aidera dans le processus de paramétrage de R sur votre ordinateur.
+
+### Suite
+
+Félicitations ! Vous pouvez utiliser {ggplot2} pour représenter n'importe quel jeu de données de différentes façons. Lorsque vous commencerez à explorer des données, vous gagnerez à intégrer ces outils dans votre façon de travailler.
+
+Il y a bien plus dans {ggplot2} et dans la visualisation de données en général que ce que nous avons couvert ici. Si vous voulez en apprendre d'avantage sur la visualisation des données avec {ggplot2}, essayez le module [Visualisation de données]().
+
+Vos nouvelles compétences en visualisation de données vont vous aider à apprendre d'autres parties de R, parce que vous savez maintenant visualiser les résultats d'un changement fait sur les données. Vous allez mettre vos compétences à profit dès le prochain module. Vous y aborderez la manière avec laquelle vous pouvez extraire des données depuis un jeu de données ainsi que la manière de calculer de nouvelles variables et des statistiques synthétiques à partir des données.

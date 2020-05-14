@@ -1,0 +1,397 @@
+---
+title: "Histogrammes"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## Bienvenue
+
+Les **histogrammes** sont la façon la plus populaire de visualiser des distributions continues. Ici nous allons voir les histogrammes et leurs dérivés. Vous allez apprendre à :
+
+* Faire et interpréter des histogrammes
+* Ajuster le **binwidth** d'un histogramme pour révéler de l'information
+* Utiliser des geoms similaires à l'histogramme, comme __dotplots__, __frequency polygons__, et __densities__
+
+Ce module est adapté du livre _R for Data Science_ d'Hadley Wickham et Garrett Grolemund, publié par O’Reilly Media, Inc., 2016, ISBN: 9781491910399. Vous pouvez obtenir le livre ici : [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
+
+Ce module utilise les packages {ggplot2} et {dplyr}, qui ont été chargés pour votre convenance.
+
+## Histogrammes
+
+### Introduction
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VDKBWcc9RIY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### Comment faire un histogramme
+
+Pour faire un histogramme avec {ggplot2}, ajoutez `geom_histogram()` au [template {ggplot2}](). Par exemple, le code ci-dessous produit un histogramme de la variable `carat` du jeu de données `diamonds`, qui est dans {ggplot2}.
+
+```{r hist1, exercise = TRUE, out.width = "80%", message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram()
+```
+
+### La variable y
+
+Comme avec `geom_bar()`, vous n'avez pas besoin de donner une variable $y$ à `geom_histogram()`. `geom_histogram()` va construire sa propre variable $y$ en comptant le nombre d'observation dans chaque classe sur l'axe des $x$. `geom_histogram()` va ensuite représenter le nombre d'observations sur l'axe des $y$.
+
+```{r out.width = "80%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram()
+```
+
+Ainsi, en regardant une barre, vous pouvez déterminer combien il y a d'observations dans chaque classe. Les classes avec une barre haute représentent des valeurs courantes de la variable $x$.
+
+### Exercice 1 - Interprétation
+
+```{r out.width = "80%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram()
+```
+
+```{r r1, echo = FALSE}
+question("En vue du graphique, quelle est la taille de carat la plus courante dans le jeu de données ?",
+         answer("Approximativement 0.3 ou 0.4 carats", correct = TRUE, message = "Plus de 15 000 diamants dans les données ont une valeur dans la classe entre 0.3 et 0.4. C'est plus que dans n'importe quelle autre classe. Comment le sait-on ? Parce que la barre au dessus de 0.3-0.4 va jusqu'à 15 000, plus haut que n'importe quelle autre barre dans le graphique."),
+         answer("Approximativement 1 carat"),
+         answer("Approximativement 1.5 carat"),
+         answer("Approximativement 2 carats"),
+         allow_retry = TRUE
+)
+```
+
+### Largeur des classes
+
+Par défaut, {ggplot2} va choisir une largueur de classe pour votre histogramme d'environ 30 classes. Vous pouvez manuellement spécifier l'argument `binwidth`, qui est interprété dans l'unité de l'axe des x :
+
+```{r hist2, exercise = TRUE, exercise.eval = TRUE}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram(binwidth = 1)
+```
+
+### Nombre de classes
+
+Une alternative est de spécifier l'argument `bins` qui prend le nombre total de classes à utiliser :
+
+```{r hist3, exercise = TRUE, exercise.eval = TRUE}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram(bins = 10)
+```
+
+Il peut être difficile de déterminer la largueur des classes avec l'utilisation de `bins`, étant donné qu'il se peut que ce ne soit pas des nombres entiers.
+
+### Limites 
+
+Vous pouvez bouger les classes à droite ou à gauche sur l'axe des $x$ avec l'argument `boundary`. `boundary` prend une valeur de $x$ comme limite entre deux classes ({ggplot2} va aligner le reste des classes en fonction) :
+
+```{r hist4, exercise = TRUE, exercise.eval = TRUE}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram(bins = 10, boundary = 0)
+```
+
+### Exercice 2 - binwidth
+
+Lorsque vous utilisez `geom_histogram()`, il est recommandé de toujours expérimenter avec différentes valeurs de binwidth. En effet, différentes largeurs de classe peuvent révéler différents types d'informations.
+
+Pour voir un exemple, faites un histogramme de la variable `carat` du jeu de données `diamonds`. Utilisez la largeur de 0.5 carats par classe. A quoi ressemble la forme générale de la distribution ?
+
+```{r r2, exercise = TRUE}
+
+```
+
+```{r r2-check}
+"Bien ! La taille de diamants la plus courante est environ 0.5 carats. Les plus grandes tailles deviennent progressivement moins fréquentes. Ceci s'accorde avec la connaissance générale sur les diamants. Ainsi vous pourriez être tenté d'arrêter là votre exploration de la taille de carat. Mais est-ce une bonne idée ?"
+```
+
+```{r r2-solution}
+ggplot(data = diamonds) +
+  aes(x = carat) + 
+  geom_histogram(binwidth = 0.5)
+```
+
+### Exercice 3 - une autre valeur pour binwidth
+
+Recréez un histogramme de `carat` mais cette fois-ci avec des classe de 0.1 de largeur. Est-ce que ce graphique révèle de nouvelles informations ? Regardez de plus près. Y a-t-il plus d'un pic ? Où se trouvent ces pics ?
+
+```{r r3, exercise = TRUE}
+
+```
+
+```{r r3-check}
+"Voilà ! La nouvelle largeur de classe révèle un nouveau phénomène : les carats de taille 0.5, 0.75, 1, 1.5, et 2 sont bien plus fréquents. Pourquoi ?"
+```
+
+```{r r3-solution}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram(binwidth = 0.1)
+```
+
+### Exercice 4 - encore une autre valeur de binwidth
+
+Recréez votre histogramme une dernière fois, avec une largeur de classe de 0.1 et une limite à zéro. Essayez de trouver une nouvelle tendance dans ce graphique.
+
+```{r r4, exercise = TRUE}
+
+```
+
+```{r r4-check}
+"Bien ! Cette nouvelle largeur de classe révèle encore un autre phénomène : chaque pic est déformé sur la droite. En d'autres termes, les diamants qui ont 1.01 carats sont bien plus communs que les diamants de 0.99 carats. Pourquoi ?"
+```
+
+```{r r4-solution}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram(binwidth = 0.01, boundary = 0)
+```
+
+### aesthetics
+
+Visuellement, les histogrammes sont très ressemblants aux diagrammes en barres. Ainsi, ils utilisent les mêmes paramètres esthétiques : _alpha_, _color_, _fill_, _linetype_, et _size_.
+
+Ils se comportent aussi de la même étrange façon lorsque vous utilisez la couleur. Vous souvenez-vous de ce qui se passait ? 
+
+```{r q1, echo = FALSE}
+question("Quel paramètre esthétique utiliseriez-vous pour colorer l'intérieur de chaque barre de l’histogramme ?",
+         answer("color", message = 'Pour les histogrammes, color contrôle le contour de chaque barre.'),
+         answer("fill", correct = TRUE, message = "fill contrôle la couleur de l'intérieur du geom, c'est-à-dire l'intérieur des barres. Le paramètre color, lui, contrôle la couleur du contour."),
+         allow_retry = TRUE)
+```
+
+### Exercice 5 - Tout mettre ensemble
+
+Recréez l'histogramme ci-dessous.
+
+```{r out.width = "100%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price, fill = cut) +
+  geom_histogram(binwidth = 1000, boundary = 0)
+```
+
+```{r r5, exercise = TRUE}
+
+```
+
+```{r r5-check}
+"Super ! Etes-vous sûr que chaque limite est de 1000 et que la première limite est à zéro ?"
+```
+
+```{r r5-solution}
+ggplot(data = diamonds) +
+  aes(x = price, fill = cut) +
+  geom_histogram(binwidth = 1000, boundary = 0)
+```
+
+## geoms similaires
+
+### Un problème
+
+En ajoutant une couleur (avec fill) dans l'histogramme ci-dessous, nous avons divisé les données en cinq "sous-distributions" : la distribution du prix pour les diamants fair cut, pour les diamants good cut, very good cut, premium cut et ideal cut.
+
+```{r out.width = "80%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price, fill = cut) +
+  geom_histogram(binwidth = 1000, boundary = 0)
+```
+
+Mais il y a quelques limitations à cette façon de représenter :
+
+* il est difficile de voir les formes des distributions individuelles.
+* il est difficile de comparer les distributions individuelles, parce qu'elles n'ont pas la même première valeur pour $y$.
+
+### Une solution
+
+Nous pouvons améliorer le graphique en utilisant d'autres geom pour représenter les distribution des valeurs de prix. Il y a trois geom dans {ggplot2} qui représentent le même type d'information qu'un histogramme :
+
+1. `geom_freqpoly()`
+1. `geom_density()`
+1. `geom_dotplot()`
+
+### geom_freqpoly()
+
+`geom_freqpoly()` représente un _polygone de fréquences_, qui utilise une ligne pour représenter la même information qu'un histogramme. Vous pouvez voir un polygone de fréquences comme une ligne qui connecterait le haut de chaque barre d'un histogramme, comme ceci :
+
+```{r out.width = "80%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = carat) +
+  geom_histogram(binwidth = 0.25, boundary = 0, fill = "grey50") +
+  geom_freqpoly(binwidth = 0.25, boundary = 0, size = 0.7)
+```
+
+Notez que les barres ne font pas partie du polygone de fréquences ; elles sont présentes ici uniquement pour références. `geom_freqpoly()` reconnait les même paramètres que `geom_histogram()`, comme `bins`, `binwidth`, et `boundary`.
+
+### Exercice 6 - Polygones de fréquences
+
+Créez le polygone de fréquences visible au dessus. Il a une largeur de classe de 0.25 et commence avec une limite à zéro.
+
+```{r r6, exercise = TRUE}
+
+```
+
+```{r r6-check}
+"Bien ! En utilisant une ligne plutôt que des barres, les polygones de fréquences peuvent parfois représenter des choses que les histogrammes ne peuvent pas."
+```
+
+```{r r6-solution}
+ggplot(data = diamonds) +
+  aes(x = carat)
+  geom_freqpoly(binwidth = 0.25, boundary = 0)
+```
+
+### Exercice 7 - Polygones de fréquences multiples
+
+Utilisez un polygone de fréquences pour recréer le graphique de price et cut. Etant donné que les lignes n'ont pas *d'intérieur* comme les barres, vous allez utiliser le paramètre esthétique color plutôt que fill.
+
+```{r out.width = "80%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price, fill = cut) +
+  geom_histogram(binwidth = 1000, boundary = 0)
+```
+
+```{r r7, exercise = TRUE}
+
+```
+
+```{r r7-check}
+"Bravo ! Etant donné que les lignes ne se masquent pas entre elles, `geom_freqpoly()` représente chaque sous-groupe avec la même base de référence : y = 0 (les sous-groupes ne sont pas au dessus les uns des autres). Cela fait qu'il est plus aisé de comparer les distributions. Vous pouvez maintenant voir que pour presque chaque valeur de prix, il y a plus de diamants avec une taille idéale que n'importe quel autre type de diamants."
+```
+
+```{r r7-solution}
+ggplot(data = diamonds) +
+  aes(x = price, color = cut) +
+  geom_freqpoly(binwidth = 1000, boundary = 0)
+```
+
+### geom_density()
+
+Notre polygone de fréquences souligne une deuxième limitation de notre graphique : il est difficile de comparer les formes des distributions parce que certains sous-groupes comportent plus de diamants que d'autres. Ceci à pour effet de compresser les plus petits groupes dans le bas du graphique.
+
+```{r out.width = "80%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price, color = cut) +
+  geom_freqpoly(binwidth = 1000, boundary = 0)
+```
+
+Vous pouvez éviter cela avec `geom_density()`.
+
+### Courbes de densité
+
+`geom_density()` représente une courbe de densité pour chaque distribution. Voilà une représentation lissée des données, similaire à un histogramme lissé.
+
+Les courbes de densité ne représentent pas un nombre d'observations sur l'axe des $y$ mais la densité. La densité est analogue au nombre d'observations en un point divisé par le nombre d'observations total. Les densités aident à comparer les distributions des sous-groupes. Lorsque vous représentez plusieurs sous-groupes, chaque courbe de densité va contenir la même aire sous la courbe.
+
+```{r out.width = "50%", echo = FALSE, message = FALSE}
+data <- data.frame(data = c(rnorm(1000), rnorm(500, mean = 3), rnorm(100, mean = 6)),
+                   group = c(rep("A", 1000), rep("B", 500), rep("C", 100)))
+
+ggplot(data = data) +
+  aes(x = data, color = group) +
+  geom_freqpoly() +
+  ggtitle("Données avec nombres d'observations")
+
+ggplot(data = data) +
+  aes(x = data, color = group) +
+  geom_density() + 
+  ggtitle("Mêmes données avec densités")
+```
+
+### Exercice 8 - Courbes de densité
+
+Recréez le graphique avec les courbes de densités. Comment interprétez-vous les résultats ?
+
+```{r out.width = "80%", echo = FALSE, message = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price, fill = cut) +
+  geom_histogram(binwidth = 1000, boundary = 0)
+```
+
+```{r r8, exercise = TRUE}
+
+```
+
+```{r r8-check}
+"Bien ! Vous pouvez à présent comparer les prix les plus communs pour chaque sous-groupe. Par exemple, le graphique montre que le prix le plus commun pour la majorité des diamants est proche de 1000$. Cependant, le prix le plus commun pour les diamants de taille fair est largement au dessus, environ 2500$. Nous reviendrons sur cette bizarrerie dans un autre module."
+```
+
+```{r r8-solution}
+ggplot(data = diamonds) +
+  aes(x = price, color = cut) +
+  geom_density()
+```
+
+### Paramètres de densité
+
+Les graphiques de densité ne prennent pas les paramètres `bin`, `binwidth`, et `boundary`. A la place, ils reconnaissent des paramètres de noyau et de lissage qui sont utilisés dans l'algorithme d'ajustement de densité, qui est assez sophistiqué.
+
+En pratique, vous pouvez obtenir rapidement des résultats utiles avec les paramètres par défaut de `geom_density()`. Si vous voulez en apprendre d’avantage sur les estimations de densité et les paramètres qui permettent de les régler, commencez avec la page d'aide de R avec `?geom_density()`.
+
+### geom_dotplot()
+
+Il y a un dernier geom dans {ggplot2} qui représente des distributions uni-dimensionnelles : `geom_dotplot()`. `geom_dotplot()` représente chaque observation avec un point, puis empile les points au sein des classes pour créer un semblant d'histogramme.
+
+Les diagrammes de points peuvent fournir une représentation intuitive des données, mais ils ont quelques limitations. Les diagrammes de points ne sont pas idéaux pour de larges jeux de données comme `diamonds`, et fournissent des légendes des axes $y$ qui n'ont pas de sens. De plus, les paramètres de réglages de `geom_dotplot()` font que ces diagrammes sont lents à travailler lors de l'analyse exploratoire des données.
+
+```{r dotplot, exercise = TRUE, exercise.eval = TRUE, message = FALSE}
+ggplot(data = mpg) +
+  aes(x = displ) +
+  geom_dotplot(dotsize = 0.5, stackdir = "up", stackratio = 1.1)
+```
+
+### Exercice 9 - Facettes
+
+Au lieu de changer les geom, vous pouvez faire en sorte de pouvoir comparer vos sous-groupes en utilisant des facettes. Modifiez le code ci-dessous pour faire des facettes par taille (cut).
+
+```{r r9, exercise = TRUE}
+ggplot(data = diamonds) +
+  aes(x = price, fill = cut) +
+  geom_histogram(binwidth = 1000, boundary = 0)
+```
+
+```{r r9-check}
+"Voilà ! Les facettes permettent de comparer les sous-groupes. Par contre, les données sont séparées. Vous pouvez décider si les polygones de fréquences ou les densité permettent de mieux faire les comparaisons."
+```
+
+```{r r9-solution}
+ggplot(data = diamonds) +
+  aes(x = price, fill = cut) +
+  geom_histogram(binwidth = 1000, boundary = 0) +
+  facet_wrap( ~cut)
+```
+
+### Récapitulatif
+
+Dans ce module, vous avez appris à visualiser des distributions avec des histogrammes, des polygones de fréquences et des densités. Mais que devez-vous rechercher dans ces visualisations ?
+
+* **Rechercher là où il y a beaucoup de données.** Les barres hautes révèlent les valeurs les plus communes dans le jeu de données. Vous pouvez vous attendre à ce que ces valeurs soient des "valeurs typiques" de votre variable.
+
+* **Rechercher là où il y a peu de données.** Les barres courtes révèlent les valeurs peu communes. Ces valeurs apparaissent rarement et vous serez sûrement capable de savoir pourquoi.
+
+* **Rechercher les outliers.** Les barres qui apparaissent en dehors de la majorité du reste de données sont des outliers (= données aberrantes), des cas spéciaux qui peuvent révéler des informations inattendues. 
+    
+Parfois, les outliers ne sont pas visible dans un graphique, mais ils peuvent être déduits de l'échelle des $x$. Par exemple, beaucoup de graphiques dans ce module semblent être étendus bien au delà des données. Pourquoi ? Parce que l'échelle à été étirée pour inclure les outliers. Lorsque votre jeu de données est grand, comme `diamonds`, la barre qui décrit un outlier peut être invisible (moins que la hauteur d'un pixel).
+    
+* **Rechercher les clusters.**
+
+* **Rechercher les formes.** La forme d'un histogramme peut souvent indiquer si une variable se comporte selon une distribution de probabilité connue.
+
+Le plus important à retenir concernant les histogrammes, les polygones de fréquences et les graphiques de densités, c'est d'explorer les différentes largeurs de classes. La largeur de classes d'un histogramme l'information qui est représentée. Vous ne pouvez pas prédire en amont quelle taille de classes va révéler des information inattendues.

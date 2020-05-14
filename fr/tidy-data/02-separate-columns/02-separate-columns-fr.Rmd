@@ -1,0 +1,520 @@
+---
+title: "Séparer et unir des colonnes"
+tutorial:
+  id: "io.shinyapps.tutorials.02-separate"
+  version: 0.01
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+
+hurricanes <- tribble(
+     ~name,  ~wind_speed, ~pressure,        ~date,
+  "Alberto",         110,      1007, "2000-08-03",
+     "Alex",          45,      1009, "1998-07-27",
+  "Allison",          65,      1005, "1995-06-03",
+      "Ana",          40,      1013, "1997-06-30",
+   "Arlene",          50,      1010, "1999-06-11",
+   "Arthur",          45,      1010, "1996-06-17"
+)
+
+x <- tribble(
+  ~x1, ~x2,
+  "A",   1,
+  "B",  NA,
+  "C",  NA,
+  "D",   3,
+  "E",  NA
+)
+
+# To avoid a distracting detail during tutorial
+names(who) <- stringr::str_replace(names(who), "newrel", "new_rel")
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Bienvenue
+
+Les données sont plus faciles à analyser dans R lorsqu'elles sont stockées dans un format ordonné (on parle de **tidy data** en anglais). Dans le dernier module, vous avez appris à ordonner les données dont la présentation est désordonnée. Mais les jeux de données peuvent être désordonnés d'une autre manière : un ensemble de données peut combiner plusieurs valeurs dans une seule cellule ou répartir une seule valeur sur plusieurs cellules. Cela rend difficile l'extraction et l'utilisation de valeurs lors de votre analyse.
+
+Ce module vous apprendra deux outils que vous pouvez utiliser pour réordonner ce type de données :
+
+* `separate()` - qui sépare une colonne en plusieurs colonnes
+* `unite()` - qui combine plusieurs colonnes en une seule colonne
+
+Le module se termine par une étude de cas qui vous obligera à utiliser tous les outils de mise en ordre des données pour appréhender un jeu de données réelles désordonnées.
+
+Ce module utilise les [packages de base du tidyverse](http://tidyverse.org/), notamment {tidyr}. Tous ces packages ont été préinstallés et préchargés.
+
+Cliquez sur le bouton "Suivant" pour commencer.
+
+## separate()
+
+### hurricanes
+
+Le jeu de données `hurricanes` contient les informations historiques de cinq ouragans. À première vue, il semble contenir quatre variables : _name_, *wind_speed*, _pressure_ et _date_. Cependant, trois autres variables sont 'cachées.' dans le jeu de données. Pouvez-vous les repérer ?
+
+```{r}
+hurricanes
+```
+
+```{r q1}
+question("Quelles variables sont 'cachées' dans le jeu de données hurricanes ? Trouvez-en trois",
+   answer("location"),
+   answer("year", correct = TRUE),
+   answer("month", correct = TRUE),
+   answer("day", correct = TRUE),
+   allow_retry = TRUE,
+   correct = "Bon travail ! La variable date contient aussi l'année, le mois et le jour associé à chaque mesure.",
+   incorrect = "Et non... Continuez ! Quelles sont les _trois_ autres variables affichées dans hurricanes ?"
+)
+```
+
+### Dates
+
+Saviez-vous que les dates sont une combinaison de plusieurs variables ? 
+
+Vous afficherez presque toujours ces variables ensemble pour faire une date, car une date est elle-même une variable ---et elle bien plus qu'uniquement la combinaison de ses trois parties.
+
+Cependant, il y a des moments où il est commode de traiter chaque élément d'une date séparément. Par exemple, que se passe-t-il si vous souhaitez filtrer les ouragans uniquement pour les tempêtes qui se sont produites en juin (c'est-à-dire ``month == 6`) ? Il serait alors pratique de réorganiser les données pour ressembler à ceci :
+
+```{r}
+hurricanes %>% 
+  separate(date, c("year","month","day"), sep = "-", convert = TRUE)
+```
+
+Mais comment pouvez-vous faire cela ?
+
+### separate()
+
+Vous pouvez séparer les éléments de `date` avec la fonction `separate()`. `separate()` divise une colonne de valeurs en plusieurs colonnes qui contiennent chacune une partie des valeurs d'origine.
+
+Exécutez le code ci-dessous pour voir `separate()` en action. Cliquez ensuite sur "Continue" pour en savoir plus sur la syntaxe.
+
+```{r ex1, exercise = TRUE}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day"), sep = "-")
+```
+
+```{r ex1-check}
+"Bravo ! Comme pour les autres fonctions du tidyverse, `separate()` renvoie une copie modifiée des données originales. Vous devrez enregistrer la copie si vous souhaitez l'utiliser ultérieurement."
+```
+
+### Syntaxe
+
+Réécrivons notre commande ci-dessus sans le pipe (%>%). Cela permettra de décrypter plus facilement la syntaxe de `separate()`.
+
+```{r echo = TRUE, eval = FALSE}
+separate(data = hurricanes, 
+         col = date, 
+         into = c("year","month","day"),
+         sep = "-")
+```
+
+`separate()` prend en arguments un jeu de données, puis le nom de la colonne à séparer. Ici, notre code séparera la colonne `date` du jeu de données `hurricane`.
+
+L’argument `sep = "-"` indique à la fonction `separate()` qu'il faut séparer chaque valeur de la colonne `date` à chaque fois qu'un `-` apparaît. Vous pouvez choisir de séparer une colonne selon n'importe quel caractère.
+
+La séparation selon le symbole `-` divisera chaque date en trois dates : une année, un mois et un jour. Ainsi, `separate()` ajoutera trois nouvelles colonnes au résultat. L'argument `into` donne à `separate()` un vecteur de caractères de noms à utiliser pour les nouvelles colonnes. Puisque le résultat aura trois nouvelles colonnes, ce vecteur devra contenir trois nouveaux noms. `separate()` fournira un message d'erreur s'il lui est demandé de créer moins ou plus de colonnes qu'il n'y a de noms de colonnes renseignés.
+
+### Fonctionnement par défaut
+
+Par défaut, `separate()` séparera les valeurs à l'emplacement de _chaque_ caractère non alphanumérique, comme `-`, `,`,`/ `, etc. Ainsi, nous aurions pu exécuter notre code précédent sans l'argument `sep = "-"` et obtenir le même résultat. Lancer le code ci-dessous pour voir si c'est bien le cas.
+
+```{r ex2, exercise = TRUE}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day"))
+```
+
+```{r ex2-check}
+'Bien joué ! "-" est le seul caractère non-alphanumérique utilisé dans nos dates, ce qui signifie que les valeurs par défaut renvoient la même sortie que si nous avions fixé le paramètre sep = "-"'
+```
+
+### Séparation grâce à la position
+
+Si vous définissez `sep` égal à un (ou des) entier(s), `separate()` séparera les valeurs à l'emplacement indiqué par les entiers Par exemple :
+
+* `sep = 1` séparera les valeurs après le premier caractère
+* `sep = -2` séparera les valeurs après l' _avant dernier_ caractère, et ce quel que soit le nombre de caractères apparaissant dans la valeur. En d'autres termes, il séparera le dernier caractère de chaque valeur du reste.
+* `sep = c(2, 4, 6)` séparera les valeurs après les deuxième, quatrième et sixième caractères, créant quatre sous-valeurs.
+
+Vous pensez avoir compris ce fonctionnement ? Alors créez cette version de `hurricanes` en ajoutant un deuxième appel à `separate()` qui utilise un séparateur entier :
+
+```{r}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day")) %>% 
+  separate(col = year, into = c("century", "year"), sep = 2)
+```
+
+```{r ex3, exercise = TRUE}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day"))
+```
+
+```{r ex3-solution}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day")) %>% 
+  separate(col = year, into = c("century", "year"), sep = 2)
+```
+
+```{r ex3-check}
+"Bravo ! Notez que lorsque vous séparez une valeur en fonction d'un caractère, separate() supprime ce caractère des résultats. Lorsque vous séparez une valeur en fonction d'une position, separate() conserve tous les caractères dans le résultat."
+```
+
+### Quiz - Et si...
+
+Ces deux commandes renverraient-elles le même résultat ? Selon vous, pourquoi ? Une fois que vous pensez avoir la réponse, exécutez le code ci-dessous pour voir si vous aviez raison.
+
+```{r ex4, exercise = TRUE}
+hurricanes %>% 
+  separate(col = pressure, into = c("first", "last"), sep = 1)
+```
+
+```{r ex4-check}
+"Quand sep = 1, separate() sépare après le premier caractère"
+```
+
+
+```{r ex5, exercise = TRUE}
+hurricanes %>% 
+  separate(col = pressure, into = c("first", "last"), sep = "1")
+```
+
+```{r ex5-check}
+'Quand sep = "1", separate() sépare la valeur à chaque fois que le caractère "1" apparaît. En effet, R traite un 1 entouré de guillemets comme un caractère, et non comme un nombre.'
+```
+
+### Conversion
+
+Vous avez peut-être remarqué que `separate()` renvoie ses résultats sous forme de colonnes de chaînes de caractères. Cependant, dans certains cas (comme le nôtre), les colonnes contiendront des entiers, des doubles ou d'autres types de données sans caractère.
+
+Vous pouvez demander à `separate()` de convertir les nouvelles colonnes en un type de données approprié en ajoutant `convert = TRUE` lors de votre appel `separate()`.
+
+Identifiez les types de données de `year`, `month`, et `day`. Ils apparaissent sous les noms de colonnes lorsque vous affichez le jeu de données (comme dans la sortie ci-dessous). Ajoutez ensuite `convert = TRUE` et ré-exécutez le code. Quels changements  observez-vous ?
+
+```{r ex6, exercise = TRUE, exercise.eval = TRUE}
+hurricanes %>% 
+  separate(col = date, into = c("year", "month", "day"))
+```
+
+```{r ex6-solution}
+hurricanes %>% 
+  separate(col = date, into = c("year", "month", "day"), convert = TRUE)
+```
+
+```{r ex6-check}
+"Bien joué ! Nos colonnes contiennent maintenant des entiers, ce qui les rendra plus faciles à manipuler avec des opérations mathématiques."
+```
+
+### Suppression
+
+Jetons maintenant un coup d’œil à un dernier argument de `separate()`. Si vous ajoutez `remove = FALSE` à votre appel `separate()`, R conservera la colonne d'origine dans les résultats.
+
+```{r echo = TRUE}
+hurricanes %>% 
+  separate(col = date, into = c("year", "month", "day"), convert = TRUE, remove = FALSE)
+```
+
+## unite()
+
+### unite()
+
+Vous pouvez faire l'inverse de `separate()` avec `unite()`. `unite()` utilise plusieurs colonnes en entrée pour créer une seule colonne en sortie. Cette fonction construit cette colonne en collant ensemble les cellules des colonnes d'origine avec un séparateur.
+
+```{r ex7, exercise = TRUE, exercise.eval = TRUE}
+hurricanes %>%
+  separate(date, c("year", "month", "day"), sep = "-") %>%
+  unite(col = "date", month, day, year, sep = ":")
+```
+
+### Syntaxe
+
+```{r echo = TRUE, eval = FALSE}
+hurricanes %>%
+  separate(date, c("year", "month", "day"), sep = "-") %>%
+  unite(col = "date", month, day, year, sep = ":")
+```
+
+Notez que la syntaxe de `unite()` est l'inverse de celle de `separate()` :
+
+* Le premier argument est une chaîne de caractères : le nom de la nouvelle colonne que `unite ()` créera
+* Les arguments qui suivent sont les colonnes à combiner dans la nouvelle colonne. Vous pouvez répertorier autant de colonnes que vous le souhaitez. Leurs noms n'ont pas besoin d'être entre guillemets et chaque nom est répertorié comme son propre argument.
+
+### Exercice - Séparer et Unir des colonnes
+
+Utilisez `separate()` et `unite()` pour ré-écrire les dates de `hurricanes` avec le format suivant : 
+
+* month/day/year, par ex : 1/27/2020
+
+```{r ex8, exercise = TRUE}
+
+```
+
+```{r ex8-solution}
+hurricanes %>%
+  separate(date, c("year", "month", "day"), sep = "-") %>%
+  unite(col = "date", month, day, year, sep = "/")
+```
+
+```{r ex8-check}
+"Bon travail ! Poussons maintenant le processus un peu plus loin."
+```
+
+### Exercice - Séparer et Unir des colonnes 2
+
+Utilisez le bloc ci-dessous pour :
+
+1. Utilisez `separate()` pour isoler les deux premiers chiffres de chaque date et ainsi créer une nouvelle colonne "century" (siècle)
+2. Filtrez les données sur les lignes où `century == 19`. Cela vous permettra d'identifier les tempêtes survenues dans les années 1900.
+3. Utilisez `unite()` pour ramener les résultats au format de date d'origine. _Conseil : vous pouvez définir `sep = ""` pour éviter d'inclure un caractère de séparation lors de l'union._
+
+```{r ex9, exercise = TRUE}
+
+```
+
+```{r ex9-solution}
+hurricanes %>%
+  separate(col = date, c("century", "rest"), sep = 2) %>%
+  filter(century == 19) %>% 
+  unite(col = "date", century, rest, sep = "")
+```
+
+```{r ex9-check}
+"Bravo ! C'est exactement ça !"
+```
+
+### Tidy data (Données ordonnées)
+
+Jusqu'à présent, nous avons séparé et uni `date`, une variable qui contient des sous-variables pertinentes. En effet, il n'est pas très logique de combiner des valeurs indépendantes et sans relation entre elles au sein des mêmes cellules. Cependant, de nombreux jeux de données suivent cette pratique insensée. Si vous vous retrouvez confronté à ce problème, vous pouvez utiliser `separate()` et `unite()` pour réorganiser les valeurs de manière ordonnée.
+
+Dans l'étude de cas qui suit, c'est justement ce que vous allez faire. Vous vous exercerez également à utiliser plusieurs fonctions du package {tidyr}.
+
+## Etude de cas
+
+### who 
+
+Le jeu de données `who` contient un sous-ensemble de données du rapport mondial sur la tuberculose de l'Organisation Mondiale de la Santé (OMS). Il est disponible [ici](http://www.who.int/tb/country/data/download/en/).
+
+Dans leur format d'origine, les données sont très désordonnées
+
+```{r echo = TRUE}
+who
+```
+
+### Variables disponibles dans who
+
+Les quatre premières colonnes de `who` contiennent chacune une variable :
+
+* **country** - nom de pays
+* **iso2** - code pays composé de deux lettres
+* **iso3** - code pays composé de trois lettres
+* **year** - année
+
+Les colonnes restantes sont nommées d'après des codes qui contiennent plusieurs variables.
+
+### Codes disponibles dans who
+
+Chaque nom de colonne après la quatrième contient un code composé de trois valeurs provenant de trois variables : _type of TB_, _gender_, et _age_.
+
+```{r out.width = "90%"}
+knitr::include_graphics("www/images/codes.png")
+```
+
+### Objectif
+
+Pour que `who` soit plus facile à utiliser dans R, nous devons l'agencer dans le format ci-dessous. Ce jeu de données contient six variables non redondantes : _country_, _year_, _type_, _sex_, _age (group)_, et _n_ (le nombre de cas de tuberculose signalés pour chaque groupe).
+
+```{r}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>%
+  separate(codes, c("new", "type", "sexage"), sep = "_") %>%
+  select(-new) %>%
+  separate(sexage, c("sex", "age"), sep = 1) %>%
+  drop_na(n)
+```
+
+### Échauffement
+
+Il faudra un certain nombre d'opérations pour ordonner le jeu de données `who`. Lorsque vous regardez le résultat final, la tâche peut sembler longue et difficile, mais chaque opération individuelle sera assez concise (et vous y êtes déjà familier). Nous utiliserons un chaînage d'opérations avec le pipe `%>%` pour enchaîner ces opérations.
+
+Commençons le processus en supprimant les variables redondantes `iso2` et` iso3` de `who`. En d'autres termes, utilisons une fonction de {dplyr} pour sélectionner chaque colonne sauf `iso2` et` iso3`. Rappelez-vous qu'il existe un moyen de le faire sans avoir à taper beaucoup de code.
+
+```{r ex10, exercise = TRUE}
+
+```
+
+```{r ex10-solution}
+who %>% 
+  select(-iso2, -iso3)
+```
+
+```{r ex10-check}
+"Exactement ! L'opérateur - devient très pratique lorsque vous avez 60 noms de colonne à traiter !"
+```
+
+### Stratégie
+
+Ensuite, nous devons déplacer les variables `type`, `sex` et `age` hors des noms de colonne et les mettre dans leur propre colonne. C'est vrai que l'objectif final est de séparer ces valeurs dans leurs propres cellules, mais ce sera plus facile à faire une fois qu'elles seront dans leur propre colonne.
+
+En bref, nous voulons faire quelque chose comme ceci :
+
+```{r out.width = "90%"}
+knitr::include_graphics("www/images/reshape.png")
+```
+
+### Exercice - Restructurer les données
+
+Continuez le code ci-dessous. Utilisez une fonction du package {tidyr} pour restructurer les données en rassemblant les noms de colonne dans leur propre colonne, nommée "codes". Placez les cellules de la colonne dans une colonne nommée "n". _Conseil : ça peut vous être utile : il y a maintenant 58 colonnes dans l'ensemble de données._
+
+Vous pouvez considérer chaque nom de colonne comme une clé (key) qui combine les valeurs (values) de plusieurs variables. Nous voulons déplacer ces clés dans leur propre colonne de clés.
+
+```{r ex11, exercise = TRUE}
+who %>% 
+  select(-iso2, -iso3)
+```
+
+```{r ex11-solution}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n")
+```
+
+```{r ex11-check}
+"Bon travail ! Les codes sont plus faciles à utiliser lorsqu'ils sont dans leur propre colonne."
+```
+
+### Exercice - Séparer les colonnes
+
+Ajoutez au processus le moyen de séparer les codes contenus dans `codes` en trois colonnes nommées "new", "type", et "sexage". Sur quel type de séparateur devez-vous effectuer la séparation ?
+
+```{r ex12, exercise = TRUE}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n")
+```
+
+```{r ex12-solution}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>% 
+  separate(codes, into = c("new", "type", "sexage"), sep = "_")
+```
+
+```{r ex12-check}
+"C'est exactement ça ! Heureusement, on peut décomposer chaque code en ses composants en utilisant une séparation avec le caractères _. Cependant, le sexe et l'âge apparaissent toujours dans la même colonne. Mais nous sommes sur la bonne voie !"
+```
+
+### Exercice - Séparer les données (encore !)
+
+Notre dernière opération a permis d'isoler les variables `new` et `type` dans leur propre colonne. Mais elle n'a pas permis de séparer les variables de sexe et d'âge.
+
+Regardez la structure de la colonne `sexage` d'un peu plus près. Vous pouvez voir que chaque cellule commence par une seule lettre (qui représente un sexe, `m` ou `f`) suivie de trois chiffres ou plus (qui représentent un groupe d'âge). Utilisez ces informations pour effectuer une seconde séparation qui isole les variables `sex` et `age` :
+
+```{r ex13, exercise = TRUE}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>% 
+  separate(codes, into = c("new", "type", "sexage"), sep = "_")
+```
+
+```{r ex13-solution}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>% 
+  separate(codes, into = c("new", "type", "sexage"), sep = "_") %>% 
+  separate(sexage, into = c("sex", "age"), sep = 1)
+```
+
+```{r ex13-check}
+"Excellent travail ! Nous avons presque fini d'ordonner ce jeu de données. Ajoutons quelques touches finales."
+```
+
+### Exercice - Sélectionner des colonnes
+
+Continuez le processus pour supprimer la variable `new`, qui ne fournit aucune information utile. (Chaque ligne du jeu de données montre de nouveaux cas de tuberculose et a la même valeur de `new`).
+
+```{r ex14, exercise = TRUE}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>% 
+  separate(codes, into = c("new", "type", "sexage"), sep = "_") %>% 
+  separate(sexage, into = c("sex", "age"), sep = 1)
+```
+
+```{r ex14-solution}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>% 
+  separate(codes, into = c("new", "type", "sexage"), sep = "_") %>% 
+  separate(sexage, into = c("sex", "age"), sep = 1) %>% 
+  select(-new)
+```
+
+```{r ex14-check}
+"Bien joué ! Focalisons nous maintenant sur les NA présents de la colonne n."
+```
+
+### n
+
+Notez que la colonne `n` de `who` est celle qui contient les informations les plus pertinentes. Vous n'avez pas besoin de prendre de mesures particulières pour répertorier le pays, l'année, le type, le sexe et les combinaisons d'âge dans le jeu de données. Dans un sens, vous connaissez ces combinaisons à l'avance. La colonne `n`, elle, indique le nombre de cas de tuberculose signalés pour chaque combinaison. Contrairement aux autres colonnes, vous ne connaissez pas ces informations à l'avance et vous ne pouvez les obtenir que par le biais de travaux sur le terrain - les vôtres ou ceux de quelqu'un d'autre. C'est en ce sens que la colonne `n` est celle qui contient les informations les plus pertinentes, et c'est celle sur laquelle vous allez focaliser vos analyses. Par conséquent, il est préoccupant de voir que cette colonne contient autant de valeurs `NA`.
+
+### NA
+
+`NA` est le symbole de R qui indique une information manquante. Il est courant d'avoir plusieurs `NA` lorsque vous remodelez vos données d'un format large vers un format long. En effet, la structure de table rectangulaire imposée par des données larges nécessite un espace réservé pour chaque combinaison variable-valeur ---même si aucune donnée n'a été collectée pour cette combinaison.
+
+En revanche, le format de données long ne nécessite pas d'espace réservé pour chaque combinaison variable-valeur. Étant donné que chaque combinaison est enregistrée sur sa propre ligne, vous ne pouvez tout simplement pas inclure de lignes contenant une information manquante `NA`.
+
+### drop_na()
+
+Le package {tidyr} fournit une fonction très pratique pour supprimer des lignes contenant un `NA` dans une colonne spécifique : `drop_na()`. Pour l'utiliser, donnez à `drop_na()` un jeu de données (qui peut provenir d'un pipe `%>%`), puis listez une ou plusieurs colonnes de ce jeu de données. Par exemple :
+
+```{r echo = TRUE, eval = FALSE}
+data %>% 
+  drop_na(colonne1, colonne2)
+```
+
+`drop_na()` supprimera chaque ligne contenant un `NA` dans une ou plusieurs des colonnes répertoriées.
+
+Ajoutez `drop_na()` au pipe ci-dessous pour supprimer chaque ligne qui a un NA dans la colonne `n`.
+
+```{r ex15, exercise = TRUE}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>% 
+  separate(codes, into = c("new", "type", "sexage"), sep = "_") %>% 
+  separate(sexage, into = c("sex", "age"), sep = 1) %>% 
+  select(-new)
+```
+
+```{r ex15-solution}
+who %>%
+  select(-iso2, -iso3) %>% 
+  pivot_longer(cols = 3:58, names_to = "codes", values_to = "n") %>% 
+  separate(codes, into = c("new", "type", "sexage"), sep = "_") %>% 
+  separate(sexage, into = c("sex", "age"), sep = 1) %>% 
+  select(-new) %>% 
+  drop_na(n)
+```
+
+```{r ex15-check}
+"Bon travail ! Vous avez peut-être remarqué que drop_na(n) fait la même chose que filter(!is.na(n)). Cependant, drop_na(n) est plus facile à lire et à taper."
+```
+
+### Récapitulatif
+
+Bon travail ! Vous avez transformer le jeu de données `who` en un jeu de données ordonné et prêt à être exploré, modélisé et analysé.
+
+La différence entre les versions initiale et finale de `who` est radical, mais chaque étape de notre processus de transformation a utilisé un changement minime, logique et familier. C'est la conception même du tidyverse ! Le tidyverse contient un vocabulaire de fonctions qui font chacune une chose simple, mais qui peuvent être combinées pour effectuer des tâches plus sophistiquées. De cette façon, le tidyverse est comme un langage écrit, il est composé de mots (fonctions) qui peuvent être combinés en phrases qui ont une signification sophistiquée (pipes).
+
+Cette approche facilite également la résolution des problèmes de code. Vous pouvez aborder n'importe quel problème en le décomposant en une série de petites étapes.

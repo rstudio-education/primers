@@ -1,0 +1,571 @@
+---
+title: "Graphiques linéaires et cartes"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+library(maps)
+library(mapproj)
+library(gapminder)
+library(forcats)
+
+asia <- 
+  gapminder %>% 
+  filter(country %in% c("China", "Korea, Dem. Rep.", "Korea, Rep.", "Japan")) %>% 
+  mutate(country = fct_recode(country, "North Korea" = "Korea, Dem. Rep.", "South Korea" = "Korea, Rep."))
+
+tx <- map_data("state", region = "texas")
+us <- map_data("state")
+
+USArrests2 <- USArrests %>% 
+  rownames_to_column("region") %>% 
+  mutate(region = tolower(region))
+
+checker <- function(label, user_code, check_code, envir_result, evaluate_result, ...) {
+  list(message = check_code, correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 60, exercise.checker = checker)
+knitr::opts_chunk$set(error = TRUE, out.width = "100%")
+```
+
+## Bienvenue 
+
+Un **graphique linéaire** représente une relation fonctionnelle entre deux variables continues. Une **carte** représente des données spatiales. Même si ces deux types de représentations semblent différents, ils sont fait de façon similaire. Dans ce module, vous allez apprendre à :
+
+* Faire de nouveaux types de graphique avec `geom_step()`, `geom_area()`, `geom_path()`, et `geom_polygon()`
+* Eviter d'obtenir des graphiques en dents de scie avec le paramètre esthétique `group`
+* Trouver et représenter des données spatiales avec `geom_map()`
+* Transformer un système de coordonnées en une projection de carte avec `coord_map()`
+
+Ce module est adapté du livre _R for Data Science_ d'Hadley Wickham et Garrett Grolemund, publié par O’Reilly Media, Inc., 2016, ISBN: 9781491910399. Vous pouvez obtenir le livre ici : [shop.oreilly.com](http://shop.oreilly.com/product/0636920034407.do).
+
+Ce module utilise les packages {ggplot2}, {maps}, {mapproj}, et {dplyr}, qui ont été chargés pour votre convenance.
+
+## Graphiques lineaires
+
+### Graphiques linéaires vs. Graphiques de dispersion
+
+Comme les graphiques de dispersion (ou nuages de points), les graphiques linéaires représentent la relation entre deux variables continues. Cependant, contrairement aux nuages de points, les graphiques linéaires s'attendent à ce que les variables aient des relations _fonctionnelles_, avec chaque valeur de $x$ associée à uniquement une valeur de $y$.
+
+Par exemple, dans le graphique ci-dessous, il n'y a qu'une valeur de `unemploy` pour chaque valeur de `date`. 
+
+```{r echo = FALSE, out.width = "80%"}
+economics %>% 
+  ggplot() +
+  aes(x = date, y = unemploy) +
+    geom_line()
+```
+
+### geom_line()
+
+Utilisez la fonction `geom_line()` pour créer des graphiques linéaires. Comme `geom_point()`, `geom_line()` a besoin d'un x et d'un y.
+
+Utilisez `geom_line()` dans le bloc pour recréer le graphique ci-dessus. Le graphique utilise le jeu de données `economics` qui est dans {ggplot2}. Représentez la variable `date` sur l'axe des $x$ et `unemploy` sur l'axe des $y$. Allez voir le module [Bases de la visualisation de données]() si vous êtes complètement bloqués.
+
+```{r r1, exercise = TRUE}
+
+```
+
+```{r r1-solution}
+ggplot(economics) +
+  aes(x = date, y = unemploy) +
+  geom_line()
+```
+
+```{r r1-check}
+"Bien ! Le graphique montre le nombre de personnes sans emploi aux Etats-Unis (en centaines) entre 1967 et 2015. Regardons à présent un autre jeu de données."
+```
+
+### asia
+
+Nous avons utilisé le package **{gapminder}** pour créer un nouveau jeu de données nommé `asia` à représenter graphiquement. `asia` contient entre autres le PIB par habitant (GDP per capita en anglais) de quatre pays entre 1952 et 2007.
+
+```{r}
+asia
+```
+
+### Phénomène de dents de scie
+
+Cependant, lorsqu'on représente le jeu de données `asia`, le graphique semble bizarre. La ligne monte et descend en dents de scie (on parle de _whipsawing_ en anglais). Les graphiques en dents de scie sont un des défis fréquents lorsqu'on réalise des graphiques linéaires.
+
+```{r out.width = "80%"}
+ggplot(asia) +
+  aes(x = year, y = gdpPercap) +
+  geom_line()
+```
+
+### Quiz - Phénomène de dents de scie
+
+```{r r2, echo = FALSE}
+question("Qu'indiquent les graphiques en dents de scie ?",
+         answer("Il y a beaucoup de volatilité dans les données.", message = "Des données très volatiles mèneraient certainement à un phénomène de dents de scie. Mais regardez de plus près : ce n'est pas ce qui se passe ici."),
+         answer("Le graphique devrait être représenté en coordonnées polaires."),
+         answer("Les données comportent des erreurs d’arrondi."),
+         answer("On essaie de représenter plus d'une ligne avec une seule ligne.", correct = TRUE, message = "En effet, l'unique ligne présente sur le graphique connecte en fait plusieurs points pour chaque valeur de x avant de rejoindre la valeur de x suivante."),
+         allow_retry = TRUE)
+```
+
+### Lignes multiples 
+
+Recréez le graphique en utilisant un nuage de points. Voyez-vous plus d'une "ligne" dans les données ?
+
+```{r r3, exercise = TRUE}
+
+```
+
+```{r r3-solution}
+ggplot(asia) +
+  aes(x = year, y = gdpPercap) +
+  geom_point()
+```
+
+```{r r3-check}
+"C'est ça ! Il y a quatre lignes dans le graphique. Une pour chaque pays : Chine, Japon, Corée du Nord et Corée du Sud."
+```
+
+### group
+
+De nombreuses fonctions géométriques `geom` comme lines, boxplots, et smooth lines, utilisent un objet unique pour le jeu de données entier. Vous pouvez utiliser le paramètre esthétique _group_ pour indiquer à ces fonctions `geom` de représenter différents objets pour différents groupes d'observations.
+
+Par exemple, dans le code ci-dessous, vous pouvez associer `group` à la variable de regroupement `country` pour créer une ligne distincte pour chaque pays. Essayez. Assurez-vous de placer le groupe dans la fonction `aes`.
+
+```{r r4, exercise = TRUE}
+ggplot(asia) +
+  aes(x = year, y = gdpPercap)
+  geom_line()
+```
+
+```{r r4-solution}
+ggplot(asia) +
+  aes(x = year, y = gdpPercap, group = country) +
+  geom_line()
+```
+
+```{r r4-check}
+"Super ! Nous avons maintenant une ligne distincte pour chaque pays. Malheureusement, nous ne pouvons pas dire quels sont les pays : le paramètre esthétique `group` ne fournit pas de légende. Voyons comment remédier à cela."
+```
+
+### Paramètres esthétiques
+
+Vous n'avez pas besoin de vous fier au paramètre esthétique `group` pour effectuer un regroupement. {ggplot2} regroupera automatiquement un `geom` chaque fois que vous ferez correspondre un paramètre esthétique à une variable catégorielle.
+
+Ainsi, par exemple, le code ci-dessous effectue un regroupement implicite. Et comme nous utilisons le paramètre esthétique `color`, le tracé comprend la légende des couleurs.
+
+```{r, out.width = "80%"}
+ggplot(asia) +
+  aes(x = year, y = gdpPercap, color = country) +
+  geom_line()
+```
+
+### linetype 
+
+Les lignes reconnaissent un paramètre esthétique que nous n'avons jamais rencontré auparavant : _linetype_. Changez le paramètre esthétique `color` par le paramètre `linetype` ci-dessous et examinez les résultats. Que se passe-t-il si vous associez _à la fois_ une couleur et un type de ligne à un pays ?
+
+```{r r5, exercise = TRUE, exercise.eval = TRUE}
+ggplot(asia) +
+  aes(x = year, y = gdpPercap, color = country) +
+  geom_line()
+```
+
+```{r r5-solution}
+ggplot(asia) +
+  aes(x = year, y = gdpPercap, linetype = country, color = country) +
+  geom_line()
+```
+
+```{r r5-check}
+"Et voilà ! Si vous faites correspondre deux paramètres esthétiques à la même variable, {ggplot2} combinera leurs légendes. Compléter la couleur avec un type de ligne est une bonne idée si vous souhaitez imprimer votre graphique en noir et blanc."
+```
+
+### Exercice 1 - Espérance de vie
+
+Utilisez ce que vous avez appris pour tracer l'espérance de vie de chaque pays au fil du temps. L'espérance de vie est enregistrée dans le jeu de données `asia` dans la variable `lifeExp`. Quel pays a l'espérance de vie la plus élevée ? La plus faible ?
+
+```{r r6, exercise = TRUE}
+
+```
+
+
+```{r r6-solution}
+ggplot(asia) +
+  aes(x = year, y = lifeExp, color = country, linetype = country) +
+  geom_line()
+```
+
+```{r r6-check}
+"
+Bien ! Le Japon a l'espérance de vie la plus élevée et la Corée du Nord la pire. Mais nous pouvons voir que les choses n'ont pas toujours été ainsi. Voyons maintenant d'autres façons d'afficher les mêmes informations."
+```
+
+## Fonctions geometriques similaires
+
+### geom_step()
+
+`geom_step()` produit un graphique linéaire de manière progressive. Pour voir ce que nous voulons dire, changez la fonction `geom` dans le graphique ci-dessous et relancez le code.
+
+```{r r7, exercise = TRUE, exercise.eval = TRUE}
+ggplot(asia) +
+  aes(x = year, y = lifeExp, color = country, linetype = country) +
+  geom_line()
+```
+
+```{r r7-solution}
+ggplot(asia) +
+  aes(x = year, y = lifeExp, color = country, linetype = country) +
+  geom_step()
+```
+
+```{r r7-check}
+'Super ! Vous pouvez contrôler si les étapes se font horizontalement puis verticalement ou verticalement puis horizontalement avec les paramètres `direction = "hv"` (défaut) ou `direction = "vh"`.'
+```
+
+### geom_area()
+
+`geom_area()` est similaire à un graphique linéaire, mais il remplit la zone sous la ligne. Pour voir `geom_area()` en action, changez la fonction `geom` dans le graphique ci-dessous et relancez le code.
+
+```{r r0, exercise = TRUE, exercise.eval = TRUE}
+ggplot(economics) +
+  aes(x = date, y = unemploy) +
+  geom_line()
+```
+
+```{r r0-solution}
+ggplot(economics) +
+  aes(x = date, y = unemploy) +
+  geom_area()
+```
+
+```{r r0-check}
+"Très bien ! Remplir l'espace sous la ligne vous donne une nouvelle façon de personnaliser votre graphique."
+```
+
+
+### Révision - Paramètres esthétiques à l'intérieur ou à l'extérieur de la fonction `aes`
+
+Vous souvenez-vous du module [Bases de la visualisation de données]() ? Comment feriez-vous pour mettre le remplissage de notre graphique en bleu (au lieu, par exemple, de faire correspondre le remplissage à une variable) ? Essayez.
+
+```{r r8, exercise = TRUE, exercise.eval = TRUE}
+ggplot(economics) +
+  aes(x = date, y = unemploy) +
+  geom_area()
+```
+
+```{r r8-solution}
+ggplot(economics) +
+  aes(x = date, y = unemploy) +
+  geom_area(fill = "blue")
+```
+
+```{r r8-check}
+"Très bien ! Gardez en tête que vous indiquez les paramètres esthétiques qui concernent des variables à l'intérieur de aes(). Pour les autres, vous devez les définir à l'extérieur de aes()."
+```
+
+### Accumulation
+
+`geom_area()` est un excellent choix si vos mesures représentent l'accumulation d'objets (comme les personnes sans emploi). Notez que l'axe $y$ avec `geom_area()` commence ou se termine toujours à zéro.
+
+C'est peut-être pour cette raison que `geom_area()` peut donner des résultats étranges lorsque vous avez plusieurs groupes. Exécutez le code ci-dessous. Pouvez-vous dire ce qui se passe ici ?
+
+```{r r00, exercise = TRUE}
+ggplot(asia) +
+  aes(x = year, y = lifeExp, fill = country) +
+  geom_area()
+```
+
+### Quiz - Ajustement de position
+
+Si vous avez répondu que les Chinois vivaient jusqu'à 300 ans, vous avez mal deviné. 
+
+`geom_area()` empile les groupes les uns au-dessus des autres. Par conséquent, la ligne qui devrait afficher l'espérance de vie pour la Chine affiche l'espérance de vie combinée pour tous les pays.
+
+Vous pouvez corriger cela en modifiant l'ajustement de position de la fonction `geom_area()`. Essayez ci-dessous. Changez le paramètre de position de `"stack"` (la valeur par défaut) à `"identity"`. Allez voir le module [Diagramme à barres]() si vous voulez en savoir plus sur les ajustements de position.
+
+```{r r9, exercise = TRUE}
+ggplot(asia) +
+  aes(x = year, y = lifeExp, fill = country) +
+  geom_area(position = "stack", alpha = 0.3)
+```
+
+```{r r9-solution}
+ggplot(asia) +
+  aes(x = year, y = lifeExp, fill = country) +
+  geom_area(position = "identity", alpha = 0.3)
+```
+
+```{r r9-check}
+"Voilà ! Vous pouvez personnaliser davantage votre graphique en passant de `geom_area()` à `geom_ribbon()`. `geom_ribbon()` vous permet de faire correspondre le bas de la zone remplie à une variable, ainsi que le haut. Utilisez `?geom_ribbon` si vous voulez en savoir plus."
+```
+
+### geom_path()
+
+`geom_line()` a un drôle de collègue : `geom_path()`. `geom_path()` trace une ligne entre les points comme `geom_line()`, mais au lieu de connecter les points dans l'ordre où ils apparaissent le long de l'axe $x$, cette fonction connecte les points dans l'ordre où ils apparaissent _dans le jeu de données_.
+
+Elle commence par l'observation de la première ligne du jeu de données et la relie à l'observation de la deuxième ligne, qu'elle relie ensuite à l'observation de la troisième ligne, et ainsi de suite.
+
+### Exemple geom_path()
+
+Pour voir comment `geom_path()` fait cela, réorganisons les lignes du jeu de données `economics`. Nous pouvons les réarranger par valeur de la variable `unemploy`. Ainsi, le jeu données commencera par l'observation qui avait la valeur la plus basse de `unemploy`.
+
+```{r}
+economics2 <- economics %>% 
+  arrange(unemploy)
+economics2
+```
+
+Si nous traçons les données réordonnées avec à la fois `geom_line()` et `geom_path()` nous obtenons deux graphiques très différents. 
+
+```{r out.width = "50%", fig.show='hold'}
+ggplot(economics2) +
+  aes(x = date, y = unemploy) +
+  geom_line()
+
+ggplot(economics2) +
+  aes(x = date, y = unemploy) +
+  geom_path()
+```
+
+Le graphique de gauche utilise `geom_line()` : les points sont reliés dans l'ordre le long de l'axe $x$. Le graphique de droite utilise `geom_path()` : les points sont connectés dans l'ordre où ils apparaissent dans le jeu de données (ce qui les met dans l'ordre le long de l'axe $y$).
+
+### Un exemple d'utilisation
+
+Pourquoi voudriez-vous utiliser `geom_path()` ? Le code ci-dessous illustre un cas particulièrement utile. Le jeu de données `tx` contient des coordonnées de latitude et de longitude sauvegardées dans un ordre spécifique.
+
+```{r}
+tx
+```
+
+### tx
+
+Que pensez-vous qu'il se passe lorsque vous faites un graphique avec les données de `tx` ? Exécutez le code pour le savoir.
+
+```{r r10, exercise = TRUE}
+ggplot(tx) +
+  aes(x = long, y = lat) +
+  geom_path()
+```
+
+```{r r10-solution}
+ggplot(tx) +
+  aes(x = long, y = lat) +
+  geom_path()
+```
+
+```{r r10-check}
+"C'est ça ! `geom_path()` révèle comment vous pouvez utiliser ce qui est essentiellement un graphique linéaire pour faire une carte (c'est une carte de l'état du Texas). Il existe d'autres façons de faire des cartes en R, mais cette méthode de faible technicité est étonnamment polyvalente."
+```
+
+### geom_polygon()
+
+`geom_polygon()` va plus loin que `geom_path()` : il relie le dernier point au premier, et colore ensuite la région intérieure avec un remplissage. Le résultat est un polygone.
+
+```{r out.width = "80%"}
+ggplot(tx) +
+  aes(x = long, y = lat) +
+  geom_polygon()
+```
+
+### Exercice 2 - Phénomène de bris de verre
+
+Selon vous, qu'est-ce qui a mal tourné dans le graphique du Texas ci-dessous ?
+
+```{r out.width = "80%", echo = FALSE}
+set.seed(100)
+rows <- c(rep(c(1:10), 100) + rep(sample(0:99 * 10), each = 10), 1001:1088)
+
+tx[rows, ] %>% 
+  ggplot() +
+    aes(x = long, y = lat) +
+    geom_polygon()
+```
+
+```{r r11, echo = FALSE}
+question("Qu'est-ce qui n'a pas fonctionné ?",
+         answer("Les lignes du jeu de données sont devenues désordonnées.", correct = TRUE, message = "On a l'impression que quelqu'un ait joué avec `tx`. `tx` et les jeux de données similaires ont une variable d'ordre que vous pourrez utiliser pour vous assurer que les données sont dans le bon ordre avant de les tracer."),
+         answer("La personne qui a écrit ce code n'a pas fixé un paramètre esthétique de remplissage.", message = "Il n'est pas nécessaire de fixer un paramètre esthétique de remplissage pour faire un polygone correct."),
+         answer("La personne qui a écrit ce code a utilisé un graphique linéaire au lieu d'un graphique en polygone.", message = "Si vous regardez de près, vous pouvez voir qu'il s'agit d'un graphique en polygone."),
+         allow_retry = TRUE)
+```
+
+## Cartes
+
+### {maps}
+
+Le jeu de données `tx` provient du package {maps}, qui est un package R contenant des jeux de données au format similaire pour de nombreuses régions du globe. 
+
+Une courte liste des jeux de données sauvegardés dans {maps} inclue : `france`, `italy`, `nz`, `usa`, `world`, et `world2`, ainsi que `county` et `state`. Pour en savoir plus sur {maps}, lancez `help(package = maps)`.
+
+### map_data
+
+Vous n'avez pas besoin d'accéder au package {maps} pour utiliser ses données. {ggplot2} fournit la fonction `map_data()` qui récupère les cartes du package {maps} et les renvoie dans un format que {ggplot2} peut tracer. 
+
+### Syntaxe de map_data
+
+Pour utiliser `map_data()`, donnez-lui le nom d'un jeu de données à récupérer. Vous pouvez récupérer un sous-ensemble de données en renseignant l'argument optionnel `region`. Par exemple, nous pouvons utiliser ce code pour récupérer une carte de la Floride à partir de `state`, qui est le jeu de données qui contient les 50 états américains.
+
+```{r eval = FALSE}
+fl <- map_data("state", region = "florida")
+ggplot(fl) +
+  aes(x = long, y = lat) +
+  geom_polygon()
+```
+
+Modifiez le code pour récupérer et tracer un autre état, par exemple l'Idaho.
+
+```{r r12, exercise = TRUE, exercise.eval = TRUE}
+
+```
+
+```{r r12-solution}
+id <- map_data("state", region = "idaho")
+ggplot(id) +
+  aes(x = long, y = lat) +
+  geom_polygon()
+```
+
+```{r r12-check}
+"Super ! C'est ainsi que nous avons recueilli le jeu de données `tx`. Regardez ce qui se passerait si vous ne spécifiez pas une région dans map_data()."
+```
+
+### state
+
+Si vous ne spécifiez pas de région, `map_data()` récupérera l'ensemble des données, dans ce cas `state`. 
+```{r eval = FALSE}
+us <- map_data("state")
+```
+
+En pratique, vous devrez souvent récupérer un jeu de données entier au moins une fois pour savoir quels noms de régions il faut utiliser avec `map_data()`. Les noms seront stockés dans la colonne `region` de ce jeu de données.
+
+### Hmmm
+
+Le code ci-dessous récupère et trace l'ensemble du jeu de données state, mais quelque chose ne va pas. Quoi ?
+
+```{r}
+us <- map_data("state")
+ggplot(us) +
+  aes(x = long, y = lat) +
+  geom_polygon()
+```
+
+### Polygones multiples
+
+Dans ce cas, notre jeu de données n'est pas désordonné, mais il contient plus d'un polygone : il contient 50 polygones - un pour chaque état. 
+
+Par défaut, `geom_polygon()` essaie de tracer un seul polygone, ce qui l'amène à relier plusieurs polygones de façon étrange.
+
+### group
+
+Quel paramètre pouvez-vous utiliser pour tracer des polygones multiples ? Dans le code ci-dessous, associez le paramètre esthétique `group` à la variable `group` du jeu de données `state`. Cette variable contient toutes les informations de regroupement nécessaires pour réaliser une carte cohérente. Relancez ensuite le code.
+
+```{r r13, exercise = TRUE, exercise.eval = TRUE}
+ggplot(us) +
+  aes(x = long, y = lat) +
+  geom_polygon()
+```
+
+```{r r13-solution}
+ggplot(us) +
+  aes(x = long, y = lat, group = group) +
+  geom_polygon()
+```
+
+```{r r13-check}
+"Voilà ! Vous maîtrisé une méthode pour dessiner des cartes. Passons à l'étape finale et utilisons la carte pour afficher des informations."
+```
+
+### USArrests
+
+R est fourni avec un jeu de données appelé `USArrests` que nous pouvons utiliser en conjonction avec notre graphique ci-dessus pour faire une _carte choroplèthe_. Une carte choroplèthe utilise la couleur de chaque région dans le graphique pour afficher une valeur associée à la région.
+
+Dans notre cas, nous utiliserons la variable `UrbanPop` de `USAarrests` qui décrit le degré d'urbanisation de chaque état en 1973. `UrbanPop` est le pourcentage de la population qui vivait à l'intérieur d'une ville.
+
+```{r}
+USArrests
+```
+
+### geom_map()
+
+Vous pouvez utiliser `geom_map()` pour créer des cartes choroplèthes. `geom_map()` couple des données comme `USArrests` avec une carte comme `us` en faisant correspondre les noms de régions.
+
+### Les conflits de données
+
+Pour utiliser `geom_map()`, nous devons d'abord nous assurer qu'un ensemble commun de noms de régions apparaît dans les deux ensembles de données. 
+
+Pour l'instant, ce n'est pas le cas. `USArrests` utilise des noms d'états en majuscules et les cache en dehors du jeu de données dans les noms de lignes (plutôt que dans une colonne). Au contraire, `us` utilise une colonne de noms d'états en minuscules. Le code ci-dessous permet de résoudre ce problème.
+
+```{r}
+USArrests2 <- USArrests %>% 
+  rownames_to_column("region") %>% 
+  mutate(region = tolower(region))
+
+USArrests2
+```
+
+### Syntaxe de geom_map()  
+
+Pour utiliser `geom_map()` : 
+
+1. Initialisez un graphique avec le jeu de données qui contient vos données. Ici, `USArrests2`.
+
+1. Ajouter `geom_map()`. Définissez le paramètre esthétique `map_id` à la variable qui contient les noms des régions. Puis définissez le paramètre esthétique `fill` à la variable `fill`. Vous n'avez pas besoin de fournir les paramètres esthétiques `x` et `y`, `geom_map()` dérivera ces valeurs de la carte, que vous devez définir avec le paramètre `map`. Puisque `map` est un paramètre, il doit aller en dehors de la fonction `aes()`.
+
+1. Après `geom_map()`, utilisez `expand_limits()`, et dites à `expand_limits()` quelles sont les variables $x$ et $y$ dans la carte. Cela ne devrait pas être nécessaire dans les futures versions de `geom_map()`, mais pour l'instant {ggplot2} utilisera les arguments `x` et `y` de `expand_limits()` pour construire la boîte de délimitation de votre graphique.
+
+```{r r15, exercise = TRUE}
+ggplot(USArrests2) +
+  aes(map_id = region, fill = UrbanPop) +
+  geom_map(map = us) +
+  expand_limits(x = us$long, y = us$lat)
+```
+
+```{r r15-check}
+"Félicitations ! Vous avez utilisé geom_map() pour réaliser votre premier graphique choroplèthe ! Pour tester votre compréhension, modifiez le code pour afficher les variables Murder (meurtres), Assault (agressions), ou Rape (viols)."
+```
+
+### coord_map()
+
+Vous avez peut-être remarqué que nos cartes ont l'air un peu fausses. Jusqu'à présent, nous les avons tracées en coordonnées cartésiennes, ce qui déforme la surface sphérique décrite par la latitude et la longitude. De plus, {ggplot2} ajuste le rapport d'aspect de nos graphiques pour qu'ils correspondent à notre fenêtre graphique, ce qui peut encore fausser nos cartes.
+
+Vous pouvez éviter ces deux distorsions en ajoutant `coord_map()` à votre graphique. La fonction `coord_map()` affiche le graphique dans une projection cartographique fixe. Notez que `coord_map()`, repose sur le package **{mapproj}** . Vous devrez donc avoir installé {mapproj} avant d'utiliser `coord_map()`.
+
+```{r out.width = "80%"}
+ggplot(USArrests2) +
+  aes(map_id = region, fill = UrbanPop) +
+  geom_map(map = us) +
+  expand_limits(x = us$long, y = us$lat) +
+  coord_map()
+```
+
+### Projections
+
+Par défaut, `coord_map()` remplace le système de coordonnées par une projection Mercator. Pour utiliser une projection différente, mettez l'argument `projection` de `coord_map()` à un nom de projection, entouré de guillemets. 
+
+Pour voir cela, étendez le code ci-dessous pour afficher la carte dans une projection "sinusoïdale".
+
+```{r r16, exercise = TRUE, exercise.eval = TRUE, exercise.lines = 4}
+ggplot(USArrests2) +
+  aes(map_id = region, fill = UrbanPop) +
+  geom_map(map = us) +
+  expand_limits(x = us$long, y = us$lat)
+```
+
+```{r r16-solution}
+ggplot(USArrests2) +
+  aes(map_id = region, fill = UrbanPop) +
+  geom_map(map = us) +
+  expand_limits(x = us$long, y = us$lat) +
+  coord_map(projection = "sinusoidal")
+```
+
+```{r r16-check}
+"Super ! Pour voir une liste des projections disponibles, visitez la page d'aide `?mapproj`, qui est liée par un hyperlien à la page d'aide de coord_map()."
+```
+
+### Récapitulatif
+
+Vous pouvez maintenant réaliser tous les graphiques recommandés dans le module [Analyse exploratoire de données](). Le prochain module vous apprendra plusieurs stratégies pour faire face à la problématique de chevauchement (superposition), une problématique qui peut survenir lorsque vous avez de grands jeux de données ou des données à faible résolution.
