@@ -1,0 +1,12 @@
+name: 05-scatterplots-fr
+title: 05-scatterplots-fr
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2300260
+bundleId: 3148326
+url: https://tutorials.shinyapps.io/05-scatterplots-fr/
+when: 1589481499.5936
+asMultiple: FALSE
+asStatic: FALSE

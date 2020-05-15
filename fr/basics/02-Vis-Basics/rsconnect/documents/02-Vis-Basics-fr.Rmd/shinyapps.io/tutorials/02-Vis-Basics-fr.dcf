@@ -1,0 +1,12 @@
+name: 02-Vis-Basics-fr
+title: 02-Vis-Basics-fr
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2299502
+bundleId: 3147681
+url: https://tutorials.shinyapps.io/02-Vis-Basics-fr/
+when: 1589472652.91648
+asMultiple: FALSE
+asStatic: FALSE

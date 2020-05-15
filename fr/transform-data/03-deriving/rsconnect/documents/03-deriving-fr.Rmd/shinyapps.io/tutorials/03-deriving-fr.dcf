@@ -1,0 +1,12 @@
+name: 03-deriving-fr
+title: 03-deriving-fr
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2299644
+bundleId: 3147834
+url: https://tutorials.shinyapps.io/03-deriving-fr/
+when: 1589474315.07912
+asMultiple: FALSE
+asStatic: FALSE

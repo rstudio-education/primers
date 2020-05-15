@@ -1,0 +1,12 @@
+name: 02-Exploratory-Data-Analysis-fr
+title: 02-Exploratory-Data-Analysis-fr
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2299687
+bundleId: 3147880
+url: https://tutorials.shinyapps.io/02-Exploratory-Data-Analysis-fr/
+when: 1589474798.55049
+asMultiple: FALSE
+asStatic: FALSE

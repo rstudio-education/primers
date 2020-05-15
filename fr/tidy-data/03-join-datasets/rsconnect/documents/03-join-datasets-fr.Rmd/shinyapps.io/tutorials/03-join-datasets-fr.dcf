@@ -1,0 +1,12 @@
+name: 03-join-datasets-fr
+title: 03-join-datasets-fr
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2299589
+bundleId: 3147770
+url: https://tutorials.shinyapps.io/03-join-datasets-fr/
+when: 1589473671.47762
+asMultiple: FALSE
+asStatic: FALSE

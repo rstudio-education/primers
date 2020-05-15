@@ -1,0 +1,12 @@
+name: 01-Reshape-Data-fr
+title: 01-Reshape-Data-fr
+username:
+account: tutorials
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2299559
+bundleId: 3147738
+url: https://tutorials.shinyapps.io/01-Reshape-Data-fr/
+when: 1589473236.59979
+asMultiple: FALSE
+asStatic: FALSE
