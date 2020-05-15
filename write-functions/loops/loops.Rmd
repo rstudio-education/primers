@@ -146,6 +146,14 @@ repeat {
 n
 ```
 
+```{r n-setup}
+n <- 1
+repeat {
+  if (n == 5) break
+  n <- n + 1
+}
+```
+
 * Click Submit Answer to find out.
 
 ```{r n, exercise = TRUE}
