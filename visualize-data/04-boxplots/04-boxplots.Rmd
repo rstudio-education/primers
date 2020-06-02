@@ -196,7 +196,7 @@ In the next sections, we'll use _group_ to make a more informative plot.
 ggplot2 provides three helper functions that you can use to split a continuous variable into categories. Each takes a continuous vector and returns a categorical vector that assigns each value to a group. For example, `cut_interval()` bins a vector into `n` equal length bins.
 
 ```{r}
-continuous_vector <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+continuous_vector <- 1:10
 continuous_vector
 ```
 
