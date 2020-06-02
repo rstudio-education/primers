@@ -1,0 +1,96 @@
+---
+title: "Test-Driven Development"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", error = TRUE, out.width = "100%")
+library(learnr)
+library(grader)
+library(tidyverse)
+library(assertthat)
+library(testthat)
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+```
+
+## Test-Driven Development
+
+Many programmers are fans of **test-driven development**: instead of writing code and then writing tests to check that it's correct, programmers write tests to specify what the code is supposed to do and then write just enough code to make those tests pass. Advocates claim that this makes programming more productive because it forces people to think about what they're doing before they start typing, and because it prevents endless polishing by establishing what "done" looks like. [The empirical evidence for TDD's benefits is mixed](https://doi.org/10.1145/2961111.2962592), but it is still a good way to discover and resolve amgibuity when working with other people. For example, here's a prose explanation of what a function is supposed to do:
+
+> Given a numeric vector, `monotone_sums` returns a new vector whose elements are the sums of the monotone-increasing subsequences in the original. For example, `monotone_sum(c(1, 2, 3, 1, 2, 1))` is `c(6, 3, 1)`, and `monotone_sum(c(10, 8))` is `c(10, 8)`.
+
+That seems pretty simple, but if you give this specification to two different developers, you will get implementations that handle at least one of these cases differently:
+
+-   `monotone_sum(c(10, 10, 10))` is either `c(30)` or `c(10, 10, 10)`, depending on whether "increasing" means "strictly increasing".
+-   `monotone_sum(NULL)` is 0, `integer(0)`, `NULL`, or an error.
+
+Let's try specifying behavior with tests instead:
+
+```{r tdd-example-specs, code=readLines("tdd-example-specs.R"), eval=FALSE}
+```
+
+This is much more precise than the prose we started with, and as we are writing our function, we can repeatedly run these tests to see how close we are to finishing.
+
+FIXME EXERCISE: fill in the sections of code marked with `##` below so that this function passes all of the given tests.
+
+```{r tdd-monotone, exercise = TRUE}
+monotone_sum <- function(vec) {
+  if (is.null(vec)) {
+    return(NULL)
+  }
+  
+  ## stopifnot(____)
+  
+  if (length(vec) == 0) {
+    ## return(____)
+  }
+
+  result <- rep(0, length(vec))
+  current <- 1
+  for (i in seq_along(vec)) {
+    if (i == 1) {
+      result[[current]] <- 0 ## replace 0 with something
+    } else if (vec[[i]] > vec[[i - 1]]) {
+      result[[current]] <- 0 ## replace 0 with something
+    } else {
+      current <- current + 1
+      result[[current]] <- 0 ## replace 0 with something
+    }
+  }
+
+  result[1:current]
+}
+```
+
+```{r tdd-monotone-solution}
+monotone_sum <- function(vec) {
+  if (is.null(vec)) {
+    return(NULL)
+  }
+  
+  stopifnot(is.numeric(vec))
+  
+  if (length(vec) == 0) {
+    return(integer(0))
+  }
+
+  result <- rep(0, length(vec))
+  current <- 1
+  for (i in seq_along(vec)) {
+    if (i == 1) {
+      result[[current]] <- vec[[i]]
+    } else if (vec[[i]] > vec[[i - 1]]) {
+      result[[current]] <- result[[current]] + vec[[i]]
+    } else {
+      current <- current + 1
+      result[[current]] <- vec[[i]]
+    }
+  }
+
+  result[1:current]
+}
+```
+
+```{r tdd-monotone-check, code=readLines("tdd-example-specs.R")}
+```

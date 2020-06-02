@@ -1,0 +1,145 @@
+---
+title: "Handling Errors"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", error = TRUE, out.width = "100%")
+library(learnr)
+library(grader)
+library(tidyverse)
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+```
+
+## Conditions
+
+Cautious programmers plan for the unexpected. In Python or Java, this is done by raising exceptions when something goes wrong, and catching them in order to report the problem or take corrective action. R draws on a tradition with slightly different terminology: we say that an operation **signals** a **condition** when something goes wrong, and that some other piece of code then **handles** that condition.
+
+The three built-in kinds of conditions are, in order of increasing severity, **messages**, **warnings**, and **errors**. We can signal these conditions using the functions `message`, `warning`, and `stop`, each of which takes an error message as a parameter:
+
+```{r error=TRUE}
+message("This is a message.")
+warning("This is a warning.")
+stop("This is an error.")
+```
+
+There are only a few situations in which a warning is appropriate. If something has truly gone wrong, we should stop, and if it hasn't, we should not distract users; if we do, they will quickly learn to ignore *all* of our messages.
+
+FIXME EXERCISE: which of the following should the program stop for?
+
+## Handling Conditions
+
+The bluntest of instruments for handling conditions is to ignore them. If a statement is placed in a call to the function `try`, conditions that are signalled in the operation are still reported, but execution continues. Here's some code that deliberately triggers an error:
+
+```{r}
+badAddition <- function(){
+  temp <- 1 + "two"
+  "result" # never returned
+}
+badAddition()
+```
+
+And here is the same code with the offending operation wrapped in `try`:
+
+```{r}
+hiddenFailure <- function(){
+  temp <- try(1 + "two")
+  "result" # will be returned this time
+}
+result <- hiddenFailure()
+cat("result is", result)
+```
+
+The error message appears, but the program continues.  We can achieve a similar result by wrapping the call to `badAddition` in `try`:
+
+```{r}
+result <- try(badAddition())
+cat("result is", result)
+```
+
+We still don't get the string `"result"` because `badAddition` stops when it tries to add the number and the string. Instead, the result of `try` is the **error object** that contains information about what went wrong.
+
+If we are *sure* that we wish to incur the risk of silent failure, we can suppress the error messages from `try` by setting `silent` to `TRUE`:
+
+```{r}
+failQuietly <- function(){
+  temp <- try(1 + "two", silent = TRUE)
+  "result" # returned
+}
+result <- failQuietly(1, "two")
+cat("result is", result)
+```
+
+This is a really bad idea, and you should never do it.
+
+FIXME EXERCISE: exercise on handling conditions.
+
+## Handling Conditions
+
+Instead of suppressing errors, we can handle them ourselves using `tryCatch`. Let's define a function that takes an error object of the kind created by `stop` as its argument, and displays the first element (which contains the error message):
+
+```{r}
+printError <- function(errorObject){
+  cat("ERROR", as.character(errorObject[1]))
+}
+```
+
+We can now pass this function to `tryCatch` along with the operation we're trying to do:
+
+```{r}
+tryCatch(
+  stop("our message"),
+  error = printError
+)
+```
+
+To show that this works in general
+
+```{r}
+tryCatch(
+  badAddition(),
+  error = printError
+)
+```
+
+FIXME EXERCISE: error handling exercises.
+
+## Cleaning Up
+
+Sometimes it isn't enough to report errors: we need to clean up after ourselves. For example, if we have opened a connection to a database, and something goes wrong with one of our queries, we should close that connection before doing anything else. `tryCatch` lets us specify this kind of cleanup using `finally`:
+
+```{r}
+tryCatch(
+  badAddition(),
+  error = printError,
+  finally = print("final action")
+)
+```
+
+The output here shows that our error handler function `printError` is invoked first, and then the statement passed as the `finally` argument is run. If we need to do several things, we can provide a code block as the `finally` argument:
+
+```{r}
+tryCatch(
+  badAddition(),
+  error = printError,
+  finally = {
+    print("first cleanup action")
+    print("second cleanup action")
+  }
+)
+```
+
+FIXME: show some actual cleanup.
+
+Exercise: what is printed when this is run? (Answer: the `"final action"` message does not appear, since the statement bound to `finally` defines a functinon but does not call it. This is inconsistent with `error`, which calls the function bound to it with a single argument.)
+
+```{r}
+tryCatch(
+  badAddition(),
+  error = printError,
+  finally = function(){ print("final action") }
+)
+```
+
+FIXME EXERCISE: exercise on cleaning up.

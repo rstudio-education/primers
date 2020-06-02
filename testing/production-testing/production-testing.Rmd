@@ -1,0 +1,169 @@
+---
+title: "Production Testing"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", error = TRUE, out.width = "100%")
+library(learnr)
+library(grader)
+library(tidyverse)
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+```
+```{r code = readLines("nickr_col.R"), include = FALSE}
+```
+```{r code = readLines("nickr_row.R"), include = FALSE}
+```
+```{r code = readLines("nickr_group.R"), include = FALSE}
+```
+
+## Sanity Checks
+
+As we said in the introduction, it doesn't matter how careful you were when writing your code if someone then feeds it data in production that doesn't make sense. This can happen for any number of reasons: the problem itself could slowly shift over time, for example, or new hires could interpret the instructions for collecting data differently. It's impossible to predict and forestall all of these, so the best thing you can do is sound the alarm when something goes wrong.
+
+Monitoring operational code is a different problem than testing that code's correctness during development, and requires a different set of tools. What we want to do is look at the data flowing through our analysis pipeline and make sure it meets expectations. When it doesn't, we want generate a message and possibly stop processing. As with unit testing, it's important that we don't ask for attention when nothing has gone wrong, because if we do, people will soon learn to ignore us.
+
+```{r include = FALSE, code = readLines("survey-data.R")}
+```
+
+The simplest tests we can write look at **data integrity**: are values not null or NaN, are strings not empty, and so on. Thorley's [checkr](https://poissonconsulting.github.io/checkr/) package is one tool we can use to do this; another is [nickr](https://github.com/gvwilson/nickr) package. Suppose we have this pipeline:
+
+```{r}
+survey %>%
+  group_by(person) %>%
+  mutate(adjusted = score - min(score))
+```
+
+It looks simple enough, but what happens when someone feeds it this survey data?
+
+```{r code = readLines("survey-data.R")}
+```
+
+Several implicit assumptions are violated:
+
+1.  One of the scores is `NaN`, which means that the adjusted score for that person is also `NaN`.
+2.  One of PQ1's scores is negative: this may be OK, but it might also signal bad data entry.
+3.  One person (TG6) only has one score, and one person (RJ3) has three.
+4.  One person identifier, PQ, doesn't fit the letter-letter-digit scheme of all the others, and may be a typo.
+
+Here's an annotated pipeline that checks for all of these conditions, which we have put in a function so that we can call it to demonstrate each test:
+
+```{r}
+annotated <- function(data, msg) {
+  print(msg)
+  
+  data %>%
+    nickr_col(!is.nan(score) &
+              score > 0, 
+              msg = "scores must be non-negative", 
+              logger = print) %>%
+    nickr_col(str_detect(person, "[A-Z][A-Z][0-9]"),
+              msg = "subject IDs must be letter-letter-digit",
+              logger = print) %>%
+    group_by(person) %>%
+    nickr_group(n() == 2, 
+                msg = "require two scores per subject", 
+                logger = print) %>%
+    mutate(adjusted = score - min(score))
+  
+  invisible(data) # to hide result
+}
+annotated(survey, "full checks")
+```
+
+`nickr_col` and `nickr_group` (and their third sibling, `nickr_row`) take an expression as an argument, and can optionally also take a user-defined error message and a function to call when an error is detected.  The default for the latter is `stop`; it's common to override this with `warning`, but here we're using `print` to get readable output.  Note that we're also using `&` instead of `&&` in the first check so that we get a vector result, and so that checking doesn't stop the first time the expression fails.
+
+```{r tighter-conditions, echo = FALSE}
+question("Will the person identifier `ABCD1234` pass the tests we have written?",
+  answer("No: it's too long."),
+  answer("Yes: our regular expression checks if *any* of the identifiers fail to match."),
+  answer("Yes: our regular expression matches the middle of this identifier.", correct = TRUE),
+  answer("Yes: our regular expression checks that the identifier contains *at least* two letters and *at least* one digit.")
+  )
+```
+
+Here are some data sets that trigger different conditions in the pipe:
+
+```{r}
+tribble(
+  ~id, ~person, ~score,
+    1,  "AB1",   NaN,
+    2,  "AB1",     3
+) %>% annotated("checking that scores are not NaN")
+```
+
+```{r}
+tribble(
+  ~id, ~person, ~score,
+    1, "AB1",   -1,
+    2, "AB2",   3
+) %>% annotated("checking that scores are positive")
+```
+
+```{r}
+tribble(
+  ~id, ~person, ~score,
+    1, "AB1",   3,
+    2, "AB",    5
+) %>% annotated("checking that person matches pattern")
+```
+
+```{r}
+tribble(
+  ~id, ~person, ~score,
+  1, "AB1", 3
+) %>% annotated("checking that fewer than two rows per person don't work")
+```
+
+```{r}
+tribble(
+  ~id, ~person, ~score,
+  1, "AB1", 3,
+  2, "AB1", 5,
+  3, "AB1", 7
+) %>% annotated("checking that more than two rows per person don't work")
+```
+
+FIXME EXERCISE: write test to ensure that scores are integers in the range 0..10.
+
+FIXME EXERCISE: write test to ensure that the second score in each group is greater than the first.  (I don't know how to do this myself.)
+
+## Going Into Production
+
+The full set of parameters for the `nickr_*` family of functions are:
+
+-   `.data`: Incoming data (can be omitted as usual if the function is included in a `%>%` pipeline).
+-   `cond`: Column-wise condition expression to test.
+-   `msg`: User message to display if test fails.
+-   `active`: Enable or disable the test by setting this argument `TRUE` (the default) or `FALSE`.
+-   `logger`: The function to call with the error message if the test fails (e.g., `print`, `warning`, or `stop`).
+
+If we were building this pipeline for real, we would do the following:
+
+1.  Create the pipeline.
+2.  Create a variable called `logger` and assign `warning` to it.
+3.  Create another variable called `active` and assigned `TRUE` to it.
+4.  Add the sanity checks as written with `logger = logger` and `active = active`.
+5.  Change `logger` to `stop`.
+6.  Deploy.
+
+If someone then wanted to turn off logging in production, they could simply change the variable `active` to `FALSE` and all the loggers will stop checking their conditions. (Someone might want to do this out of a misplaced concern for performance, but honestly, if they don't care about getting the right answer, they can speed things up considerably by replacing the entire pipeline with a random number generator.) Similarly, if someone wanted to send the error messages somewhere special, they could either assign a different function of one argument to the variable `logger` or override the `logger` argument of individual checking functions.
+
+A more structured way to handle this is to use a logging framework like [futile.logger](https://github.com/zatonovo/futile.logger). Just as testthat is similar to testing libraries for other languages, futile.logger works like Java's log4j library, Python's logging, and related tools. At its simplest, it provides a set of functions to log messages with increasing urgency called `flog.trace`, `flog.debug`, `flog.info`, `flog.warn`, `flog.error`, and `flog.fatal`. It also provides symbolic names for these levels, from `TRACE` to `FATAL`, and a function `flog.threshold` that allows the user to change the logging threshold to control which messages appear. If, for example, the threshold is currently `WARN` (set with `flog.threshold(WARN)`), then messages at the `TRACE`, `DEBUG`, and `INFO` levels are discarded. This allows users to leave fine-grained messages in their code rather than commenting them out so that if something does go wrong in production, whoever is using the software can re-set the logging threshold and get more information.
+
+Like its cousins in other languages, futile.logger provides three other capabilities:
+
+-   Every logger can be put in a user-defined namespace, such as "tidying" or "estimating", so that message thresholds can be set per stage or per package. These namespaces can even be hierarchical if you want to be able to turn reporting for sub-stages of your pipeline on and off.
+-   Every logger can also be given a custom reporting format, which can be very useful if the messages from your pipeline are going to be mixed with messages from other tools.
+-   Finally, loggers can be pointed at different output destinations (called **appenders**, since log messages are appended to them). The most common during debugging is the screen, but in production it's common to append messages to a log file, add records to a database, or call some sort of monitoring service.
+
+You don't have to take advantage of any of these advanced features to start using futile.logger, but we recommend that you start using the `flog.whatever` family of functions right from the start. If nothing else, it will be a pleasant surprise for the sys admin who eventually has to put your code into production.
+
+> If you are using pseudo-random numbers anywhere in your pipeline.
+> always be sure to log the seed used to initialize the PRNG.
+> It doesn't guarantee that you'll be able to reproduce the problem,
+> but not being able to re-generate the exact values that led to the crash
+> certainly reduces your chances of making it happen again.
+
+FIXME EXERCISE: coding exercise to switch over to futile.logger.

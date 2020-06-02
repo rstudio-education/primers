@@ -1,0 +1,55 @@
+---
+title: "Testing"
+output: html_document
+---
+
+Data analysis is only useful if it's correct, and if it's not, it [can do considerable harm](https://theconversation.com/the-reinhart-rogoff-error-or-how-not-to-excel-at-economics-13646).
+While no amount of testing can ever conclusively prove that there aren't mistakes in code, a few simple practices can reassure us that it's probably all right.
+This tutorial will introduce some of the tools R gives you for checking your code and show you how to integrate them into your workflow.
+
+As the figure below shows,
+we can distinguish testing during development from testing code in production,
+and small-scale (micro) approaches from larger (macro) approach:
+
+1.  Embed *assertions* in software to check that it's behaving as it should
+    both during development and in production.
+2.  Write *unit tests* to check that functions are doing what they're supposed to
+    as we create or modify them.
+3.  Use *mock objects* to help test difficult-to-reach parts of our code during development.
+4.  Write our own *error handling* (or even error recovery)
+    so that failures in production don't bring the system crashing down.
+5.  Add checks on data validity for *production testing*
+    so that if something unexpected happens,
+    we're the first to know.
+
+<figure id="testing-overview" align="center">
+![Testing Overview](./testing-overview.svg)
+</figure>
+
+## [Testing Basics](./testing-basics/testing-basics.Rmd)
+
+Start here to learn what testing can and can't do, and how to think about building useful tests.
+
+## [Writing Unit Tests](./unit-tests/unit-tests.Rmd)
+
+Unit testing is how experienced developers check their code as they build it and re-check it as they modify it. This tutorial will show you how to create and run unit tests using the testthat library.
+
+## [Test-Driven Development](./test-driven-development/test-driven-development.Rmd)
+
+Writing tests before you write code helps you figure out what that code should do, and helps you tell when you're done. This tutorial will introduce the basic ideas of test-driven development.
+
+## [Handling Errors](./handling-errors/handling-errors.Rmd)
+
+You can't always prevent errors, but in R, you can always catch them and do something about them. This tutorial will show you how to handle errors yourself.
+
+## [Testing in Production](./production-testing/production-testing.Rmd)
+
+It doesn't matter how careful you were when writing your code if someone then feeds it data that doesn't make sense. This tutorial will show you how to inspect the data flowing through your pipeline so that you can sleep easily at night.
+
+## [Mocking](./mocking/mocking.Rmd)
+
+Some parts of your program will be more difficult to reach for testing than others.  This tutorial introduces a technique called mocking that lets you temporarily replace those bits with simplified or more predictable versions.
+
+## Acknowledgments
+
+Our thanks to Charles Gray, Alec Robitaille, and Jim Tyhurst for their feedback.

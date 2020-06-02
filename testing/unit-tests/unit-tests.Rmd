@@ -1,0 +1,319 @@
+---
+title: "Writing Unit Tests"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", error = TRUE, out.width = "100%")
+library(learnr)
+library(grader)
+library(tidyverse)
+library(assertthat)
+library(testthat)
+tutorial_options(exercise.timelimit = 60, exercise.checker = grade_learnr)
+```
+
+## Assertions
+
+Assertions are the atoms of testing. An assertion is simply a statement that something must be true at a certain point in a program's execution: a variable has to exist, all the values in a column must be greater than zero, and so on.
+
+R has a built-in function for checking conditions like this called `stopifnot`, but we prefer `assert_that` from the assertthat package, since it allows us to specify an error message:
+
+```{r demonstrate-assert-that}
+ages <- c(25, 27, 27, 30, 32)
+assert_that(!is.null(ages), msg = "ages must exist")
+assert_that(length(ages) > 0, msg = "ages must contain some data")
+assert_that(all(ages > 0), msg = "all ages must be positive")
+assert_that(length(unique(ages)) == length(ages), msg = "all ages must be distinct")
+```
+
+Good software is full of assertions: by some counts, 20% or more of the code in an application like a web browser is there to check that the other code is working correctly.
+
+FIXME EXERCISE: write an assertion to check that a vector is in sorted order.
+
+## Approximately Correct
+
+The `expect_equal` function can take a third argument
+when used with floating-point numbers: `tolerance`.
+This tells the function how close values have to be to be considered equal.
+It's needed because floating-point numbers are only approximations of real numbers,
+so even simple expressions may not produce the mathematically-exact result.
+R tries to shield users from this,
+but if we look closely,
+we can see the issue:
+
+```{r}
+sprintf('%.25f', 0.1 + 0.2)
+```
+
+Since the size of the difference between the true result
+and what's calculated using a finite number of bits
+will vary depending on the magnitudes of the numbers involved,
+`expect_equal`'s `tolerance` value is expressed as a **relative error**,
+i.e.,
+as a fraction of the actual result.
+By default,
+the value is roughly 1.5e-8
+(see the documentation for `all.equal` for details).
+There's usually no reason to change this,
+but its existence is the reason why correctness tests should use `expect_equal`
+rather than simply `==`.
+For more information,
+please see [The Floating Point Guide](https://floating-point-gui.de/errors/rounding/).
+For *lots* more information,
+see David Goldberg's "[What Every Computer Scientist Should Know About Floating-Point Arithmetic](https://doi.org/10.1145/103162.103163)".
+
+FIXME EXERCISE: exercise for floating-point thresholds in testing
+
+## Writing Unit Tests
+
+If assertions are the atoms of testing, then unit tests are the molecules. A unit test is typically one call to a function followed by one or more assertions that check whether that function did the right thing. The call to the function may be preceded by some setup code (for example, creating a table to operate on), but each unit test should focus on one aspect of the function's operation.
+
+Unit tests in R are typically written using `test_that`. Each call to `test_that` takes a descriptive string and a code block as arguments. Inside the code block, tests are written using the `expect_*` family of functions: these do the same sorts of things as the assertions we saw above, but also report back to `test_that` so that it can display a summary of how testing is going.
+
+If any tests fail, `test_that` displays a message. Crucially, testing doesn't stop at the first failure: when `numSign` returns the wrong value for the sign of 0, `test_that` keeps going so that we have as much information as possible.
+
+Here's a broken version of the `numSign` function:
+
+```{r numsign-defined}
+numSign <- function(x) {
+  if (x > 0) {
+    1
+  } else {
+    -1
+  }
+}
+```
+
+and here are three unit tests for it:
+
+```{r numsign-tests}
+test_that("sign of a negative number is -1", {
+  expect_equal(numSign(-3), -1)
+})
+
+test_that("sign of zero is zero", {
+  expect_equal(numSign(0), 0)
+})
+
+test_that("sign of a positive number is 1", {
+  expect_equal(numSign(43214), 1)
+})
+```
+
+We could have put all of these checks inside one call to `test_that`:
+
+```{r numsign-all-in-one}
+test_that("sign function does the right thing", {
+  expect_equal(numSign(-3), -1)
+  expect_equal(numSign(0), 0)
+  expect_equal(numSign(43214), 1)
+})
+```
+
+This is OK for small tests like this, but as tests grow larger, it's considered good practice to put each call to the function being tested in its own test. For example, suppose we have been given a function call `cap_cols` that takes a data frame and the names of two columns A and B, and caps each value in A so that it is no greater than the corresponding value in B. Here's how I would go about testing it:
+
+```{r include=FALSE}
+cap_cols <- function(data, values, limits) {
+
+  # correct behavior
+  data[[values]] <- ifelse(data[[values]] > data[[limits]], data[[limits]], data[[values]])
+
+  # deliberate bug: always cap last column as well
+  i <- length(data)
+  data[[i]] <- ifelse(data[[i]] > data[[limits]], data[[i]], data[[values]])
+
+  data
+}
+```
+
+```{r cap-cols-tests}
+test_that("zero-length columns are handled", {
+  fixture <- tribble(~a, ~b, ~c)
+  result <- cap_cols(fixture, "a", "b")
+  expect_identical(fixture, result)
+})
+
+test_that("single value is left alone when it shouldn't be capped", {
+  fixture <- tribble(~a, ~b, 1, 10)
+  result <- cap_cols(fixture, "a", "b")
+  expect_equal(result$a, fixture$a)
+})
+
+test_that("single value is capped when it should be", {
+  fixture <- tribble(~a, ~b, 9, 5)
+  result <- cap_cols(fixture, "a", "b")
+  expect_equal(result$a, c(5))
+})
+
+test_that("mixed values are capped when they should be (and nothing else changes)", {
+  fixture <- tribble(
+    ~a, ~b,
+    1,  10,
+    20,  2
+  )
+  result <- cap_cols(fixture, "a", "b")
+  expect_equal(result$a, c(1, 2))
+  expect_equal(result$b, fixture$b)
+})
+```
+
+The first test checks that a **boundary condition** is handled correctly: we don't expect empty tables, but we ought to handle them gracefully if they appear. The second and third checks make sure that simple cases work: capping happens when it should, and *doesn't* happen when it *shouldn't*. If these tests fail, they give us a very simple starting point for debugging.
+
+The fourth case makes sure that `cap_cols` handles mixed cases, i.e., that it can cap some values in a column without capping others. It also checks that the function doesn't accidentally change the column containing the capping values. It's not supposed to, and there's no reason to believe that it would, but software has a way of turning the unbelievable into a frustrating Wednesday afternoon.
+
+FIXME EXERCISE: check that other columns in the table aren't accidentally capped.
+
+FIXME EXERCISE: check that no new columns are added to the table
+
+## Checking Error Conditions
+
+If your code is going to be used in production---i.e., if it's ever going to run while you're not watching it---it's very important to include error handling checks and to make sure that those checks actually work.  According to [one study](https://dl.acm.org/citation.cfm?id=2685068) of failures in large data-intensive systems:
+
+> Almost all (92%) of the catastrophic system failures are the result of incorrect handling of non-fatal errors explicitly signaled in software.
+> In 58% of the catastrophic failures, the underlying faults could easily have been detected through simple testing of error handling code. 
+
+testthat provides functions like `expect_error` and `expect_warning` to help with this.  Let's start with a naive implementation of `cap_cols`:
+
+```{r cap-cols-naive}
+cap_cols <- function(data, vals, lims) {
+  data[[vals]] <- ifelse(data[[vals]] > data[[lims]],
+                         data[[lims]],
+                         data[[vals]])
+  data
+}
+```
+
+What happens if we ask this function to cap using a column of logical values?
+
+```{r cap-cols-naive-test-logical}
+logicals <- tribble(~a, ~b, TRUE, 3)
+cap_cols(logicals, "a", "b")
+cap_cols(logicals, "b", "a")
+```
+
+What about columns of text?
+
+```{r cap-cols-naive-test-character}
+mixed <- tribble(
+  ~nums, ~low, ~high,
+      1,  "a",   "b",
+      2,  "z",   "y"
+)
+cap_cols(mixed, "nums", "low")
+cap_cols(mixed, "low", "nums")
+cap_cols(mixed, "low", "high")
+```
+
+That works, but you should be feeling increasingly uncomfortable about what we're doing: capping a bunch of numbers according to how they compare with some character strings feels like it would usually happen by mistake, and we should probably tell people something has gone wrong. Let's add some checks:
+
+```{r cap-cols-with-checks}
+cap_cols <- function(data, vals, lims) {
+  assert_that(is.numeric(data[["vals"]]),
+              msg = paste("values column", vals, "must be numeric"))
+  assert_that(is.numeric(data[["lims"]]),
+              msg = paste("limits column", lims, "must be numeric"))
+  data[[vals]] <- ifelse(data[[vals]] > data[[lims]], data[[lims]], data[[vals]])
+  data
+}
+```
+
+We can now check that we get errors when we should:
+
+```{r cap-cols-retest}
+test_that("values column has to be numeric", {
+  fixture <- tribble(~chars, ~nums, "chars", 1)
+  expect_error(cap_cols(fixture, "chars", "nums"),
+               regexp = "must be numeric")
+})
+
+test_that("limits column has to be numeric", {
+  fixture <- tribble(~chars, ~nums, "chars", 1)
+  expect_error(cap_cols(fixture, "nums", "chars"),
+               regexp = "must be numeric")
+})
+```
+
+The first argument to `expect_error` is the function call to check; the second is a regular expression that the error message must match.
+
+FIXME EXERCISE: write a tighter regular expression
+
+FIXME EXERCISE: add checks for null inputs
+
+FIXME EXERCISE: show a simple-minded implementation of `expect_error` and ask what cases it *won't* catch.  This will depend on learners having done the primer on error handling (which in turn depends on me writing it).
+
+## Randomness
+
+There are two rules you absolutely must follow when writing R programs:
+
+1.  [Never use `setwd`](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/).
+2.  Always seed the random number generator explicitly so that you can reproduce your results.
+
+The background to the second rule is that computer-generated random numbers aren't really random;
+they're produced by a completely deterministic algorithm
+whose outputs have all the properties of truly random numbers.
+The initial value of such a **pseudo-random number generator** (PRNG) is called the **seed**.
+If the PRNG is given the same seed,
+it will reproduce exactly the same sequence of values.
+
+This is important because data scientists need to be able to reproduce their work
+and to be able to test their software.
+Suppose, for example, that you are sampling a uniform distribution 100 times in one of your tests.
+If the test fails,
+you'll want to be able to re-run it to find out why,
+but if you can't regenerate exactly the same set of values,
+you might not be able to.
+
+Most programs set the PRNG seed once as the program starts up,
+but since `test_that` doesn't guarantee to run tests in the same order every time,
+a well-written test suite will re-set the PRNG at the start of each test.
+Doing this is usually not necessary,
+but few things are as frustrating as having a test that fails once in a hundred runs,
+so it's worth the extra line of code.
+We will talk more about this when we discussion
+[production testing](../production-testing/production-testing.Rmd).
+
+## Organizing Tests
+
+Every good R package has tests, and every set of package tests must follow a few simple rules. Let's create `tests/testthat/test_example.R`:
+
+```{r test-example-source, code=readLines("../../tests/testthat/test_example.R"), eval=FALSE}
+```
+
+The first line loads the testthat package. The call to `context` on the second line gives this set of tests a name for reporting purposes. After that, we add as many calls to `test_that` as we want, each with a name and a block of code. We can now run this file from within RStudio:
+
+FIXME: get the project root properly in the code example below or explain why it's there.
+
+```{r test-dir-all-tests}
+test_dir("../../tests/testthat")
+```
+
+A bit of care is needed when interpreting these results. There are four `test_that` calls, but eight actual checks, and the number of successes and failures is counted by recording the results of the checks, not the number of `test_that` calls.
+
+We don't actually have to call our test files `test_something.R`, but `test_dir` and the rest of R's testing infrastructure expect us to. Similarly, we don't have to put them in a `tests` directory, but everyone (including a lot of tools) expects them to be there.
+
+If we only want to run a subset of our tests, we can provide a `filter` argument to `test_dir`. To show how this works, let's create another file of tests in `tests/testthat/test_tibble.R`:
+
+```{r test-tibble-source, code=readLines("../../tests/testthat/test_tibble.R"), eval=FALSE}
+```
+
+and then run just those tests like this:
+
+```{r test-dir-filter-mistaken}
+test_dir("../../tests/testthat", filter = "test_tibble.R")
+```
+
+Ah. It turns out that `filter` is applied to filenames *after* the leading `test_` and the trailing `.R` have been removed. Let's try again:
+
+```{r test-dir-filter-correct}
+test_dir("../../tests/testthat", filter = "tibble")
+```
+
+That's better, and it illustrates our earlier point about the importance of following conventions.
+
+FIXME: explain how to set all of this up from inside the IDE.
+
+FIXME: explain that tests are run with the package software loaded, including whatever is specified in `DESCRIPTION`.
+
+FIXME EXERCISE: exercise for organizing tests.
