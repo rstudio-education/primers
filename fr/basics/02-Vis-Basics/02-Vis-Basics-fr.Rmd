@@ -546,7 +546,7 @@ ggplot(data = mpg) +
 
 ### Plus de geoms !
 
-{ggplot2} contient plus de 30 fonctions _geom_ que vous pouvez utiliser, et d'autres packages en procurent encore d'avantage (regarder <https://www.ggplot2-exts.org> pour une liste non exhaustive). Vous apprendrez comment utiliser ces geoms pour l'exploration de données dans le primer [Visualiser des données]().
+{ggplot2} contient plus de 30 fonctions _geom_ que vous pouvez utiliser, et d'autres packages en procurent encore d'avantage (regarder <https://exts.ggplot2.tidyverse.org/> pour une liste non exhaustive). Vous apprendrez comment utiliser ces geoms pour l'exploration de données dans le primer [Visualiser des données]().
 
 Jusque là, le meilleur moyen d'obtenir une vue d'ensemble compréhensible sur les geoms, c'est d'utiliser la [cheatsheet {ggplot2}](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf), cette petite page remplie d'astuces trèsutiles. Et pour en savoir plus sur un geom en particulier, regardez sa page d'aide (par ex : `?geom_violin`.)
 
