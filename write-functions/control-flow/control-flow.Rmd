@@ -388,7 +388,7 @@ Translated to R this becomes:
 
 ```{r}
 my_square <- function(x) {
-  y <- sum(x) / length(x)
+  y <- x * x
   return(y)
 }
 ```
