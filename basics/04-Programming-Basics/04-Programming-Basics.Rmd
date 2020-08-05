@@ -258,7 +258,7 @@ iris
 
 ### rm()
 
-What if you accidentally overwrite an object? If that object came with R or one of its packages, you can restore the original version of the object by removing your version with `rm()`. Run `rm()` on `iris` below to restore the iris data set.
+What if you accidentally overwrite an object? If that object came with R or one of its packages, you can restore the original version of the object by removing your version with `rm()`. Run `rm()` on `iris` below to restore the iris data set. Then print `iris` again to show that the original version has been restored.
 
 ```{r objects-5, exercise = TRUE}
 iris <- 1
