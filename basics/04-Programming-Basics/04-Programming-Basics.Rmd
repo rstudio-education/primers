@@ -60,7 +60,7 @@ R is easiest to use when you know how the R language works. This tutorial will t
 
 ### Run a function
 
-Can you use the `sqrt()` function in the chunk below to compute the square root of 962?
+Can you use the `sqrt()` function in the chunk below to compute the square root of 961?
 
 ```{r functions-1, exercise = TRUE}
 
