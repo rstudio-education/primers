@@ -1,7 +1,5 @@
 #!groovy
 
-doUpload = (env.BRANCH_NAME == 'master')
-
 ansiColor('xterm') {
   node('docker') {
       stage('setup') {
@@ -27,20 +25,16 @@ ansiColor('xterm') {
       }
 
       stage('Upload') {
-        if (doUpload) {
-          image.inside() {
-            gitSHA = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-            unstash 'rlibrary'
-            withCredentials([string(credentialsId: 'primers-role-name', variable: 'PRIMERS_ROLE_NAME')]) {
-              withCredentials([string(credentialsId: 'primers-role-account', variable: 'PRIMERS_ROLE_ACCOUNT')]) {
-                withAWS(role: PRIMERS_ROLE_NAME, roleAccount: PRIMERS_ROLE_ACCOUNT) {
-                  sh "aws s3 cp bionic-r3-6-3.tar.gz s3://primers-library/r3.6.3/bionic/${gitSHA}.tar.gz"
-                }
+        image.inside() {
+          gitSHA = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+          unstash 'rlibrary'
+          withCredentials([string(credentialsId: 'primers-role-name', variable: 'PRIMERS_ROLE_NAME')]) {
+            withCredentials([string(credentialsId: 'primers-role-account', variable: 'PRIMERS_ROLE_ACCOUNT')]) {
+              withAWS(role: PRIMERS_ROLE_NAME, roleAccount: PRIMERS_ROLE_ACCOUNT) {
+                sh "aws s3 cp bionic-r3-6-3.tar.gz s3://primers-library/r3.6.3/bionic/${gitSHA}.tar.gz"
               }
             }
           }
-        } else {
-          print "Skipping"
         }
       }
       stage('Finish') {
