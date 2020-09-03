@@ -42,6 +42,20 @@ tryCatch(
 )
 ```
 
+```{r, context="server", include=FALSE}
+tryCatch({
+    cat("Observed a new session:", getDefaultReactiveDomain()$token, "\n")
+    getDefaultReactiveDomain()$onSessionEnded(function(){
+      cat("Observed session end:", getDefaultReactiveDomain()$token, "\n")  
+    })
+  },
+  error = function(e){
+    print("An error occurred printing information about the session")
+    print(e)
+  }
+)
+```
+
 ## Welcome
 
 This tutorial will show you how to make and enhance **bar charts** with the ggplot2 package. You will learn how to:
